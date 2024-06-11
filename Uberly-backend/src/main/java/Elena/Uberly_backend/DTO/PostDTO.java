@@ -1,6 +1,7 @@
 package Elena.Uberly_backend.DTO;
 
-import elena.uberly.Entity.User;
+
+import Elena.Uberly_backend.Entity.User;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

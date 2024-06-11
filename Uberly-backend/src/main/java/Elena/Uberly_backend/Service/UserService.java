@@ -2,6 +2,7 @@ package Elena.Uberly_backend.Service;
 
 import Elena.Uberly_backend.DTO.UserDTO;
 import Elena.Uberly_backend.Entity.User;
+import Elena.Uberly_backend.Enum.Role;
 import Elena.Uberly_backend.Exception.BadRequestException;
 import Elena.Uberly_backend.Exception.UserNotFoundException;
 import Elena.Uberly_backend.Repository.UserRepository;
@@ -98,19 +99,18 @@ public class UserService {
             user.setUsername(userDTO.getUsername());
             user.setName(userDTO.getName());
             user.setSurname(userDTO.getSurname());
-            user.setPictureProfile(userDTO.getPictureProfile());
-
+            user.setPictureProfile("https://ui-avatars.com/api/?name=" + user.getName() + "+" + user.getSurname());
             user.setEmail(userDTO.getEmail());
             user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
             user.setRole(userDTO.getRole());
             userRepository.save(user);
-            sendMailProfileCreated(user.getEmail());
-            return "User with ID: " + user.getId()+" , with role: "+ user.getRole();
+            sendMailProfileCreated(user.getEmail(), user.getName(), user.getSurname(), String.valueOf(user.getRole()));
+            return "User with ID: " + user.getId() + " , with role: " + user.getRole();
         }
     }
 
     // UPDATE USER METHOD
-    public User updateUser(UserDTO userUpdate, int id) throws UserNotFoundException {
+    public User updateUser(UserDTO userUpdate, int id) {
         Optional<User> userOpt = getUserById(id);
         if (userOpt.isPresent()) {
             User user = userOpt.get();
@@ -119,6 +119,15 @@ public class UserService {
             user.setSurname(userUpdate.getSurname());
             user.setEmail(userUpdate.getEmail());
             user.setPassword(passwordEncoder.encode(userUpdate.getPassword()));
+
+            if (userUpdate.getRole() != null) {
+                user.setRole(userUpdate.getRole());
+            }
+
+            if (user.getPictureProfile() == null || user.getPictureProfile().isEmpty()) {
+                user.setPictureProfile("https://ui-avatars.com/api/?name=" + user.getName() + "+" + user.getSurname());
+            }
+
             return userRepository.save(user);
         } else {
             throw new UserNotFoundException("User with id: " + id + " hasn't been found");
@@ -134,7 +143,7 @@ public class UserService {
             userRepository.delete(userOpt.get());
             return "User with id: " + id + " has been deleted";
         } else {
-            throw new UserNotFoundException("User with id: " + id + " hasn't been found");
+            throw new UserNotFoundException("User with ID: " + id + " hasn't been found");
         }
 
 
@@ -143,21 +152,21 @@ public class UserService {
 
 
     // PATCH USER PROFILE PIC METHOD
-    public String patchPictureProfileUser(int id, MultipartFile foto) throws UserNotFoundException, IOException {
+    public String patchPictureProfileUser(int id, MultipartFile pictureProfile) throws UserNotFoundException, IOException {
         Optional<User> userOptional = getUserById(id);
         if (userOptional.isPresent()){
-            String url =(String) cloudinary.uploader().upload(foto.getBytes(), Collections.emptyMap()).get("url");
+            String url =(String) cloudinary.uploader().upload(pictureProfile.getBytes(), Collections.emptyMap()).get("url");
             User user = userOptional.get();
             user.setPictureProfile(url);
             userRepository.save(user);
-            return "Immagine profilo aggiornata!";
+            return "Profile picture updated!";
         }else{
-            throw new UserNotFoundException("Impossibile impostare immagine del profilo, non è stato trovato nessun utente con matricola: "+id);
+            throw new UserNotFoundException("Impossible to update profile picture, user with id: "+ id + " not found");
         }
     }
 
 
-    private void sendMailProfileCreated(String email) {
+    private void sendMailProfileCreated(String email, String name, String surname, String role) {
         try {
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
@@ -165,31 +174,37 @@ public class UserService {
             helper.setTo(email);
             helper.setSubject("Uberly Account Successfully Created");
 
-            String htmlMsg = """
-                    <html>
-                    <body>
-                        <img src='cid:logoImage'>
-                        <p>Your Uberly account has been successfully created!</p>
-                        <p>You can now access the system using the credentials you provided during registration.</p>
-                        <p>If you have any questions or need assistance, please do not hesitate to contact us at <a href="mailto:support@uberly.com">support@uberly.com</a>.</p>
-                        <p>Thank you for registering with Uberly!</p>
-                        <p>Best regards,</p>
-                        <p>The Uberly Team</p>
-                    </body>
-                    </html>
-                    """;
+            String htmlMsg = String.format("""
+            <html>
+            <body>
+                <img src='cid:welcomeImage' style='width: 800px; height: auto;'>
+                <p>Dear %s %s, your Uberly account has been successfully created!</p>
+                <p>You can now access the system using the credentials you provided during registration. Remember, you are a %s of Uberly.</p>
+                <p>If you have any questions or need assistance, please do not hesitate to contact us at <a href="mailto:uberlyteam@gmail.com">uberlyteam@gmail.com</a>.</p>
+                <p>Thank you for registering! Enjoy your journeys with new people.</p>
+                <p>Best regards,</p>
+                <p>The Uberly Team</p>
+                <img src='cid:logoImage' style='width: 200px; height: auto;'>
+            </body>
+            </html>
+            """, name, surname, role);
 
             helper.setText(htmlMsg, true);
 
-            // Add the inline image, assuming you have the image file in the resources folder
-            ClassPathResource imageResource = new ClassPathResource("static/images/logo.png");
-            helper.addInline("logoImage", imageResource);
+
+            ClassPathResource imageResource = new ClassPathResource("static/images/welcome.png");
+            helper.addInline("welcomeImage", imageResource);
+
+            ClassPathResource imageResource2 = new ClassPathResource("static/images/logo.png");
+            helper.addInline("logoImage", imageResource2);
 
             javaMailSender.send(mimeMessage);
         } catch (MessagingException e) {
             logger.error("Error sending email to {}", email, e);
         }
     }
+
+
 
     private void sendMailModifyPassword(String email) {
         SimpleMailMessage message = new SimpleMailMessage();

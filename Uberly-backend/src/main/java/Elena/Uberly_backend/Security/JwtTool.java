@@ -30,10 +30,10 @@ public class JwtTool {
     }
 
 
-    public String createToken(User user){
+    public String createToken(User user) {
         String newToken = Jwts.builder().
                 issuedAt(new Date(System.currentTimeMillis())).
-                expiration(new Date(System.currentTimeMillis()+duration)).
+                expiration(new Date(System.currentTimeMillis() + duration)).
                 subject(String.valueOf(user.getId())).
                 signWith(Keys.hmacShaKeyFor(secret.getBytes())).
                 compact();
@@ -45,25 +45,23 @@ public class JwtTool {
     }
 
 
-    public void verifyToken(String token){
-        try{
+    public void verifyToken(String token) {
+        try {
             Jwts.parser().verifyWith(Keys.hmacShaKeyFor(secret.getBytes())).
                     build().parse(token);
-        }
-
-        catch (Exception e){
-throw  new UnauthorizedException("Failed to authorize. Please login again to access this resource.");
+        } catch (Exception e) {
+            throw new UnauthorizedException("Failed to authorize. Please login again to access this resource.");
         }
     }
 
 
-    public int getIdFromToken(String token){
-    return Integer.parseInt(Jwts.parser()
-            .verifyWith(Keys.hmacShaKeyFor(secret.getBytes()))
-            .build()
-            .parseSignedClaims(token)
-            .getPayload()
-            .getSubject());
+    public int getIdFromToken(String token) {
+        return Integer.parseInt(Jwts.parser()
+                .verifyWith(Keys.hmacShaKeyFor(secret.getBytes()))
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .getSubject());
     }
 
 }
