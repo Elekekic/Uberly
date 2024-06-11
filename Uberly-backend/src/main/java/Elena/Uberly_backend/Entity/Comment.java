@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import jakarta.persistence.Table;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -32,5 +33,5 @@ public class Comment {
     private Comment parentComment;
 
     @OneToMany(mappedBy = "parentComment", orphanRemoval = true)
-    private List<Comment> replies;;
+    private List<Comment> replies = new ArrayList<>();
 }
