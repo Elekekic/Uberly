@@ -22,5 +22,5 @@ public class PostDTO {
     private String city;
 
     @Min(value = 1)
-    private User userId;
+    private int userId;
 }
