@@ -37,11 +37,11 @@ public class User implements UserDetails {
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIncludeProperties(value = {"id", "title", "description", "city"})
-    private List<Post> posts;
+    private List<Post> posts = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", orphanRemoval = true)
     @JsonIgnore
-    private List<Comment> comments;
+    private List<Comment> comments = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(name = "user_followers",
