@@ -1,6 +1,7 @@
 package Elena.Uberly_backend.Controller;
 
 import Elena.Uberly_backend.DTO.UserDTO;
+import Elena.Uberly_backend.Entity.Post;
 import Elena.Uberly_backend.Entity.User;
 import Elena.Uberly_backend.Exception.BadRequestException;
 import Elena.Uberly_backend.Service.UserService;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -59,5 +61,24 @@ public class UserController {
     @PreAuthorize("hasAnyAuthority('ADMIN', 'DRIVER', 'RIDER')")
     public String patchPictureProfile(@PathVariable int id, @RequestBody MultipartFile pictureProfile) throws IOException {
         return userService.patchPictureProfileUser(id, pictureProfile);
+    }
+
+    //QUERY 1 - SEARCHING BY PARTIAL USERNAME
+    @GetMapping("/users/search")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'DRIVER', 'RIDER')")
+    public List<User> getUsersByUsernameContaining (@RequestParam String username) {
+        return userService.getUserByUsernameContaining(username);
+    }
+
+
+    @GetMapping("/{userId}/saved-posts")
+    public List<Post> getSavedPostsByUserId(@PathVariable int userId) {
+        return userService.getFavoritesByUserId(userId);
+    }
+
+
+    @PostMapping("/{userId}/saved-posts/{postId}")
+    public void addSavedPost(@PathVariable int userId, @PathVariable int postId) {
+        userService.addSavedPost(userId, postId);
     }
 }

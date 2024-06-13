@@ -17,6 +17,11 @@ public class UserDTO {
     @Size(max = 30, message = "The name cannot be over the 30 characters")
     private String name;
 
+    @NotBlank
+    private String bio;
+
+    private String pronouns;
+
     @NotBlank(message = "The surname cannot be empty")
     @Size(max = 30, message = "The surname cannot be over the 30 characters")
     private String surname;

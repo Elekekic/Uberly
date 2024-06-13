@@ -3,13 +3,17 @@ package Elena.Uberly_backend.Controller;
 import Elena.Uberly_backend.DTO.PostDTO;
 import Elena.Uberly_backend.Entity.Post;
 import Elena.Uberly_backend.Entity.User;
+import Elena.Uberly_backend.Enum.Tags;
 import Elena.Uberly_backend.Exception.UserNotFoundException;
 import Elena.Uberly_backend.Service.PostService;
 import Elena.Uberly_backend.Service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -41,27 +45,10 @@ public class PostController {
         return postService.getPostById(id);
     }
 
-    @GetMapping("/posts/users/{id}")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'DRIVER', 'RIDER')")
-    public List<Post> getPostsByUser(@PathVariable int id) {
-        Optional<User> userOptional = userService.getUserById(id);
-        if (userOptional.isPresent()) {
-            return postService.getPostsByUser(userOptional.get());
-        } else {
-            throw new UserNotFoundException("User with id: " + id + " not found");
-        }
-    }
-
-    @GetMapping("/posts/{city}")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'DRIVER', 'RIDER')")
-    public List<Post> getPostsByCity(@PathVariable String city) {
-        return postService.getPostsByCity(city);
-    }
-
 
     @PostMapping("/posts")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'DRIVER')")
-    public String savePost(@RequestBody PostDTO postDTO, BindingResult bindingResult) {
+    public String savePost(@RequestBody @Validated PostDTO postDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new IllegalArgumentException(bindingResult.getAllErrors().stream()
                     .map(objectError -> objectError.getDefaultMessage()).reduce("", (s, s2) -> s + s2));
@@ -71,7 +58,7 @@ public class PostController {
 
     @PutMapping("/posts/{id}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'DRIVER')")
-    public Post updatePost(@PathVariable int id, @RequestBody PostDTO postDTO, BindingResult bindingResult) {
+    public Post updatePost(@PathVariable int id, @RequestBody @Validated PostDTO postDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new IllegalArgumentException(bindingResult.getAllErrors().stream()
                     .map(objectError -> objectError.getDefaultMessage()).reduce("", (s, s2) -> s + s2));
@@ -84,5 +71,38 @@ public class PostController {
     @PreAuthorize("hasAnyAuthority('ADMIN', 'DRIVER')")
     public String deletePost(@PathVariable int id) {
         return postService.deletePost(id);
+    }
+
+    // QUERY - SEARCHING POSTS BY USER
+    @GetMapping("/posts/users/{id}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'DRIVER', 'RIDER')")
+    public List<Post> getPostsByUser(@PathVariable int id) {
+        Optional<User> userOptional = userService.getUserById(id);
+        if (userOptional.isPresent()) {
+            return postService.getPostsByUser(userOptional.get());
+        } else {
+            throw new UserNotFoundException("User with id: " + id + " not found");
+        }
+    }
+
+    // QUERY - SEARCHING POSTS BY STARTING POINT
+    @GetMapping("/posts/{startpoint}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'DRIVER', 'RIDER')")
+    public List<Post> getPostsByStartingPoint(@PathVariable String startpoint) {
+        return postService.getPostsByStartingPoint(startpoint);
+    }
+
+    // QUERY - SEARCHING POSTS BY END POINT
+    @GetMapping("/posts/{endpoint}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'DRIVER', 'RIDER')")
+    public List<Post> getPostsByEndPoint(@PathVariable String endpoint) {
+        return postService.getPostsByEndPoint(endpoint);
+    }
+
+    // QUERY - SEARCHING POSTS BY TAG
+    @GetMapping("/posts/{tag}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'DRIVER', 'RIDER')")
+    public List<Post> getPostsByTag(@PathVariable Tags tag) {
+        return postService.getPostsByTag(tag);
     }
 }

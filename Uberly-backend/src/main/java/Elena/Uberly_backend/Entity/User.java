@@ -31,7 +31,13 @@ public class User implements UserDetails {
     private String surname;
     private String email;
     private String password;
+    private String bio;
     private String pictureProfile;
+    private String pronouns;
+
+    @OneToMany(mappedBy = "user", orphanRemoval = true)
+    private List<Feedback> feedbacks = new ArrayList<>();
+
     @Enumerated(EnumType.STRING)
     private Role role;
 
@@ -39,14 +45,23 @@ public class User implements UserDetails {
     @JsonIncludeProperties(value = {"id", "title", "description", "city"})
     private List<Post> posts = new ArrayList<>();
 
+    @ManyToMany
+    @JoinTable(
+            name = "saved_posts",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "post_id")
+    )
+    @JsonIncludeProperties(value = {"id", "title", "description", "startingPoint", "endPoint", "spacesDrivers", "tag", "user"})
+    private List<Post> favorites = new ArrayList<>();
+
     @OneToMany(mappedBy = "user", orphanRemoval = true)
     @JsonIgnore
     private List<Comment> comments = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(name = "user_followers",
-                joinColumns = @JoinColumn(name = "user_id"),
-                inverseJoinColumns = @JoinColumn(name = "follower_id"))
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "follower_id"))
     @JsonIncludeProperties(value = {"username", "pictureProfile"})
     private List<User> followers = new ArrayList<>();
 
