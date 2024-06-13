@@ -1,10 +1,12 @@
 package Elena.Uberly_backend.Service;
 
 import Elena.Uberly_backend.DTO.UserDTO;
+import Elena.Uberly_backend.Entity.Post;
 import Elena.Uberly_backend.Entity.User;
 import Elena.Uberly_backend.Enum.Role;
 import Elena.Uberly_backend.Exception.BadRequestException;
 import Elena.Uberly_backend.Exception.UserNotFoundException;
+import Elena.Uberly_backend.Repository.PostRepository;
 import Elena.Uberly_backend.Repository.UserRepository;
 import com.cloudinary.Cloudinary;
 import jakarta.mail.MessagingException;
@@ -47,6 +49,11 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private PostRepository postRepository;
+
+
+    // QUERY - FIND USER BY USERNAME
     public User getUserByUsername(String username) {
         Optional<User> userOptional = userRepository.findByUsername(username);
 
@@ -57,6 +64,12 @@ public class UserService {
         }
     }
 
+    // QUERY - FIND USER BY USERNAME CONTAINING
+    public List<User> getUserByUsernameContaining(String like) {
+        return userRepository.findByUsernameContaining(like);
+    }
+
+    // QUERY - FIND USER BY EMAIL
     public User getUserByEmail(String email) {
         Optional<User> userOptional = userRepository.findByEmail(email);
 
@@ -67,6 +80,12 @@ public class UserService {
         }
     }
 
+    // QUERY - FIND FAVORITES BY USER ID
+    public List<Post> getFavoritesByUserId(int userId) {
+        return userRepository.findFavoritesByUserId(userId);
+    }
+
+    // FIND USER BY ID METHOD
     public Optional<User> getUserById(int id) {
         Optional<User> userOptional = userRepository.findById(id);
         if (userOptional.isPresent()) {
@@ -76,11 +95,13 @@ public class UserService {
         }
     }
 
+    // FIND ALL USERS W/ PAGINATION METHOD
     public Page<User> getUserConPaginazione(int page, int size, String sortBy) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
         return userRepository.findAll(pageable);
     }
 
+    // FIND ALL USERS W/O PAGINATION METHOD
     public List<User> getUsers() {
         return userRepository.findAll();
     }
@@ -98,13 +119,15 @@ public class UserService {
             User user = new User();
             user.setUsername(userDTO.getUsername());
             user.setName(userDTO.getName());
+            user.setBio(userDTO.getBio());
+            user.setPronouns(userDTO.getPronouns());
             user.setSurname(userDTO.getSurname());
-            user.setPictureProfile("https://ui-avatars.com/api/?name=" + user.getName() + "+" + user.getSurname());
+            user.setRole(userDTO.getRole());
             user.setEmail(userDTO.getEmail());
             user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-            user.setRole(userDTO.getRole());
+            user.setPictureProfile("https://ui-avatars.com/api/?name=" + user.getName() + "+" + user.getSurname());
             userRepository.save(user);
-            sendMailProfileCreated(user.getEmail(), user.getName(), user.getSurname(), String.valueOf(user.getRole()));
+           // sendMailProfileCreated(user.getEmail(), user.getName(), user.getSurname(), String.valueOf(user.getRole()));
             return "User with ID: " + user.getId() + " , with role: " + user.getRole();
         }
     }
@@ -116,19 +139,19 @@ public class UserService {
             User user = userOpt.get();
             user.setUsername(userUpdate.getUsername());
             user.setName(userUpdate.getName());
+            user.setBio(userUpdate.getBio());
+            user.setPronouns(userUpdate.getPronouns());
             user.setSurname(userUpdate.getSurname());
+            user.setRole(userUpdate.getRole());
             user.setEmail(userUpdate.getEmail());
             user.setPassword(passwordEncoder.encode(userUpdate.getPassword()));
-
-            if (userUpdate.getRole() != null) {
-                user.setRole(userUpdate.getRole());
-            }
 
             if (user.getPictureProfile() == null || user.getPictureProfile().isEmpty()) {
                 user.setPictureProfile("https://ui-avatars.com/api/?name=" + user.getName() + "+" + user.getSurname());
             }
-
+            sendMailProfileUpdated(user.getEmail(), user.getName(), user.getSurname(), String.valueOf(user.getRole()));
             return userRepository.save(user);
+
         } else {
             throw new UserNotFoundException("User with id: " + id + " hasn't been found");
         }
@@ -145,49 +168,56 @@ public class UserService {
         } else {
             throw new UserNotFoundException("User with ID: " + id + " hasn't been found");
         }
-
-
     }
 
+    // ADD TO FAVS METHOD
+    public void addSavedPost(int userId, int postId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new RuntimeException("Post not found"));
 
+        user.getFavorites().add(post);
+        userRepository.save(user);
+    }
 
     // PATCH USER PROFILE PIC METHOD
     public String patchPictureProfileUser(int id, MultipartFile pictureProfile) throws UserNotFoundException, IOException {
         Optional<User> userOptional = getUserById(id);
-        if (userOptional.isPresent()){
-            String url =(String) cloudinary.uploader().upload(pictureProfile.getBytes(), Collections.emptyMap()).get("url");
+        if (userOptional.isPresent()) {
+            String url = (String) cloudinary.uploader().upload(pictureProfile.getBytes(), Collections.emptyMap()).get("url");
             User user = userOptional.get();
             user.setPictureProfile(url);
             userRepository.save(user);
             return "Profile picture updated!";
-        }else{
-            throw new UserNotFoundException("Impossible to update profile picture, user with id: "+ id + " not found");
+        } else {
+            throw new UserNotFoundException("Impossible to update profile picture, user with id: " + id + " not found");
         }
     }
 
 
+    // SEND EMAIL "PROFILE CREATED" METHOD
     private void sendMailProfileCreated(String email, String name, String surname, String role) {
         try {
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
 
             helper.setTo(email);
-            helper.setSubject("Uberly Account Successfully Created");
+            helper.setSubject("Uberly Account successfully created");
 
             String htmlMsg = String.format("""
-            <html>
-            <body>
-                <img src='cid:welcomeImage' style='width: 800px; height: auto;'>
-                <p>Dear %s %s, your Uberly account has been successfully created!</p>
-                <p>You can now access the system using the credentials you provided during registration. Remember, you are a %s of Uberly.</p>
-                <p>If you have any questions or need assistance, please do not hesitate to contact us at <a href="mailto:uberlyteam@gmail.com">uberlyteam@gmail.com</a>.</p>
-                <p>Thank you for registering! Enjoy your journeys with new people.</p>
-                <p>Best regards,</p>
-                <p>The Uberly Team</p>
-                <img src='cid:logoImage' style='width: 200px; height: auto;'>
-            </body>
-            </html>
-            """, name, surname, role);
+                    <html>
+                    <body>
+                        <img src='cid:welcomeImage' style='width: 800px; height: auto;'>
+                        <h1>Dear %s %s, </h1>
+                        <p> your Uberly account has been successfully created! </p>
+                        <p>You can now access the system using the credentials you provided during registration. Remember, you are a %s of Uberly.</p>
+                        <p>If you have any questions or need assistance, please do not hesitate to contact us at <a href="mailto:uberlyteam@gmail.com">uberlyteam@gmail.com</a>.</p>
+                        <p>Thank you for registering! Enjoy your journeys with new people.</p>
+                        <p>Best regards,</p>
+                        <p>The Uberly Team</p>
+                        <img src='cid:logoImage' style='width: 200px; height: auto;'>
+                    </body>
+                    </html>
+                    """, name, surname, role);
 
             helper.setText(htmlMsg, true);
 
@@ -204,16 +234,37 @@ public class UserService {
         }
     }
 
+    // SEND EMAIL "PROFILE UPDATED" METHOD
+    private void sendMailProfileUpdated(String email, String name, String surname, String role) {
+        try {
+            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
 
+            helper.setTo(email);
+            helper.setSubject("Uberly Account has been updated");
 
-    private void sendMailModifyPassword(String email) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(email);
-        message.setSubject("Richiesta modifica password");
-        message.setText("Attenzione, la tua password è stata modificata, se non sei stato tu a richiederlo, invia una segnalazione!");
+            String htmlMsg = String.format("""
+                    <html>
+                    <body>
+                        <h1>Dear %s %s, </h1>
+                        <p>Your Uberly account has been successfully updated! </p>
+                        <p>Remember, you are a %s of Uberly.</p>
+                        <p>If you haven't changed or forgot any of your credentials, please do not hesitate to contact us at <a href="mailto:uberlyteam@gmail.com">uberlyteam@gmail.com</a>.</p>
+                        <p>Best regards,</p>
+                        <p>The Uberly Team</p>
+                        <img src='cid:logoImage' style='width: 200px; height: auto;'>
+                    </body>
+                    </html>
+                    """, name, surname, role);
 
-        javaMailSender.send(message);
+            helper.setText(htmlMsg, true);
+
+            ClassPathResource imageResource2 = new ClassPathResource("static/images/logo.png");
+            helper.addInline("logoImage", imageResource2);
+
+            javaMailSender.send(mimeMessage);
+        } catch (MessagingException e) {
+            logger.error("Error sending email to {}", email, e);
+        }
     }
-
-
 }

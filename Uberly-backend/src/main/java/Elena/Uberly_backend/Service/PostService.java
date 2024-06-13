@@ -1,8 +1,10 @@
 package Elena.Uberly_backend.Service;
 
 import Elena.Uberly_backend.DTO.PostDTO;
+import Elena.Uberly_backend.DTO.UserDTO;
 import Elena.Uberly_backend.Entity.Post;
 import Elena.Uberly_backend.Entity.User;
+import Elena.Uberly_backend.Enum.Tags;
 import Elena.Uberly_backend.Exception.PostNotFoundException;
 import Elena.Uberly_backend.Exception.UserNotFoundException;
 import Elena.Uberly_backend.Repository.PostRepository;
@@ -26,19 +28,38 @@ public class PostService {
     @Autowired
     private UserRepository userRepository;
 
+    // QUERY - FIND POSTS BY USER
     public List<Post> getPostsByUser(User user) {
         return postRepository.findByUser(user);
     }
 
-    public List<Post> getPostsByCity(String city) {
-        return postRepository.findByCity(city);
+    // QUERY - FIND POSTS BY STARTING POINT
+    public List<Post> getPostsByStartingPoint(String startingPoint) {
+        return postRepository.findByStartingPoint(startingPoint);
     }
 
+    // QUERY - FIND POSTS BY END POINT
+    public List<Post> getPostsByEndPoint(String endPoint) {
+        return postRepository.findByEndPoint(endPoint);
+    }
+
+    // QUERY - FIND POSTS BY TAG
+    public List<Post> getPostsByTag(Tags tag) {
+        return postRepository.findByTag(tag);
+    }
+
+    // FIND ALL POSTS W/ PAGINATION METHOD
     public Page<Post> getPosts(int page, int size, String sortBy) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
         return postRepository.findAll(pageable);
     }
 
+    // FIND ALL POSTS W/O PAGINATION METHOD
+    public List<Post> getAllPosts() {
+        return postRepository.findAll();
+    }
+
+    // FIND POST BY ID METHOD
     public Optional<Post> getPostById(int id) {
         Optional<Post> postOptional = postRepository.findById(id);
         if (postOptional.isPresent()) {
@@ -48,29 +69,39 @@ public class PostService {
         }
     }
 
-
+    // CREATE POST METHOD
     public String savePost(PostDTO postDTO) {
         Optional<User> user = userRepository.findById(postDTO.getUserId());
+
         if (user.isPresent()) {
             Post post = new Post();
             post.setTitle(postDTO.getTitle());
             post.setDescription(postDTO.getDescription());
-            post.setCity(postDTO.getCity());
+            post.setStartingPoint(postDTO.getStartingPoint());
+            post.setEndPoint(postDTO.getEndPoint());
+            post.setSpacesRiders(postDTO.getSpacesRiders());
+            post.setTag(postDTO.getTag());
+            post.setCar(postDTO.getCar());
             post.setUser(user.get());
             postRepository.save(post);
             return "Post with ID: " + post.getId() + " saved successfully.";
         } else {
-            throw new PostNotFoundException("User with ID: " + postDTO.getUserId() + " not found.");
+            throw new UserNotFoundException("User with ID: " + postDTO.getUserId() + " not found.");
         }
     }
 
+    // UPDATE POST METHOD
     public Post updatePost(int id, PostDTO postDTO) {
         Optional<Post> postOptional = postRepository.findById(id);
         if (postOptional.isPresent()) {
             Post post = postOptional.get();
             post.setTitle(postDTO.getTitle());
             post.setDescription(postDTO.getDescription());
-            post.setCity(postDTO.getCity());
+            post.setStartingPoint(postDTO.getStartingPoint());
+            post.setEndPoint(postDTO.getEndPoint());
+            post.setSpacesRiders(postDTO.getSpacesRiders());
+            post.setTag(postDTO.getTag());
+            post.setCar(postDTO.getCar());
             postRepository.save(post);
             return post;
         } else {
@@ -78,6 +109,7 @@ public class PostService {
         }
     }
 
+    // DELETE POST METHOD
     public String deletePost(int id) {
         Optional<Post> postOptional = postRepository.findById(id);
         if (postOptional.isPresent()) {

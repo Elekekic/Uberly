@@ -1,13 +1,19 @@
 package Elena.Uberly_backend.Service;
 
+import Elena.Uberly_backend.DTO.CommentDTO;
 import Elena.Uberly_backend.Entity.Comment;
 import Elena.Uberly_backend.Entity.Post;
 import Elena.Uberly_backend.Entity.User;
+import Elena.Uberly_backend.Exception.BadRequestException;
+import Elena.Uberly_backend.Exception.CommentNotFoundException;
 import Elena.Uberly_backend.Exception.PostNotFoundException;
 import Elena.Uberly_backend.Exception.UserNotFoundException;
 import Elena.Uberly_backend.Repository.CommentRepository;
 import Elena.Uberly_backend.Repository.PostRepository;
 import Elena.Uberly_backend.Repository.UserRepository;
+import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +22,8 @@ import java.util.Optional;
 
 @Service
 public class CommentService {
+
+    private static final Logger logger = LoggerFactory.getLogger(CommentService.class);
 
     @Autowired
     private CommentRepository commentRepository;
@@ -39,13 +47,35 @@ public class CommentService {
         }
     }
 
-    public Comment createComment(Comment comment, int postId, int userId) {
+    public Comment createComment(CommentDTO commentDTO, int postId, int userId, Integer parentCommentId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException("Post not found"));
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
-        comment.setPost(post);
-        comment.setUser(user);
-        return commentRepository.save(comment);
+
+        if (parentCommentId != null) {
+            Comment comment = new Comment();
+            comment.setContent(commentDTO.getContent());
+            comment.setPost(post);
+            comment.setUser(user);
+
+            Optional<Comment> parentCommentOptional = commentRepository.findById(parentCommentId);
+            if (parentCommentOptional.isPresent()) {
+                Comment parentComment = parentCommentOptional.get();
+                comment.setParentComment(parentComment);
+            } else {
+                throw new CommentNotFoundException("The comment you want to reply to doesn't exist");
+            }
+
+            return commentRepository.save(comment);
+
+        } else {
+            Comment comment = new Comment();
+            comment.setContent(commentDTO.getContent());
+            comment.setPost(post);
+            comment.setUser(user);
+            return commentRepository.save(comment);
+        }
     }
+
 
     public Comment updateComment(int id, Comment newComment) {
         return commentRepository.findById(id).map(comment -> {
