@@ -1,5 +1,6 @@
 package Elena.Uberly_backend.DTO;
 
+import Elena.Uberly_backend.Entity.Reaction;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -14,13 +15,9 @@ public class FeedbackDTO {
     private String content;
 
     @Min(value = 1)
-    private int userId;
+    private int authorId;
 
-    private List<ReactionDTO> types;
-
-    private Integer commentId;
-
-    private Integer feedbackId;
-
+    @Min(value = 1)
+    private int recipientId;
 
 }

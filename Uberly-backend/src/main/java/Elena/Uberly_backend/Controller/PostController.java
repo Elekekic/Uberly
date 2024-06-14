@@ -86,23 +86,25 @@ public class PostController {
     }
 
     // QUERY - SEARCHING POSTS BY STARTING POINT
-    @GetMapping("/posts/{startpoint}")
+    @GetMapping("/posts/start/{startpoint}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'DRIVER', 'RIDER')")
     public List<Post> getPostsByStartingPoint(@PathVariable String startpoint) {
         return postService.getPostsByStartingPoint(startpoint);
     }
 
     // QUERY - SEARCHING POSTS BY END POINT
-    @GetMapping("/posts/{endpoint}")
+    @GetMapping("/posts/end/{endpoint}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'DRIVER', 'RIDER')")
     public List<Post> getPostsByEndPoint(@PathVariable String endpoint) {
         return postService.getPostsByEndPoint(endpoint);
     }
 
     // QUERY - SEARCHING POSTS BY TAG
-    @GetMapping("/posts/{tag}")
+    @GetMapping("/posts/tags/{tag}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'DRIVER', 'RIDER')")
     public List<Post> getPostsByTag(@PathVariable Tags tag) {
         return postService.getPostsByTag(tag);
     }
+
+
 }

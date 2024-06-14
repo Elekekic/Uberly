@@ -23,11 +23,12 @@ public class Feedback {
     private List<Reaction> reactions = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "author_id")
     @JsonIncludeProperties(value = {"name", "username", "pictureProfile"})
-    private User user;
+    private User author;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "comment_id")
-    private Comment comment;
+    @JoinColumn(name = "recipient_id")
+    @JsonIncludeProperties(value = {"name", "username", "pictureProfile"})
+    private User recipient;
 }

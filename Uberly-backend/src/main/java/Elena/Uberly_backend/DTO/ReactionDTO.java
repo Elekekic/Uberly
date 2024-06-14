@@ -13,4 +13,12 @@ public class ReactionDTO {
 
     @NotNull(message = "Type must not be null")
     private ReactionType type;
+
+    private int commentId;
+
+    private int feedbackId;
+
+    private int postId;
+
+    private int replyId;
 }

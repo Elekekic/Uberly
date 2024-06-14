@@ -40,10 +40,9 @@ public class Post {
     @JoinColumn(name = "user_id")
     @JsonIncludeProperties(value = {"name", "username", "pictureProfile"})
     private User user;
-
-
+    
     @OneToMany(mappedBy = "post", orphanRemoval = true)
-    @JsonIncludeProperties(value = {"id", "content", "user", "parentComment", "reactions"})
+    @JsonIncludeProperties(value = {"id", "content", "user", "replies", "reactions"})
     private List<Comment> comments = new ArrayList<>();
 
     @OneToMany(mappedBy = "post", orphanRemoval = true)
