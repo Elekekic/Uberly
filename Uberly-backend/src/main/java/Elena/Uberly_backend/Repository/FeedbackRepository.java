@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface FeedbackRepository extends JpaRepository<Feedback, Integer> {
 
-    public List<Feedback> findByUser(User user);
+    public List<Feedback> findByAuthor(User author);
 
 }

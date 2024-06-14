@@ -1,7 +1,6 @@
 package Elena.Uberly_backend.Entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Entity;
@@ -17,7 +16,6 @@ import java.util.*;
 @Table(name = "comments")
 public class Comment {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -30,46 +28,21 @@ public class Comment {
     private Post post;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    @JsonIncludeProperties(value = {"username", "pictureProfile", "role"})
-    private User user;
+    @JoinColumn(name = "meme_id")
+    @JsonIncludeProperties(value = {"id", "url", "user"})
+    private Meme meme;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_comment_id")
-    @JsonBackReference
-    @JsonIncludeProperties(value = {"id"})
-    private Comment parentComment;
-
-    @OneToMany(mappedBy = "parentComment", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
-    @JsonIncludeProperties(value = {"id", "content", "user", "replies", "reactions"})
-    private List<Comment> replies = new ArrayList<>();
+    @JoinColumn(name = "user_id")
+    @JsonIncludeProperties(value = {"id", "username", "pictureProfile", "role"})
+    private User user;
 
     @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIncludeProperties(value = {"id", "type", "user"})
+    @JsonManagedReference
+    private List<Reply> replies = new ArrayList<>();
+
+    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Reaction> reactions = new ArrayList<>();
 
-
-    public void addReply(Comment reply) {
-        replies.add(reply);
-        reply.setParentComment(this);
-    }
-
-    public void removeReply(Comment reply) {
-        replies.remove(reply);
-        reply.setParentComment(null);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Comment comment = (Comment) o;
-        return Objects.equals(id, comment.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
 }

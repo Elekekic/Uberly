@@ -13,14 +13,15 @@ import java.time.LocalDateTime;
 public class CentralizedExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<Object> ClienteNotFoundHandler(UserNotFoundException exception){
+    public ResponseEntity<Object> UserNotFoundHandler(UserNotFoundException exception){
         Error error = new Error();
         error.setMessaggio(exception.getMessage());
         error.setDataErrore(LocalDateTime.now());
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
+
     @ExceptionHandler(CommentNotFoundException.class)
-    public ResponseEntity<Object> UserNotFoundHandler(CommentNotFoundException exception){
+    public ResponseEntity<Object> CommentNotFoundHandler (CommentNotFoundException exception){
         Error error = new Error();
         error.setMessaggio(exception.getMessage());
         error.setDataErrore(LocalDateTime.now());
@@ -28,7 +29,7 @@ public class CentralizedExceptionHandler extends ResponseEntityExceptionHandler 
     }
 
     @ExceptionHandler(PostNotFoundException.class)
-    public ResponseEntity<Object> FatturaNotFoundHandler (PostNotFoundException exception){
+    public ResponseEntity<Object> PostNotFoundHandler (PostNotFoundException exception){
         Error error = new Error();
         error.setMessaggio(exception.getMessage());
         error.setDataErrore(LocalDateTime.now());
@@ -36,11 +37,51 @@ public class CentralizedExceptionHandler extends ResponseEntityExceptionHandler 
     }
 
     @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<Object> FatturaNotFoundHandler (BadRequestException exception){
+    public ResponseEntity<Object> BadRequestHandler (BadRequestException exception){
         Error error = new Error();
         error.setMessaggio(exception.getMessage());
         error.setDataErrore(LocalDateTime.now());
         return new ResponseEntity<>(error,HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ReplyNotFoundException.class)
+    public ResponseEntity<Object> ReplyNotFoundHandler (ReplyNotFoundException exception){
+        Error error = new Error();
+        error.setMessaggio(exception.getMessage());
+        error.setDataErrore(LocalDateTime.now());
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(FeedbackNotFoundException.class)
+    public ResponseEntity<Object> FeedbackNotFoundHandler (FeedbackNotFoundException exception){
+        Error error = new Error();
+        error.setMessaggio(exception.getMessage());
+        error.setDataErrore(LocalDateTime.now());
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(ReactionNotFoundException.class)
+    public ResponseEntity<Object> ReactionNotFoundHandler (ReactionNotFoundException exception){
+        Error error = new Error();
+        error.setMessaggio(exception.getMessage());
+        error.setDataErrore(LocalDateTime.now());
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(WrongPostTagForRidersException.class)
+    public ResponseEntity<Object> WrongPostTagForRidersHandler (WrongPostTagForRidersException exception){
+        Error error = new Error();
+        error.setMessaggio(exception.getMessage());
+        error.setDataErrore(LocalDateTime.now());
+        return new ResponseEntity<>(error, HttpStatus.NOT_ACCEPTABLE);
+    }
+
+    @ExceptionHandler(MemeNotFoundException.class)
+    public ResponseEntity<Object> WrongPostTagForRidersHandler (MemeNotFoundException exception){
+        Error error = new Error();
+        error.setMessaggio(exception.getMessage());
+        error.setDataErrore(LocalDateTime.now());
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 
 }
