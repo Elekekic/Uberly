@@ -1,11 +1,15 @@
 package Elena.Uberly_backend.Service;
 
 import Elena.Uberly_backend.DTO.UserDTO;
+import Elena.Uberly_backend.Entity.Meme;
 import Elena.Uberly_backend.Entity.Post;
 import Elena.Uberly_backend.Entity.User;
 import Elena.Uberly_backend.Enum.Role;
 import Elena.Uberly_backend.Exception.BadRequestException;
+import Elena.Uberly_backend.Exception.MemeNotFoundException;
+import Elena.Uberly_backend.Exception.PostNotFoundException;
 import Elena.Uberly_backend.Exception.UserNotFoundException;
+import Elena.Uberly_backend.Repository.MemeRepository;
 import Elena.Uberly_backend.Repository.PostRepository;
 import Elena.Uberly_backend.Repository.UserRepository;
 import com.cloudinary.Cloudinary;
@@ -51,6 +55,9 @@ public class UserService {
 
     @Autowired
     private PostRepository postRepository;
+
+    @Autowired
+    private MemeRepository memeRepository;
 
 
     // QUERY - FIND USER BY USERNAME
@@ -127,7 +134,7 @@ public class UserService {
             user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
             user.setPictureProfile("https://ui-avatars.com/api/?name=" + user.getName() + "+" + user.getSurname());
             userRepository.save(user);
-           // sendMailProfileCreated(user.getEmail(), user.getName(), user.getSurname(), String.valueOf(user.getRole()));
+            // sendMailProfileCreated(user.getEmail(), user.getName(), user.getSurname(), String.valueOf(user.getRole()));
             return "User with ID: " + user.getId() + " , with role: " + user.getRole();
         }
     }
@@ -170,13 +177,104 @@ public class UserService {
         }
     }
 
+    public void followUser(int userId, int followUserId) {
+        Optional<User> userOpt = userRepository.findById(userId);
+        Optional<User> followUserOpt = userRepository.findById(followUserId);
+
+        if (userOpt.isPresent() && followUserOpt.isPresent()) {
+            User user = userOpt.get();
+            User followUser = followUserOpt.get();
+            user.followUser(followUser);
+            userRepository.save(user);
+            userRepository.save(followUser);
+        } else {
+            throw new UserNotFoundException("User not found");
+        }
+    }
+
+    public void unfollowUser(int userId, int unfollowUserId) {
+        Optional<User> userOpt = userRepository.findById(userId);
+        Optional<User> unfollowUserOpt = userRepository.findById(unfollowUserId);
+
+        if (userOpt.isPresent() && unfollowUserOpt.isPresent()) {
+            User user = userOpt.get();
+            User unfollowUser = unfollowUserOpt.get();
+            user.unfollowUser(unfollowUser);
+            userRepository.save(user);
+            userRepository.save(unfollowUser);
+        } else {
+            throw new UserNotFoundException("User not found");
+        }
+    }
+
+
     // ADD TO FAVS METHOD
     public void addSavedPost(int userId, int postId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
-        Post post = postRepository.findById(postId).orElseThrow(() -> new RuntimeException("Post not found"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException("Post not found"));
 
+        if (user.getFavorites().contains(post)) {
+            throw new BadRequestException("Post already in favorites");
+        }
         user.getFavorites().add(post);
+        post.getUsersWhoSaved().add(user);
+
         userRepository.save(user);
+        postRepository.save(post);
+    }
+
+    // REMOVE FROM FAVS METHOD
+    public void removeSavedPost(int userId, int postId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException("Post not found"));
+
+        if (!user.getFavorites().contains(post)) {
+            throw new BadRequestException("Post not in favorites");
+        }
+
+        user.getFavorites().remove(post);
+        post.getUsersWhoSaved().remove(user);
+
+        userRepository.save(user);
+        postRepository.save(post);
+    }
+
+    // GET FAVS POSTS METHOD
+    public List<Post> getSavedPosts(int userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
+        return user.getFavorites();
+    }
+
+    // ADD MEME TO FAVS METHOD
+    public void addSavedMeme(int userId, int memeId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
+        Meme meme = memeRepository.findById(memeId).orElseThrow(() -> new MemeNotFoundException("Meme not found"));
+
+        if (user.getFavoritesMemes().contains(meme)) {
+            throw new BadRequestException("Meme already in favorites");
+        }
+
+        user.getFavoritesMemes().add(meme);
+        meme.getUsersWhoSaved().add(user);
+
+        userRepository.save(user);
+        memeRepository.save(meme);
+    }
+
+    // REMOVE MEME FROM FAVS METHOD
+    public void removeSavedMeme(int userId, int memeId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
+        Meme meme = memeRepository.findById(memeId).orElseThrow(() -> new MemeNotFoundException("Meme not found"));
+
+        if (!user.getFavoritesMemes().contains(meme)) {
+            throw new RuntimeException("Meme not in favorites");
+        }
+
+        user.getFavoritesMemes().remove(meme);
+        meme.getUsersWhoSaved().remove(user);
+
+        userRepository.save(user);
+        memeRepository.save(meme);
     }
 
     // PATCH USER PROFILE PIC METHOD

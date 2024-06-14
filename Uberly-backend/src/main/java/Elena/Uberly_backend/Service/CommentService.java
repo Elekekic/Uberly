@@ -3,16 +3,15 @@ package Elena.Uberly_backend.Service;
 import Elena.Uberly_backend.DTO.CommentDTO;
 import Elena.Uberly_backend.DTO.CommentUpdateDTO;
 import Elena.Uberly_backend.Entity.Comment;
+import Elena.Uberly_backend.Entity.Meme;
 import Elena.Uberly_backend.Entity.Post;
 import Elena.Uberly_backend.Entity.User;
 import Elena.Uberly_backend.Exception.BadRequestException;
 import Elena.Uberly_backend.Exception.CommentNotFoundException;
-import Elena.Uberly_backend.Exception.PostNotFoundException;
-import Elena.Uberly_backend.Exception.UserNotFoundException;
 import Elena.Uberly_backend.Repository.CommentRepository;
+import Elena.Uberly_backend.Repository.MemeRepository;
 import Elena.Uberly_backend.Repository.PostRepository;
 import Elena.Uberly_backend.Repository.UserRepository;
-import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +33,9 @@ public class CommentService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private MemeRepository memeRepository;
 
     // GET ALL COMMENTS METHOD
     public List<Comment> getAllComments() {
@@ -57,16 +59,26 @@ public class CommentService {
 
     // SAVE COMMENT METHOD
     public String createComment(CommentDTO commentDTO) {
-        Post post = postRepository.findById(commentDTO.getPostId()).orElseThrow(() -> new PostNotFoundException("Post not found"));
-        User user = userRepository.findById(commentDTO.getUserId()).orElseThrow(() -> new UserNotFoundException("User not found"));
+        Optional<Post> post = postRepository.findById(commentDTO.getPostId());
+        Optional<User> user = userRepository.findById(commentDTO.getUserId());
+        Optional<Meme> meme = memeRepository.findById(commentDTO.getMemeId());
 
+        if (post.isPresent() && user.isPresent()) {
             Comment comment = new Comment();
             comment.setContent(commentDTO.getContent());
-            comment.setPost(post);
-            comment.setUser(user);
+            comment.setPost(post.get());
+            comment.setUser(user.get());
             commentRepository.save(comment);
-
-            return "Comment added successfully";
+        } else if (meme.isPresent() && user.isPresent()) {
+            Comment comment = new Comment();
+            comment.setContent(commentDTO.getContent());
+            comment.setMeme(meme.get());
+            comment.setUser(user.get());
+            commentRepository.save(comment);
+        } else {
+            throw new BadRequestException("Post meme or user not found");
+        }
+        return "Comment added successfully";
     }
 
     // UPDATE COMMENT METHOD

@@ -7,6 +7,7 @@ import Elena.Uberly_backend.Exception.BadRequestException;
 import Elena.Uberly_backend.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -63,22 +64,51 @@ public class UserController {
         return userService.patchPictureProfileUser(id, pictureProfile);
     }
 
-    //QUERY 1 - SEARCHING BY PARTIAL USERNAME
     @GetMapping("/users/search")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'DRIVER', 'RIDER')")
     public List<User> getUsersByUsernameContaining (@RequestParam String username) {
         return userService.getUserByUsernameContaining(username);
     }
 
-
-    @GetMapping("/{userId}/saved-posts")
+    @GetMapping("/users/{userId}/favorites")
     public List<Post> getSavedPostsByUserId(@PathVariable int userId) {
         return userService.getFavoritesByUserId(userId);
     }
 
-
-    @PostMapping("/{userId}/saved-posts/{postId}")
+    @PostMapping("/users/{userId}/favorites/{postId}")
     public void addSavedPost(@PathVariable int userId, @PathVariable int postId) {
         userService.addSavedPost(userId, postId);
+    }
+
+    @DeleteMapping("/users/{userId}/favorites/{postId}")
+    public void deleteSavedPost(@PathVariable int userId, @PathVariable int postId) {
+        userService.removeSavedPost(userId, postId);
+    }
+
+    @PostMapping("/users/{userId}/follow/{followUserId}")
+    public ResponseEntity<String> followUser(@PathVariable int userId, @PathVariable int followUserId) {
+        userService.followUser(userId, followUserId);
+        return ResponseEntity.ok("User followed successfully");
+    }
+
+    @PostMapping("/users/{userId}/unfollow/{unfollowUserId}")
+    public ResponseEntity<String> unfollowUser(@PathVariable int userId, @PathVariable int unfollowUserId) {
+        userService.unfollowUser(userId, unfollowUserId);
+        return ResponseEntity.ok("User unfollowed successfully");
+    }
+
+
+    @PostMapping("/users/{userId}/memes/{id}/save")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'DRIVER', 'RIDER')")
+    public ResponseEntity<String> saveMeme(@PathVariable int memeId, @PathVariable int userId) {
+        userService.addSavedMeme(userId, memeId);
+        return ResponseEntity.ok("Meme saved successfully");
+    }
+
+    @DeleteMapping("/users/{userId}/memes/{id}/unsave")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'DRIVER', 'RIDER')")
+    public ResponseEntity<String> unsaveMeme(@PathVariable int memeId, @PathVariable int userId) {
+        userService.removeSavedMeme(userId, memeId);
+        return ResponseEntity.ok("Meme removed from favorites successfully");
     }
 }

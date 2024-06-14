@@ -21,4 +21,6 @@ public class ReactionDTO {
     private int postId;
 
     private int replyId;
+
+    private int memeId;
 }

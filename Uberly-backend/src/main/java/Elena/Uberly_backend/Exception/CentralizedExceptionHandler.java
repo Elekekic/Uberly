@@ -68,4 +68,20 @@ public class CentralizedExceptionHandler extends ResponseEntityExceptionHandler 
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(WrongPostTagForRidersException.class)
+    public ResponseEntity<Object> WrongPostTagForRidersHandler (WrongPostTagForRidersException exception){
+        Error error = new Error();
+        error.setMessaggio(exception.getMessage());
+        error.setDataErrore(LocalDateTime.now());
+        return new ResponseEntity<>(error, HttpStatus.NOT_ACCEPTABLE);
+    }
+
+    @ExceptionHandler(MemeNotFoundException.class)
+    public ResponseEntity<Object> WrongPostTagForRidersHandler (MemeNotFoundException exception){
+        Error error = new Error();
+        error.setMessaggio(exception.getMessage());
+        error.setDataErrore(LocalDateTime.now());
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
 }

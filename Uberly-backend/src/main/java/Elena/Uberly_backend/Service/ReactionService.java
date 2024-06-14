@@ -32,6 +32,9 @@ public class ReactionService {
     @Autowired
     private ReplyRepository replyRepository;
 
+    @Autowired
+    private MemeRepository memeRepository;
+
 
     // GET ALL REACTIONS METHOD
     public List<Reaction> getAllReactions() {
@@ -57,6 +60,7 @@ public class ReactionService {
         Optional<Comment> commentOptional = commentRepository.findById(reactionDTO.getCommentId());
         Optional<Feedback> feedbackOptional = feedbackRepository.findById(reactionDTO.getFeedbackId());
         Optional<Reply> replyOptional = replyRepository.findById(reactionDTO.getReplyId());
+        Optional<Meme> memeOptional = memeRepository.findById(reactionDTO.getMemeId());
 
         if (reactionDTO.getType() == null) {
             throw new ReactionNotFoundException("Reaction type is not correct or cannot be null");
@@ -74,7 +78,9 @@ public class ReactionService {
             reaction.setFeedback(feedbackOptional.get());
         } else if (replyOptional.isPresent()) {
             reaction.setReply(replyOptional.get());
-        } else {
+        } else if (memeOptional.isPresent()) {
+            reaction.setMeme(memeOptional.get());
+        }  else {
             throw new IllegalArgumentException("Reaction cannot be created without a valid Post, Comment or Feedback");
         }
         reactionRepository.save(reaction);

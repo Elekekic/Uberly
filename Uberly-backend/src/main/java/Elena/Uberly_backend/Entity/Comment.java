@@ -1,7 +1,6 @@
 package Elena.Uberly_backend.Entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Entity;
@@ -27,6 +26,11 @@ public class Comment {
     @JoinColumn(name = "post_id")
     @JsonBackReference
     private Post post;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "meme_id")
+    @JsonIncludeProperties(value = {"id", "url", "user"})
+    private Meme meme;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

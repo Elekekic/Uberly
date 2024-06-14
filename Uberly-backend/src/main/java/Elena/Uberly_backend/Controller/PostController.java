@@ -47,7 +47,7 @@ public class PostController {
 
 
     @PostMapping("/posts")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'DRIVER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'DRIVER', 'RIDER')")
     public String savePost(@RequestBody @Validated PostDTO postDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new IllegalArgumentException(bindingResult.getAllErrors().stream()
@@ -57,7 +57,7 @@ public class PostController {
     }
 
     @PutMapping("/posts/{id}")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'DRIVER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'DRIVER', 'RIDER')")
     public Post updatePost(@PathVariable int id, @RequestBody @Validated PostDTO postDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new IllegalArgumentException(bindingResult.getAllErrors().stream()

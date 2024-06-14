@@ -42,4 +42,9 @@ public class Reaction {
     @JoinColumn(name = "reply_id")
     @JsonIgnore
     private Reply reply;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "meme_id")
+    @JsonIgnore
+    private Meme meme;
 }

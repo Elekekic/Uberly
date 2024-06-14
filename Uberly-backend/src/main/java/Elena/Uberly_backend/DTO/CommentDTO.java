@@ -10,9 +10,10 @@ public class CommentDTO {
     @NotBlank(message = "The content cannot be empty")
     private String content;
 
-    @Min(value = 1)
     private int postId;
 
     @Min(value = 1)
     private int userId;
+
+    private int memeId;
 }

@@ -58,9 +58,23 @@ public class User implements UserDetails {
     @JsonIncludeProperties(value = {"id", "title", "description", "startingPoint", "endPoint", "spacesDrivers", "tag", "user"})
     private List<Post> favorites = new ArrayList<>();
 
+    @ManyToMany
+    @JoinTable(
+            name = "saved_memes",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "meme_id")
+    )
+    @JsonIncludeProperties(value = {"id", "title", "description", "startingPoint", "endPoint", "spacesDrivers", "tag", "user"})
+    private List<Meme> favoritesMemes = new ArrayList<>();
+
+
     @OneToMany(mappedBy = "user", orphanRemoval = true)
     @JsonIgnore
     private List<Comment> comments = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", orphanRemoval = true)
+    @JsonIncludeProperties(value = {"id", "url", "user"})
+    private List<Meme> memes = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(name = "user_followers",
