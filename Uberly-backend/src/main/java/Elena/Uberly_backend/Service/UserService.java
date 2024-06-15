@@ -32,6 +32,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -134,7 +136,7 @@ public class UserService {
             user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
             user.setPictureProfile("https://ui-avatars.com/api/?name=" + user.getName() + "+" + user.getSurname());
             userRepository.save(user);
-            // sendMailProfileCreated(user.getEmail(), user.getName(), user.getSurname(), String.valueOf(user.getRole()));
+            sendMailProfileCreated(user.getEmail(), user.getName(), user.getSurname(), String.valueOf(user.getRole()));
             return "User with ID: " + user.getId() + " , with role: " + user.getRole();
         }
     }
@@ -156,7 +158,7 @@ public class UserService {
             if (user.getPictureProfile() == null || user.getPictureProfile().isEmpty()) {
                 user.setPictureProfile("https://ui-avatars.com/api/?name=" + user.getName() + "+" + user.getSurname());
             }
-            sendMailProfileUpdated(user.getEmail(), user.getName(), user.getSurname(), String.valueOf(user.getRole()));
+            // sendMailProfileUpdated(user.getEmail(), user.getName(), user.getSurname(), String.valueOf(user.getRole()));
             return userRepository.save(user);
 
         } else {
@@ -299,28 +301,37 @@ public class UserService {
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
 
             helper.setTo(email);
-            helper.setSubject("Uberly Account successfully created");
+            helper.setSubject(String.format("Hold onto your seats! a new %s is here! \uD83E\uDEE3", role));
 
-            String htmlMsg = String.format("""
-                    <html>
-                    <body>
-                        <img src='cid:welcomeImage' style='width: 800px; height: auto;'>
-                        <h1>Dear %s %s, </h1>
-                        <p> your Uberly account has been successfully created! </p>
-                        <p>You can now access the system using the credentials you provided during registration. Remember, you are a %s of Uberly.</p>
-                        <p>If you have any questions or need assistance, please do not hesitate to contact us at <a href="mailto:uberlyteam@gmail.com">uberlyteam@gmail.com</a>.</p>
-                        <p>Thank you for registering! Enjoy your journeys with new people.</p>
-                        <p>Best regards,</p>
-                        <p>The Uberly Team</p>
-                        <img src='cid:logoImage' style='width: 200px; height: auto;'>
-                    </body>
-                    </html>
-                    """, name, surname, role);
+
+            LocalDate currentDate = LocalDate.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM dd, yyyy");
+            String formattedDate = currentDate.format(formatter);
+
+            String htmlMsg = String.format(
+                    "<html>" +
+                            "<body style='text-align: center; font-family: Poppins, sans-serif;'>" +
+                            "<div style='display: inline-block; width: 80%%; max-width: 700px; margin: 20px auto; padding: 20px; border: 1px solid black; border-radius: 20px; text-align: left;'>" +
+                            "<img src='cid:welcomeImage' style='width: 100%%; height: auto; max-width: 900px; border-radius: 16px;'>" +
+                            "<p>%s 🗓 </p>" +
+                            "<h1 style='font-size: 30px; color: #FF6D1F;'>Dear %s %s,</h1>" +
+                            "<h3>Your Uberly account has been successfully created! Congrats! 🎉<br>" +
+                            "We can't wait to see you on our platform!</h3>" +
+                            "<p>You can now access the system using the credentials you provided during registration. Remember, you are a <strong>%s</strong> of Uberly. If you have any questions or need assistance, please do not hesitate to contact us at <a href=\"mailto:uberlyteam@gmail.com\">uberlyteam@gmail.com</a> 📩</p>" +
+                            "<p>Thank you for registering! Enjoy your journeys with new people. 📌</p>" +
+                            "<p>Best regards,</p>" +
+                            "<p>The Uberly Team</p>" +
+                            "<img src='cid:logoImage' style='width: 200px; height: auto;'>" +
+                            "<p style='font-size: 12px; margin-top: 20px;'>© 2024 Uberly Team</p>" +
+                            "<p style='font-size: 12px;'>Trieste, Italy</p>" +
+                            "</div>" +
+                            "</body>" +
+                            "</html>", formattedDate, name, surname, role);
+
 
             helper.setText(htmlMsg, true);
 
-
-            ClassPathResource imageResource = new ClassPathResource("static/images/welcome.png");
+            ClassPathResource imageResource = new ClassPathResource("static/images/welcome.jpg");
             helper.addInline("welcomeImage", imageResource);
 
             ClassPathResource imageResource2 = new ClassPathResource("static/images/logo.png");
@@ -332,37 +343,37 @@ public class UserService {
         }
     }
 
-    // SEND EMAIL "PROFILE UPDATED" METHOD
-    private void sendMailProfileUpdated(String email, String name, String surname, String role) {
-        try {
-            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
-
-            helper.setTo(email);
-            helper.setSubject("Uberly Account has been updated");
-
-            String htmlMsg = String.format("""
-                    <html>
-                    <body>
-                        <h1>Dear %s %s, </h1>
-                        <p>Your Uberly account has been successfully updated! </p>
-                        <p>Remember, you are a %s of Uberly.</p>
-                        <p>If you haven't changed or forgot any of your credentials, please do not hesitate to contact us at <a href="mailto:uberlyteam@gmail.com">uberlyteam@gmail.com</a>.</p>
-                        <p>Best regards,</p>
-                        <p>The Uberly Team</p>
-                        <img src='cid:logoImage' style='width: 200px; height: auto;'>
-                    </body>
-                    </html>
-                    """, name, surname, role);
-
-            helper.setText(htmlMsg, true);
-
-            ClassPathResource imageResource2 = new ClassPathResource("static/images/logo.png");
-            helper.addInline("logoImage", imageResource2);
-
-            javaMailSender.send(mimeMessage);
-        } catch (MessagingException e) {
-            logger.error("Error sending email to {}", email, e);
-        }
-    }
+//    // SEND EMAIL "PROFILE UPDATED" METHOD
+//    private void sendMailProfileUpdated(String email, String name, String surname, String role) {
+//        try {
+//            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+//            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+//
+//            helper.setTo(email);
+//            helper.setSubject("Uberly Account has been updated");
+//
+//            String htmlMsg = String.format("""
+//                    <html>
+//                    <body>
+//                        <h1>Dear %s %s, </h1>
+//                        <p>Your Uberly account has been successfully updated! </p>
+//                        <p>Remember, you are a %s of Uberly.</p>
+//                        <p>If you haven't changed or forgot any of your credentials, please do not hesitate to contact us at <a href="mailto:uberlyteam@gmail.com">uberlyteam@gmail.com</a>.</p>
+//                        <p>Best regards,</p>
+//                        <p>The Uberly Team</p>
+//                        <img src='cid:logoImage' style='width: 200px; height: auto;'>
+//                    </body>
+//                    </html>
+//                    """, name, surname, role);
+//
+//            helper.setText(htmlMsg, true);
+//
+//            ClassPathResource imageResource2 = new ClassPathResource("static/images/logo.png");
+//            helper.addInline("logoImage", imageResource2);
+//
+//            javaMailSender.send(mimeMessage);
+//        } catch (MessagingException e) {
+//            logger.error("Error sending email to {}", email, e);
+//        }
+//    }
 }
