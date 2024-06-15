@@ -98,16 +98,16 @@ public class UserController {
     }
 
 
-    @PostMapping("/users/{userId}/memes/{id}/save")
+    @PostMapping("/users/{userId}/memes/{memeId}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'DRIVER', 'RIDER')")
-    public ResponseEntity<String> saveMeme(@PathVariable int memeId, @PathVariable int userId) {
+    public ResponseEntity<String> saveMeme(@PathVariable int userId, @PathVariable int memeId) {
         userService.addSavedMeme(userId, memeId);
         return ResponseEntity.ok("Meme saved successfully");
     }
 
-    @DeleteMapping("/users/{userId}/memes/{id}/unsave")
+    @DeleteMapping("/users/{userId}/memes/{memeId}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'DRIVER', 'RIDER')")
-    public ResponseEntity<String> unsaveMeme(@PathVariable int memeId, @PathVariable int userId) {
+    public ResponseEntity<String> unsaveMeme(@PathVariable int userId, @PathVariable int memeId) {
         userService.removeSavedMeme(userId, memeId);
         return ResponseEntity.ok("Meme removed from favorites successfully");
     }

@@ -4,6 +4,7 @@ import Elena.Uberly_backend.Entity.Meme;
 import Elena.Uberly_backend.Entity.Post;
 import Elena.Uberly_backend.Service.MemeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
