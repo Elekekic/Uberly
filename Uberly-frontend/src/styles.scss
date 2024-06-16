@@ -1,1 +1,11 @@
-/* You can add global styles to this file, and also import other style files */
+*, *::after, *::before {
+    font-family: "Poppins", sans-serif;  
+     /* SETTINGS TO NOT MAKE THE SCROLLBAR VISIBLE */
+    scrollbar-width: none; /* For Firefox */
+    -ms-overflow-style: none; /* For Internet Explorer and Edge */
+}
+
+ /* SETTINGS TO NOT MAKE THE SCROLLBAR VISIBLE */
+*::-webkit-scrollbar {
+    display: none; /* For Chrome, Safari, and Opera */
+}
