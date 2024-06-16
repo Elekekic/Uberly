@@ -1,0 +1,63 @@
+body {
+  background-color: #222222;
+  border-style: border-box;
+  margin: 0;
+  padding: 0;
+  transition: all 1s linear;
+}
+
+p {
+  color: #fefefe;
+}
+
+.section {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  scroll-snap-type: y proximity;
+  overflow-y: scroll;
+  /* SETTINGS TO NOT MAKE THE SCROLLBAR VISIBLE */
+  scrollbar-width: none; /* For Firefox */
+  -ms-overflow-style: none; /* For Internet Explorer and Edge */
+}
+
+/* SETTINGS TO NOT MAKE THE SCROLLBAR VISIBLE */
+.section::-webkit-scrollbar {
+  display: none; /* For Chrome, Safari, and Opera */
+}
+
+.block {
+  height: 100vh;
+  padding: 240px 0;
+  scroll-snap-align: start;
+}
+
+.block + .block {
+  margin-top: auto;
+}
+
+.first-bg {
+  background-color: #222222;
+}
+
+.second-bg {
+    background-color: #222222;
+  }
+
+.third-bg {
+  background-color: #bd531a;
+}
+
+.fourth-bg {
+    background-color: #bd531a;
+  }
+
+.fifth-bg {
+    background-color: #222222;
+  }
+
+.sixth-bg {
+    background-color: #222222;
+  }
+

@@ -1,1 +1,38 @@
-<p>navbar works!</p>
+<header class="primay-header flex justify-content-between">
+    <div>
+        <a [routerLink]="['/']" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"><img
+                src="assets/img/text-logo.png" alt="Uberly Logo" class="logo"></a>
+    </div>
+
+    <button class="mobile-nav-toggle" aria-controls="primary-navigation" aria-expanded="false">
+        <span class="sr-only"></span>
+      </button>
+      <nav class="flex">
+        <ul class="primary-navigation flex list-unstyled" data-visible="false">
+            <!-- <li>
+                    <a [routerLink]="['home']" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+                        Home</a>
+                </li> -->
+            <li>
+                <a [routerLink]="['community']" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+                    Community</a>
+            </li>
+            <!-- <li>
+                    <a [routerLink]="['login']" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+                        Profile </a>
+                </li> -->
+            <li>
+                <a [routerLink]="['login']" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+                    Login</a>
+            </li>
+            <li>
+                <a [routerLink]="['signup']" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+                    Step in!</a>
+            </li>
+            <!--  <li>
+                    <a [routerLink]="['login']" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+                        Logout</a>
+                </li> -->
+        </ul>
+    </nav>
+</header>
