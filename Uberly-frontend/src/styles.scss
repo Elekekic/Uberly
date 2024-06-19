@@ -1,11 +1,22 @@
-*, *::after, *::before {
-    font-family: "Poppins", sans-serif;  
-     /* SETTINGS TO NOT MAKE THE SCROLLBAR VISIBLE */
-    scrollbar-width: none; /* For Firefox */
-    -ms-overflow-style: none; /* For Internet Explorer and Edge */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  background-color: #0e0e0e;
 }
 
- /* SETTINGS TO NOT MAKE THE SCROLLBAR VISIBLE */
+*,
+*::after,
+*::before {
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+  /* SETTINGS TO NOT MAKE THE SCROLLBAR VISIBLE */
+  scrollbar-width: none; /* For Firefox */
+  -ms-overflow-style: none; //* For Internet Explorer and Edge */
+}
+
+/* SETTINGS TO NOT MAKE THE SCROLLBAR VISIBLE */
 *::-webkit-scrollbar {
-    display: none; /* For Chrome, Safari, and Opera */
+  /*  display: none; */ /* For Chrome, Safari, and Opera */
 }

@@ -1,6 +1,8 @@
 import {
   AfterViewInit,
+  ChangeDetectorRef,
   Component,
+  ElementRef,
   OnInit,
   Renderer2,
 } from '@angular/core';
@@ -13,7 +15,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
   styleUrls: ['./landing-page.component.scss'],
 })
 export class LandingPageComponent implements AfterViewInit, OnInit {
-  constructor(private renderer: Renderer2) {}
+  constructor(private renderer: Renderer2, private el: ElementRef, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.startLoader();
@@ -21,8 +23,20 @@ export class LandingPageComponent implements AfterViewInit, OnInit {
     this.IsInViewportFunction();
   }
 
+  
   ngAfterViewInit(): void {
-    this.startLoader();
+   this.startLoader();
+    this.renderer.listen('window', 'load', () => {
+      this.scrollToTop();
+    });
+
+    setTimeout(() => {
+      this.scrollToTop();
+    }, 0);
+  }
+
+  scrollToTop() {
+    window.scrollTo(0, 0);
   }
 
   startLoader(): void {
@@ -86,73 +100,179 @@ export class LandingPageComponent implements AfterViewInit, OnInit {
       },
       ease: 'power4.inOut',
     });
+
+    gsap.from('.sub-header', {
+      duration: 1.5,
+      delay: 5,
+      y: 0,
+      opacity: 0,
+      stagger: {
+        amount: 0.5,
+      },
+      ease: 'power4.inOut',
+    });
   }
 
-  IsInViewportFunction () {
+  IsInViewportFunction() {
     gsap.registerPlugin(ScrollTrigger);
-      function isInViewPort(el: Element) {
-        const rect = el.getBoundingClientRect();
-        return (
-          rect.top >= 0 &&
-          rect.left >= 0 &&
-          rect.bottom <=
-            (window.innerHeight || document.documentElement.clientHeight) &&
-          rect.right <=
-            (window.innerHeight || document.documentElement.clientWidth)
-        );
-      }
-  
-      const rows = document.querySelectorAll('.roww');
-      rows.forEach((row) => {
-        if (isInViewPort(row)) {
-          const img = row.querySelector('img');
-          if (row.querySelector('.left')) {
-            gsap.to(img, {
-              clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)',
-            });
-          } else {
-            gsap.to(img, {
-              clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)',
-            });
-          }
+    function isInViewPort(el: Element) {
+      const rect = el.getBoundingClientRect();
+      return (
+        rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.bottom <=
+          (window.innerHeight || document.documentElement.clientHeight) &&
+        rect.right <=
+          (window.innerHeight || document.documentElement.clientWidth)
+      );
+    }
+
+    const rows = document.querySelectorAll('.roww');
+    rows.forEach((row) => {
+      if (isInViewPort(row)) {
+        const img = row.querySelector('img');
+        if (row.querySelector('.left')) {
+          gsap.to(img, {
+            clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)',
+          });
+        } else {
+          gsap.to(img, {
+            clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)',
+          });
         }
+      }
+    });
+
+    gsap.utils.toArray('.img-container.right img').forEach((img: any) => {
+      gsap.to(img, {
+        clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)',
+        scrollTrigger: {
+          trigger: img,
+          start: 'top 75%',
+          end: 'bottom 70%',
+          scrub: true,
+        },
       });
-  
-      gsap.utils.toArray(".img-container.right img").forEach((img:any) => {
-        gsap.to(img, {
-          clipPath:'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)',
-          scrollTrigger: {
-            trigger: img,
-            start: "top 75%",
-            end: "bottom 70%",
-            scrub: true, 
-          }
-        })
-      })
-  
-  
-      gsap.utils.toArray(".img-container.left img").forEach((img:any) => {
-        gsap.to(img, {
-          clipPath:'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)',
-          scrollTrigger: {
-            trigger: img,
-            start: "top 75%",
-            end: "bottom 70%",
-            scrub: true, 
-          }
-        })
-      })
-  
-      gsap.utils.toArray(".img-container p").forEach((p:any) => {
-        gsap.from(p, {
-          opacity:0,
-          y:20,
-          scrollTrigger: {
-            trigger: p,
-            start: "top 90%",
-            toggleActions: "play none none reverse",
-          }
-        })
-      } )
-    };
+    });
+
+    gsap.utils.toArray('.img-container.left img').forEach((img: any) => {
+      gsap.to(img, {
+        clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)',
+        scrollTrigger: {
+          trigger: img,
+          start: 'top 75%',
+          end: 'bottom 70%',
+          scrub: true,
+        },
+      });
+    });
+
+    gsap.utils.toArray('.img-container p').forEach((p: any) => {
+      gsap.from(p, {
+        opacity: 0,
+        y: 20,
+        scrollTrigger: {
+          trigger: p,
+          start: 'top 90%',
+          toggleActions: 'play none none reverse',
+        },
+      });
+    });
+
+    gsap.utils.toArray('.section-cta-img img').forEach((img: any) => {
+      gsap.from(img, {
+        opacity: 0,
+        y: 0,
+        scrollTrigger: {
+          trigger: img,
+          start: 'top 70%',
+          toggleActions: 'play none none reverse',
+        },
+      });
+    });
+
+    gsap.utils.toArray('.section-cta-info h2').forEach((h2: any) => {
+      gsap.from(h2, {
+        opacity: 0,
+        y: 20,
+        scrollTrigger: {
+          trigger: h2,
+          start: 'top 80% , left 50%',
+          toggleActions: 'play none none reverse',
+        },
+      });
+    });
+
+    gsap.utils.toArray('.section-cta-info p').forEach((p: any) => {
+      gsap.from(p, {
+        opacity: 0,
+        y: 20,
+        scrollTrigger: {
+          trigger: p,
+          start: 'top 80% , left 50%',
+          toggleActions: 'play none none reverse',
+        },
+      });
+    });
+
+    gsap.utils.toArray('.cta button').forEach((button: any) => {
+      gsap.from(button, {
+        opacity: 0,
+        y: 20,
+        scrollTrigger: {
+          trigger: button,
+          start: 'top 80%',
+          toggleActions: 'play none none reverse',
+        },
+      });
+    });
+
+    gsap.utils.toArray('.section-features-h2').forEach((h2: any) => {
+      gsap.from(h2, {
+        opacity: 0,
+        y: 20,
+        scrollTrigger: {
+          trigger: h2,
+          start: 'top 80%',
+          toggleActions: 'play none none reverse',
+        },
+      });
+    });
+
+    gsap.utils.toArray('.stars i').forEach((stars: any) => {
+      gsap.from(stars, {
+        opacity: 0,
+        y: 20,
+        scrollTrigger: {
+          trigger: stars,
+          start: 'top 80%',
+          toggleActions: 'play none none reverse',
+        },
+      });
+    });
+
+    gsap.utils.toArray('.text p').forEach((p: any) => {
+      gsap.from(p, {
+        opacity: 0,
+        y: 20,
+        scrollTrigger: {
+          trigger: p,
+          start: 'top 80%',
+          toggleActions: 'play none none reverse',
+        },
+      });
+    });
+
+    gsap.utils.toArray('.info-user p').forEach((p: any) => {
+      gsap.from(p, {
+        opacity: 0,
+        y: 20,
+        scrollTrigger: {
+          trigger: p,
+          start: 'top 80%',
+          toggleActions: 'play none none reverse',
+        },
+      });
+    });
   }
+}
