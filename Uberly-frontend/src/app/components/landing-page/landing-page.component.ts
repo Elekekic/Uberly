@@ -114,7 +114,9 @@ export class LandingPageComponent implements AfterViewInit, OnInit {
   }
 
   IsInViewportFunction() {
+
     gsap.registerPlugin(ScrollTrigger);
+
     function isInViewPort(el: Element) {
       const rect = el.getBoundingClientRect();
       return (
@@ -215,7 +217,7 @@ export class LandingPageComponent implements AfterViewInit, OnInit {
       });
     });
 
-    gsap.utils.toArray('.cta button').forEach((button: any) => {
+    gsap.utils.toArray('.cta a').forEach((button: any) => {
       gsap.from(button, {
         opacity: 0,
         y: 20,
@@ -224,6 +226,22 @@ export class LandingPageComponent implements AfterViewInit, OnInit {
           start: 'top 80%',
           toggleActions: 'play none none reverse',
         },
+      });
+
+      button.addEventListener("mouseenter", () => {
+        gsap.to(button, {
+          scale: 1.1,
+          duration: 0.1,
+          ease: "power1.inOut"
+        });
+      });
+  
+      button.addEventListener("mouseleave", () => {
+        gsap.to(button, {
+          scale: 1,
+          duration: 0.1,
+          ease: "power1.inOut"
+        });
       });
     });
 
@@ -270,6 +288,18 @@ export class LandingPageComponent implements AfterViewInit, OnInit {
         scrollTrigger: {
           trigger: p,
           start: 'top 80%',
+          toggleActions: 'play none none reverse',
+        },
+      });
+    });
+
+    gsap.utils.toArray('.footer-info h2').forEach((h2: any) => {
+      gsap.from(h2, {
+        opacity: 0,
+        y: 10,
+        scrollTrigger: {
+          trigger: h2,
+          start: 'top 20%',
           toggleActions: 'play none none reverse',
         },
       });

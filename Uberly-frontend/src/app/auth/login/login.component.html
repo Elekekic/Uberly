@@ -1,1 +1,28 @@
-<p>login works!</p>
+<body>
+    <div class="row">
+        <div class="col-3">
+            <h1>LOGIN</h1>
+        </div>
+        <div class="col-9 flex-column">
+            <h1 class="title">Welcome back! </h1>
+            <h2 class="sub-title"> we are happy to see you</h2>
+
+            <form class="form" #loginForm="ngForm" (ngSubmit)="login(loginForm)">
+
+                <div class="form__group field">
+                    <input type="input" class="form__field" placeholder="Email" name="email" id="email" ngModel>
+                    <label for="name" class="form__label">Email</label>
+                </div>
+
+                <div class="form__group field">
+                    <input type="password" class="form__field" placeholder="Password" name="password" id="password"
+                        ngModel autocomplete="new-password">
+                    <label for="name" class="form__label">Password</label>
+                </div>
+
+                <button type="submit" [disabled]="loginForm.invalid" class="button">
+                    Login </button>
+            </form>
+        </div>
+    </div>
+</body>

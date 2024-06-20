@@ -192,12 +192,9 @@ img {
   text-decoration: none;
   font-size: clamp(1rem, 2vw, 1.8rem);
   font-weight: 400;
+  text-align: center;
   text-transform: uppercase;
-  transition: all 0.3s ease;
-}
-
-.register:hover {
-  transform: scale(1.1);
+  transition: all 0.2s ease;
 }
 
 .login {
@@ -211,12 +208,9 @@ img {
   text-decoration: none;
   font-size: clamp(1rem, 2vw, 1.8rem);
   font-weight: 400;
+  text-align: center;
   text-transform: uppercase;
-  transition: all 0.3s ease;
-}
-
-.login:hover {
-  transform: scale(1.1);
+  transition: all 0.2s ease;
 }
 
 .section-cta-info h2 {
@@ -283,7 +277,7 @@ img {
 
 .card {
   width: 100%;
-  max-width: 900px;
+  max-width: 870px;
   min-width: 300px;
   height: 400px;
   background-color: #0e0e0e;
@@ -442,7 +436,7 @@ img {
 /* FOOTER */
 
 .footer-info h2 {
-  padding: 4em 0;
+  padding: 2em 0 1.4em 0;
   font-size: 18vh; 
   color: #ff6d1f;
 }

@@ -32,6 +32,11 @@
             "styles": [
               "src/styles.scss"
             ],
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "node_modules/bourbon/core"
+              ]
+            },
             "scripts": []
           },
           "configurations": {
@@ -98,10 +103,13 @@
             "scripts": []
           }
         }
+      },
+      "cli": {
+        "analytics": "3c51e66a-7297-47b2-a7c0-b66e6355ec31"
       }
     }
   },
   "cli": {
-    "analytics": "3c51e66a-7297-47b2-a7c0-b66e6355ec31"
+    "analytics": false
   }
 }
