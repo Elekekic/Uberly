@@ -9,7 +9,6 @@ import { LoginComponent } from './auth/login/login.component';
 import { SignUpComponent } from './auth/sign-up/sign-up.component';
 import { LandingPageComponent } from './components/landing-page/landing-page.component';
 import { NavbarComponent } from './components/navbar/navbar.component';
-import { FooterComponent } from './components/footer/footer.component';
 import { HomeComponent } from './components/home/home.component';
 import { CommunityComponent } from './components/community/community.component';
 import { ProfileComponent } from './components/profile/profile.component';
@@ -94,7 +93,6 @@ const routes: Route[] = [
     SignUpComponent,
     LandingPageComponent,
     NavbarComponent,
-    FooterComponent,
     HomeComponent,
     CommunityComponent,
     ProfileComponent,

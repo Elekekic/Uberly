@@ -1,1 +1,84 @@
-<p>sign-up works!</p>
+<body>
+    <div class="row">
+        <div class="col-3">
+            <h1> SIGN UP </h1>
+        </div>
+        <div class="col-9 flex-column">
+            <h1 class="title"> Let's get to know you!</h1>
+
+            <form class="form" #signupForm="ngForm" (ngSubmit)="onSubmit(signupForm)">
+
+                <div class="form__group field">
+                    <input type="input" class="form__field" placeholder="Username" name="username" id="username" ngModel
+                        #username="ngModel" required>
+                    <label for="username" class="form__label">Username</label>
+                    <div *ngIf="username.invalid && username.touched" class="error-message">
+                        You must fill out this field.
+                    </div>
+                </div>
+
+                <div class="form__group field">
+                    <input type="input" class="form__field" placeholder="Username" name="name" id="name" ngModel
+                        #name="ngModel" required>
+                    <label for="name" class="form__label">Name</label>
+                    <div *ngIf="name.invalid && name.touched" class="error-message">
+                        You must fill out this field.
+                    </div>
+                </div>
+
+                <div class="form__group field">
+                    <input type="input" class="form__field" placeholder="Surname" name="surname" id="surname" ngModel
+                        #surname="ngModel" required>
+                    <label for="surname" class="form__label">Surname</label>
+                    <div *ngIf="surname.invalid && surname.touched" class="error-message">
+                        You must fill out this field.
+                    </div>
+                </div>
+
+                <div class="form__group field">
+                    <input type="input" class="form__field" placeholder="Email" name="email" id="email" ngModel
+                        #email="ngModel" required>
+                    <label for="email" class="form__label">Email</label>
+                    <div *ngIf="email.invalid && email.touched" class="error-message">
+                        You must fill out this field.
+                    </div>
+                </div>
+
+                <div class="form__group field">
+                    <input type="password" class="form__field" placeholder="Password" name="password" id="password" ngModel
+                        #password="ngModel" required autocomplete="new-password">
+                    <label for="name" class="form__label">Password</label>
+                    <div *ngIf="password.invalid && password.touched" class="error-message">
+                        You must fill out this field.
+                    </div>
+                </div>
+
+                <div class="form__group field">
+                    <textarea class="form__field" placeholder="Bio" name="bio" id="bio" ngModel #bio="ngModel"
+                        required> </textarea>
+                    <label for="bio" class="form__label">Bio</label>
+                    <div *ngIf="bio.invalid && bio.touched" class="error-message">
+                        You must fill out this field.
+                    </div>
+                </div>
+
+                <div class="form__group field">
+                    <input type="input" class="form__field" placeholder="Pronouns" name="pronouns" id="pronouns"
+                        ngModel>
+                    <label for="name" class="form__label">Pronouns</label>
+                </div>
+
+                <div class="select">
+                    <div class="select-ctr">
+                        <div class="selected-input input-preview">Choose your role</div>
+                        <div class="input input-1" data-val="DRIVER" (click)="selectRole($event)">DRIVER</div>
+                        <div class="input input-2" data-val="RIDER" (click)="selectRole($event)">RIDER</div>
+                    </div>
+                </div>
+
+                <button type="submit" [disabled]="signupForm.invalid" class="button">
+                    Sign up </button>
+            </form>
+        </div>
+    </div>
+</body>
