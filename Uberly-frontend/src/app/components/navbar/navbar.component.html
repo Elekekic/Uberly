@@ -9,30 +9,31 @@
       </button>
       <nav class="flex">
         <ul class="primary-navigation flex list-unstyled" data-visible="false">
-            <!-- <li>
+            <li *ngIf="user">
                     <a [routerLink]="['home']" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-                        Home</a>
-                </li> -->
-            <li>
+                        HOME</a>
+                </li>
+            <li *ngIf="!user">
                 <a [routerLink]="['community']" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
                     COMMUNITY</a>
             </li>
-            <!-- <li>
-                    <a [routerLink]="['login']" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-                        Profile </a>
-                </li> -->
-            <li>
+            <li *ngIf="user">
+                <a [routerLink]="['/profile', user.user.id]" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+                    PROFILE
+                </a>
+            </li>
+            
+            <li *ngIf="!user" >
                 <a [routerLink]="['login']" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
                     LOGIN </a>
             </li>
-            <li>
+            <li *ngIf="!user" >
                 <a [routerLink]="['signup']" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
                     STEP IN!</a>
             </li>
-            <!--  <li>
-                    <a [routerLink]="['login']" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-                        Logout</a>
-                </li> -->
+             <li *ngIf="user" (click)="logout()">
+                    <a>LOGOUT</a>
+                </li>
         </ul>
     </nav>
 </header>

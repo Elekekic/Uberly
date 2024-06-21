@@ -22,6 +22,7 @@ import { ExplorePageComponent } from './components/explore-page/explore-page.com
 import { MemesPageComponent } from './components/memes-page/memes-page.component';
 import { AuthService } from './auth/auth.service';
 import { TokenInterceptor } from './auth/token.interceptor';
+import { Error404Component } from './components/error-404/error-404.component';
 
 const routes: Route[] = [
   {
@@ -83,6 +84,10 @@ const routes: Route[] = [
         component: FollowersComponent,
       }
     ]
+  },
+  {
+    path: '**',
+    component: Error404Component,
   }
 ];
 
@@ -103,7 +108,8 @@ const routes: Route[] = [
     FollowersComponent,
     ForYouPageComponent,
     ExplorePageComponent,
-    MemesPageComponent
+    MemesPageComponent,
+    Error404Component
   ],
   imports: [
     BrowserModule,

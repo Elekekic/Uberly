@@ -1,4 +1,6 @@
 import { Component, ElementRef, Renderer2, ViewChild, AfterViewInit, OnInit } from '@angular/core';
+import { AuthService } from 'src/app/auth/auth.service';
+import { AuthData } from 'src/app/interfaces/auth-data';
 
 @Component({
   selector: 'app-navbar',
@@ -7,13 +9,18 @@ import { Component, ElementRef, Renderer2, ViewChild, AfterViewInit, OnInit } fr
 })
 export class NavbarComponent implements AfterViewInit, OnInit {
 
-  constructor(private renderer: Renderer2) {}
+  user!: AuthData | null;
 
+  constructor(private authSrv: AuthService, private renderer: Renderer2) { }
 
   ngOnInit(): void {
-   
+    this.authSrv.user$.subscribe((user) =>
+      this.user = user)
   }
 
+  logout() {
+    this.authSrv.logout();
+  }
  
   ngAfterViewInit() {
     const primaryNav = this.renderer.selectRootElement('.primary-navigation', true);
