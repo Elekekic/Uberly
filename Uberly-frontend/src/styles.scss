@@ -4,13 +4,13 @@ html, body {
   height: 100%;
   width: 100%;
   background-color: #0e0e0e;
+  font-family: "Poppins";
 }
 
 *,
 *::after,
 *::before {
   box-sizing: border-box;
-  font-family: "Poppins", sans-serif;
   /* SETTINGS TO NOT MAKE THE SCROLLBAR VISIBLE */
   scrollbar-width: none; /* For Firefox */
   -ms-overflow-style: none; //* For Internet Explorer and Edge */
