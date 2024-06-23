@@ -2,10 +2,9 @@ body {
   width: 100%;
   height: 100%;
   display: scroll;
-  background-color: #0e0e0e;
   border-style: border-box;
   margin: 0;
-  padding: 170px 0 0 0;
+  padding: 60px 0 0 0;
 }
 
 .header {
@@ -49,7 +48,7 @@ body {
   font-family: "Oddval Semibold";
   font-size: 20vw;
   color: #ff6d1f;
-  padding: 0.3em 0.1em;
+  padding: 0.1em;
 }
 
 /* SUB-HEADER */
@@ -450,11 +449,13 @@ img {
 }
 
 .company-info a {
+  text-decoration: none;
   color: #f5e7c6;
   display: flex;
 }
 
 .primary-info {
+  cursor: pointer;
   margin: 30px 0;
   display: flex;
   flex-direction: row;
@@ -471,6 +472,7 @@ img {
 }
 
 .secondary-info a {
+  cursor: pointer;
   width: 500px;
   display: block;
   margin-bottom: 0.5em;
@@ -490,6 +492,7 @@ hr {
 }
 
 .secondary-info a:hover {
+  cursor: pointer;
   text-decoration: underline;
 }
 

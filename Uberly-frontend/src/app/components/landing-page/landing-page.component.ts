@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { SmoothScrollService } from 'src/app/services/smooth-scroll.service';
 
 @Component({
   selector: 'app-landing-page',
@@ -15,7 +16,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
   styleUrls: ['./landing-page.component.scss'],
 })
 export class LandingPageComponent implements AfterViewInit, OnInit {
-  constructor(private renderer: Renderer2, private el: ElementRef, private cdr: ChangeDetectorRef) {}
+  constructor(private renderer: Renderer2, private smoothScrollService: SmoothScrollService ) {}
 
   ngOnInit(): void {
     this.startLoader();
@@ -23,6 +24,9 @@ export class LandingPageComponent implements AfterViewInit, OnInit {
     this.IsInViewportFunction();
   }
 
+  scrollBackToTheTop(): void {
+    this.smoothScrollService.scrollToElement('top');
+  }
   
   ngAfterViewInit(): void {
    this.startLoader();
