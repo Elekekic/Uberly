@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, Renderer2 } from '@angular/core';
+import { AfterViewInit, Component, OnInit,} from '@angular/core';
 
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -9,8 +9,6 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
   styleUrls: ['./error-404.component.scss']
 })
 export class Error404Component implements OnInit, AfterViewInit {
-
-  constructor(private renderer: Renderer2) {}
 
   ngAfterViewInit(): void {
     this.IsInViewportFunction();
