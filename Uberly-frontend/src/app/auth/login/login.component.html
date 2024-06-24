@@ -10,14 +10,21 @@
             <form class="form" #loginForm="ngForm" (ngSubmit)="login(loginForm)">
 
                 <div class="form__group field">
-                    <input type="input" class="form__field" placeholder="Email" name="email" id="email" ngModel>
+                    <input type="input" class="form__field" placeholder="Email" name="email" id="email" ngModel
+                    #email="ngModel" required>
                     <label for="name" class="form__label">Email</label>
+                    <div *ngIf="email.invalid && email.touched" class="error-message">
+                        You must fill out this field.
+                    </div>
                 </div>
 
                 <div class="form__group field">
                     <input type="password" class="form__field" placeholder="Password" name="password" id="password"
-                        ngModel autocomplete="new-password">
+                        ngModel autocomplete="new-password" #password="ngModel" required>
                     <label for="name" class="form__label">Password</label>
+                    <div *ngIf="password.invalid && password.touched" class="error-message">
+                        You must fill out this field.
+                    </div>
                 </div>
 
                 <button type="submit" [disabled]="loginForm.invalid" class="button">
