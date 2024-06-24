@@ -72,7 +72,7 @@ export class LandingPageComponent implements AfterViewInit, OnInit {
   startAnimations(): void {
     gsap.to('.counter', {
       duration: 0.25,
-      delay: 3.5,
+      delay: 3,
       opacity: 0,
       onComplete: () => {
         let overlay = document.querySelector('.overlay');
@@ -85,8 +85,8 @@ export class LandingPageComponent implements AfterViewInit, OnInit {
     });
 
     gsap.to('.bar', {
-      duration: 1.5,
-      delay: 3.5,
+      duration: 1,
+      delay: 3,
       height: 0,
       stagger: {
         amount: 0.5,
@@ -95,8 +95,8 @@ export class LandingPageComponent implements AfterViewInit, OnInit {
     });
 
     gsap.from('.h1', {
-      duration: 1.5,
-      delay: 4,
+      duration: 1,
+      delay: 3.4,
       y: 0,
       opacity: 0,
       stagger: {
@@ -107,7 +107,7 @@ export class LandingPageComponent implements AfterViewInit, OnInit {
 
     gsap.from('.sub-header', {
       duration: 1.5,
-      delay: 5,
+      delay: 4,
       y: 0,
       opacity: 0,
       stagger: {
