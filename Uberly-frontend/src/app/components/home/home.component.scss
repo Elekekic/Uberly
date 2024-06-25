@@ -5,7 +5,137 @@ body {
   box-sizing: border-box;
   margin: 0;
   padding: 170px 0 0 0;
+}
+
+h1 {
+  padding-left: 0.3em;
+  font-size: 16vh;
+  color: #f5e7c6;
+  font-weight: 400;
+}
+
+h1 img {
+  width: 110px;
+  border-radius: 50%;
+  margin-bottom: 15px;
+}
+
+/* NAV */
+
+nav {
+  z-index: 10;
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 30%;
+  padding: 1.2em;
+  margin-bottom: 1em;
+  background-color: rgba(17, 17, 17, 0.3);
+  backdrop-filter: blur(10px);
   display: flex;
+  justify-content: center; /* Center items horizontally */
+  align-items: center;
+  border-radius: 50px; /* Optional: add rounded corners */
+}
+
+.primary-navigation {
+  display: flex;
+  justify-content: space-around; /* Space out the items within the nav bar */
+  width: 100%; /* Ensure the ul takes full width of the nav */
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}
+
+.primary-navigation li a {
+  color: #f5e7c6;
+  font-size: 1.5em;
+}
+
+.flex {
+  display: flex;
+  align-items: center;
   justify-content: center;
-  align-content: center;
+  gap: var(--gap, 7.5rem);
+}
+
+/* BRAKING NEWS SECTION */
+
+.breaking-news {
+  overflow: hidden;
+  margin: 80px auto;
+  width: 90%;
+  height: 72vh;
+  border-radius: 30px;
+  box-shadow: 15px 15px 65px #121212, -15px -15px 65px #131313;
+}
+
+.breaking-news-header h2 {
+  color: #ff6d1f;
+  text-align: center;
+  padding-top: 30px;
+  font-size: 8vh;
+  font-family: "Oddval";
+}
+
+.breaking-news-header p {
+  color: #f5e7c6;
+  text-align: center;
+  font-size: 18px;
+}
+
+.breaking-news-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.slider {
+  width: 100%;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.slider-wrapper {
+  white-space: nowrap;
+}
+
+.slider-item {
+  display: inline-block;
+  width: 70vh;
+  padding: 0.5vw;
+}
+
+.slider-item figure {
+  position: relative;
+  padding-bottom: 50%;
+  overflow: hidden;
+  border-radius: 15px;
+}
+
+.slider-item figure img {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.slider-progress {
+  position: relative;
+  width: 50vw;
+  height: 3px;
+  margin: 4em auto;
+  background: rgba(255, 109, 31, 0.1);
+}
+
+.slider-progress-bar {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(245, 231, 198, 0.8);
+  transform: scaleX(0);
+  transform-origin: 0 0;
 }

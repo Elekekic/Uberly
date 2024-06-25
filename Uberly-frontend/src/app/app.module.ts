@@ -32,13 +32,12 @@ const routes: Route[] = [
   {
     path: 'home',
     component: HomeComponent,
+  },
+  {
+    path: 'explore-page',
+    component: ExplorePageComponent,
     children: [
-      {
-        path: 'explore',
-        component: ExplorePageComponent,
-      },
-      {
-        path: 'for-you',
+      { path: 'for-you',
         component: ForYouPageComponent,
       },
       {

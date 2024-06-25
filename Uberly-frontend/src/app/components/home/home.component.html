@@ -1,4 +1,77 @@
 <body>
-    
-    <p> Home works !</p>
+    <header>
+        <nav class="flex">
+            <ul class="primary-navigation flex list-unstyled align-items-center" data-visible="false">
+
+                <li *ngIf="user">
+                    <a [routerLink]="['/home']" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+                        <i class="bi bi-house"></i> </a>
+                </li>
+                <li *ngIf="user">
+                    <a>
+                        <i class="bi bi-plus-square-dotted"></i> </a>
+                </li>
+                <li *ngIf="user">
+                    <a [routerLink]="['/explore-page']" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+                    ><i class="bi bi-search"></i> </a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+
+    <h1> Hi <img [src]="[user?.user?.pictureProfile]" alt="user profile picture">,
+        what are <br> you gonna do today? </h1>
+
+    <section class="breaking-news">
+        <div class="breaking-news-header">
+            <h2> BREAKING NEWS <i class="bi bi-lightning-charge-fill"></i> </h2>
+        </div>
+        <div class="breaking-news-body">
+            <div class="slider">
+                <div class="slider-wrapper">
+                    <div class="slider-item">
+                        <figure>
+                            <img src="../../../assets/img/news-1.jpg" alt="">
+                        </figure>
+                    </div>
+                    <div class="slider-item">
+                        <figure>
+                            <img src="../../../assets/img/news-2.jpg" alt="">
+                        </figure>
+                    </div>
+                    <div class="slider-item">
+                        <figure>
+                            <img src="../../../assets/img/news-3.jpg" alt="">
+                        </figure>
+                    </div>
+                    <div class="slider-item">
+                        <figure>
+                            <img src="../../../assets/img/img1.png" alt="">
+                        </figure>
+                    </div>
+                </div>
+            </div>
+            <div class="slider-progress">
+                <div class="slider-progress-bar"></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="posts">
+        <div class="row">
+            <div class="col-6">
+                <h2> Following </h2>
+                <div>
+                    
+                </div>
+            </div>
+            <div class="col-6">
+                <h2> Recent Posts </h2>
+                <div>
+                    
+                </div>
+            </div>
+        </div>
+    </section>
 </body>
