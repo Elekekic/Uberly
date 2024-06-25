@@ -1,6 +1,11 @@
 <header class="primay-header flex justify-content-between">
-    <div>
+    <div *ngIf="!user">
         <a [routerLink]="['/']" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"><img
+                src="assets/img/icon-logo.png" alt="Uberly Logo" class="logo"></a>
+    </div>
+
+    <div *ngIf="user">
+        <a [routerLink]="['home']" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"><img
                 src="assets/img/icon-logo.png" alt="Uberly Logo" class="logo"></a>
     </div>
 
@@ -8,21 +13,16 @@
         <span class="sr-only"></span>
       </button>
       <nav class="flex">
-        <ul class="primary-navigation flex list-unstyled" data-visible="false">
-            <li *ngIf="user">
-                    <a [routerLink]="['home']" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-                        HOME</a>
-                </li>
+        <ul class="primary-navigation flex list-unstyled align-items-center" data-visible="false">
             <li *ngIf="!user">
                 <a [routerLink]="['community']" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
                     COMMUNITY</a>
             </li>
             <li *ngIf="user">
                 <a [routerLink]="['/profile', user.user.id]" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-                    PROFILE
+                    <i class="bi bi-person-fill"></i>
                 </a>
             </li>
-            
             <li *ngIf="!user" >
                 <a [routerLink]="['login']" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
                     LOGIN </a>
@@ -31,8 +31,12 @@
                 <a [routerLink]="['signup']" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
                     STEP IN!</a>
             </li>
+            <li *ngIf="user" >
+                <a [routerLink]="['settings']" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+                    <i class="bi bi-gear-wide-connected"></i>  </a>
+            </li>
              <li *ngIf="user" (click)="logout()">
-                    <a>LOGOUT</a>
+                    <a>LOGOUT <i class="bi bi-arrow-right-circle"></i> </a>
                 </li>
         </ul>
     </nav>
