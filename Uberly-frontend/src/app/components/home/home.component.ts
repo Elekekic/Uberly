@@ -102,18 +102,31 @@ export class HomeComponent implements OnInit, AfterViewInit {
   }
 
   showLoader(): void {
+    window.scrollTo(0, 0);
+
     const loader = document.querySelector('#loader');
     if (loader) {
       loader.classList.remove('hidden');
     }
   }
-  
+
   hideLoader(): void {
     const loader = document.querySelector('#loader');
     if (loader) {
-      gsap.to(loader, { opacity: 0, duration: 0.5, onComplete: () => {
-        loader.classList.add('hidden');
-      }});
+      gsap.to(loader, {
+        opacity: 0,
+        duration: 0.5,
+        onComplete: () => {
+          loader.classList.add('hidden');
+
+          const body: HTMLElement | null = document.querySelector('.body');
+          if (body) {
+            body.style.opacity = '0'; 
+            body.classList.remove('hidden');
+            gsap.to(body, { opacity: 1, duration: 0.7 }); 
+          }
+        },
+      });
     }
   }
 
