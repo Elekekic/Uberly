@@ -21,7 +21,6 @@ export class CommunityComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.spanAnimation();
     this.FaqAnimations();
   }
 
@@ -304,22 +303,6 @@ export class CommunityComponent implements OnInit, AfterViewInit {
       onComplete: () => {
         target.classList.remove('open');
       },
-    });
-  }
-
-  spanAnimation() {
-    document.querySelectorAll('.hero span').forEach((span) => {
-      span.addEventListener('mouseenter', () => {
-        if (span.parentNode) {
-          (span.parentNode as HTMLElement).style.color = '#545454';
-        }
-      });
-
-      span.addEventListener('mouseleave', () => {
-        if (span.parentNode) {
-          (span.parentNode as HTMLElement).style.color = '#f5e7c6';
-        }
-      });
     });
   }
 }

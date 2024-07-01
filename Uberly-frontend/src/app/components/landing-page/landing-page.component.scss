@@ -70,7 +70,7 @@ body {
   color: #f5e7c6;
   padding: 1em;
   text-decoration: none;
-  font-size: clamp(1rem, 2.5vw, 2rem);
+  font-size: clamp(1rem, 2vw, 1.5rem);
   font-weight: 400;
   text-transform: uppercase;
   transition: all 0.3s ease;
@@ -386,7 +386,7 @@ img {
 }
 
 .comment p {
-  font-size: 4vh;
+  font-size: 2.3vh;
 }
 
 .user {

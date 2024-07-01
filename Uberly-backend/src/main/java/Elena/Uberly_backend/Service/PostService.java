@@ -16,6 +16,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,8 +46,8 @@ public class PostService {
     }
 
     // QUERY - FIND POSTS BY TAG
-    public List<Post> getPostsByTag(Tags tag) {
-        return postRepository.findByTag(tag);
+    public List<Post> getPostsByTag(Tags tags) {
+        return postRepository.findByTags(tags);
     }
 
     // FIND ALL POSTS W/ PAGINATION METHOD
@@ -59,6 +61,28 @@ public class PostService {
         return postRepository.findAll();
     }
 
+    public List<Post> getRecentPostsForFollowedUsers(int userId) {
+        Optional<User> userOptional = userRepository.findById(userId);
+
+        if (userOptional.isEmpty()) {
+            throw new UserNotFoundException("User not found with id: " + userId);
+        }
+
+        User user = userOptional.get();
+
+        List<User> followingUsers = user.getFollowing();
+
+        List<Post> recentPosts = new ArrayList<>();
+
+
+        for (User followingUser : followingUsers) {
+            List<Post> posts = postRepository.findByUser(followingUser);
+
+            recentPosts.addAll(posts);
+        }
+        return recentPosts;
+    }
+
     // FIND POST BY ID METHOD
     public Optional<Post> getPostById(int id) {
         Optional<Post> postOptional = postRepository.findById(id);
@@ -68,6 +92,10 @@ public class PostService {
             throw new UserNotFoundException("Post with id: " + id + " not found");
         }
     }
+
+
+
+
 
     // CREATE POST METHOD
     public String savePost(PostDTO postDTO) {
@@ -80,8 +108,8 @@ public class PostService {
             post.setStartingPoint(postDTO.getStartingPoint());
             post.setEndPoint(postDTO.getEndPoint());
             post.setSpacesRiders(postDTO.getSpacesRiders());
-            post.setTag(postDTO.getTag());
-            post.setCar(postDTO.getCar());
+            post.setTags(postDTO.getTags());
+            post.setVehicle(postDTO.getVehicle());
             post.setUser(user.get());
             postRepository.save(post);
             return "Post with ID: " + post.getId() + " saved successfully.";
@@ -100,8 +128,8 @@ public class PostService {
             post.setStartingPoint(postDTO.getStartingPoint());
             post.setEndPoint(postDTO.getEndPoint());
             post.setSpacesRiders(postDTO.getSpacesRiders());
-            post.setTag(postDTO.getTag());
-            post.setCar(postDTO.getCar());
+            post.setTags(postDTO.getTags());
+            post.setVehicle(postDTO.getVehicle());
             postRepository.save(post);
             return post;
         } else {

@@ -11,6 +11,6 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     List<Post> findByUser(User user);
     List<Post> findByStartingPoint(String startingPoint);
     List<Post> findByEndPoint(String endPoint);
-    List<Post> findByTag(Tags tag);
+    List<Post> findByTags(Tags tags);
 
 }

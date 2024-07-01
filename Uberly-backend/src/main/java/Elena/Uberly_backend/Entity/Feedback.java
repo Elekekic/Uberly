@@ -24,11 +24,11 @@ public class Feedback {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id")
-    @JsonIncludeProperties(value = {"name", "username", "pictureProfile"})
+    @JsonIncludeProperties(value = {"id", "name", "username", "pictureProfile", "role"})
     private User author;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "recipient_id")
-    @JsonIncludeProperties(value = {"name", "username", "pictureProfile"})
+    @JsonIncludeProperties(value = {"id", "name", "username", "pictureProfile", "role"})
     private User recipient;
 }

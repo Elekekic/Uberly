@@ -10,28 +10,23 @@ import { AuthService } from './auth.service';
 
 @Injectable()
 export class TokenInterceptor implements HttpInterceptor {
-  constructor(private authSrv: AuthService) {}
 
-  intercept(
-    request: HttpRequest<unknown>,
-    next: HttpHandler
-  ): Observable<HttpEvent<unknown>> {
+  constructor(private authSrv: AuthService) { }
+
+  intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     return this.authSrv.user$.pipe(
       take(1),
       switchMap((user) => {
         if (user) {
-          console.log('prova');
           const newReq = request.clone({
-            headers: request.headers.append(
-              'Authorization',
-              'Bearer ' + user.token
-            ),
-          });
+            headers: request.headers.append('Authorization',"Bearer " + user.token)
+          })
           return next.handle(newReq);
-        } else {
-          return next.handle(request);
+        }
+        else {
+          return next.handle(request)
         }
       })
-    );
-  }
+    )
+}
 }

@@ -15,14 +15,16 @@ import { ProfileComponent } from './components/profile/profile.component';
 import { FeedbacksComponent } from './components/feedbacks/feedbacks.component';
 import { SavedPostsComponent } from './components/saved-posts/saved-posts.component';
 import { SavedMemesComponent } from './components/saved-memes/saved-memes.component';
-import { FollowingComponent } from './components/following/following.component';
-import { FollowersComponent } from './components/followers/followers.component';
 import { ForYouPageComponent } from './components/for-you-page/for-you-page.component';
 import { ExplorePageComponent } from './components/explore-page/explore-page.component';
 import { MemesPageComponent } from './components/memes-page/memes-page.component';
 import { AuthService } from './auth/auth.service';
 import { TokenInterceptor } from './auth/token.interceptor';
 import { Error404Component } from './components/error-404/error-404.component';
+import { SettingsComponent } from './components/settings/settings.component';
+import { PostsComponent } from './components/posts/posts.component';
+import { MemesComponent } from './components/memes/memes.component';
+import { AuthGuard } from './auth/auth-.guard';
 
 const routes: Route[] = [
   {
@@ -32,17 +34,21 @@ const routes: Route[] = [
   {
     path: 'home',
     component: HomeComponent,
+    canActivate: [AuthGuard],
   },
   {
     path: 'explore-page',
     component: ExplorePageComponent,
+    canActivate: [AuthGuard],
     children: [
       { path: 'for-you',
         component: ForYouPageComponent,
+        canActivate: [AuthGuard]
       },
       {
         path: 'memes',
         component: MemesPageComponent,
+        canActivate: [AuthGuard]
       }
     ]
   },
@@ -61,28 +67,19 @@ const routes: Route[] = [
   {
     path: 'profile/:id',
     component: ProfileComponent,
+    canActivate: [AuthGuard],
     children: [
-      {
-        path: 'feedbacks',
-        component: FeedbacksComponent,
-      },
-      {
-        path: 'favorites',
-        component: SavedPostsComponent,
-      },
-      {
-        path: 'favorite-memes',
-        component: SavedMemesComponent,
-      },
-      {
-        path: 'following',
-        component: FollowingComponent,
-      },
-      {
-        path: 'followers',
-        component: FollowersComponent,
-      }
+      { path: 'feedbacks', component: FeedbacksComponent, canActivate: [AuthGuard] },
+      { path: 'saved-posts', component: SavedPostsComponent, canActivate: [AuthGuard] },
+      { path: 'saved-memes', component: SavedMemesComponent, canActivate: [AuthGuard]  },
+      { path: 'posts', component: PostsComponent, canActivate: [AuthGuard]  },
+      { path: 'memes', component: MemesComponent, canActivate: [AuthGuard]  }
     ]
+  },
+  {
+    path: 'settings',
+    component: SettingsComponent,
+    canActivate: [AuthGuard]
   },
   {
     path: '**',
@@ -103,12 +100,13 @@ const routes: Route[] = [
     FeedbacksComponent,
     SavedPostsComponent,
     SavedMemesComponent,
-    FollowingComponent,
-    FollowersComponent,
     ForYouPageComponent,
     ExplorePageComponent,
     MemesPageComponent,
-    Error404Component
+    Error404Component,
+    SettingsComponent,
+    PostsComponent,
+    MemesComponent
   ],
   imports: [
     BrowserModule,

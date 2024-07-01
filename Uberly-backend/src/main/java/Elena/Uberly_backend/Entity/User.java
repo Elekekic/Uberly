@@ -55,7 +55,7 @@ public class User implements UserDetails {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "post_id")
     )
-    @JsonIncludeProperties(value = {"id", "title", "description", "startingPoint", "endPoint", "spacesDrivers", "tag", "user"})
+    @JsonIncludeProperties(value = {"id", "title", "description", "spacesRiders", "startingPoint", "endPoint", "spacesDrivers", "tag", "user", "vehicle", "comments", "reactions", "usersWhoSaved", })
     private List<Post> favorites = new ArrayList<>();
 
     @ManyToMany
@@ -64,7 +64,6 @@ public class User implements UserDetails {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "meme_id")
     )
-    @JsonIncludeProperties(value = {"id", "title", "description", "startingPoint", "endPoint", "spacesDrivers", "tag", "user"})
     private List<Meme> favoritesMemes = new ArrayList<>();
 
 

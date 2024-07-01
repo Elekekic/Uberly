@@ -22,8 +22,8 @@ export interface AuthData {
     favorites: Post[];
     favoritesMemes: Meme[];
     memes: Meme[];
-    followers: User[];
-    following: User[];
+    followers: User[] | number;
+    following: User[] | number;
     enabled: true;
     authorities: [
       {

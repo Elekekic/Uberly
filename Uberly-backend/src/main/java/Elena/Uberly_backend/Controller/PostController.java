@@ -33,10 +33,14 @@ public class PostController {
 
     @GetMapping("/posts")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'DRIVER', 'RIDER')")
-    public Page<Post> getPosts(@RequestParam(defaultValue = "0") int page,
-                               @RequestParam(defaultValue = "10") int size,
-                               @RequestParam(defaultValue = "id") String sortBy){
-        return postService.getPosts(page, size, sortBy);
+    public List<Post> getAllPosts(){
+        return postService.getAllPosts();
+    }
+
+    @GetMapping("/posts/recent/{userId}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'DRIVER', 'RIDER')")
+    public List<Post> getRecentPostsOfFollowedUsers(@PathVariable int userId) {
+         return postService.getRecentPostsForFollowedUsers(userId);
     }
 
     @GetMapping("/posts/{id}")

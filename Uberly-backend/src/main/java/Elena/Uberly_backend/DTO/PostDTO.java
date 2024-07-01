@@ -16,7 +16,6 @@ public class PostDTO {
 
 
     @NotBlank(message = "The title cannot be empty")
-    @Size(max = 30, message = "The name cannot be over the 30 characters")
     private String title;
 
     @NotBlank(message = "The description cannot be empty")
@@ -31,11 +30,11 @@ public class PostDTO {
    @Min(value = 1)
     private int spacesRiders;
 
-    @NotNull(message = "The tag must not be null")
-    private Tags tag;
+    @NotNull(message = "The tags must not be null")
+    private List<Tags> tags;
 
-    @NotBlank(message = "You must say which car you have")
-    private String car;
+    @NotBlank(message = "You must say which vehicle you have")
+    private String vehicle;
 
    @Min(value = 1)
     private int userId;

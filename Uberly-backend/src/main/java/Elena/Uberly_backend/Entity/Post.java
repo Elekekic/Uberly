@@ -31,14 +31,17 @@ public class Post {
     @Column(name = "spaces_riders")
     private int spacesRiders;
 
+    @ElementCollection(targetClass = Tags.class)
+    @CollectionTable(name = "post_tags", joinColumns = @JoinColumn(name = "post_id"))
     @Enumerated(EnumType.STRING)
-    private Tags tag;
+    @Column(name = "tag")
+    private List<Tags> tags = new ArrayList<>();
 
-    private String car;
+    private String vehicle;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    @JsonIncludeProperties(value = {"name", "username", "pictureProfile"})
+    @JsonIncludeProperties(value = {"id","name", "username", "pictureProfile","role"})
     private User user;
     
     @OneToMany(mappedBy = "post", orphanRemoval = true)

@@ -41,6 +41,16 @@ public class ReactionService {
         return reactionRepository.findAll();
     }
 
+    //GET REACTION BY POST ID METHOD
+    public Optional<Post> getReactionByPostId(int id) {
+        Optional<Post> postOptional = postRepository.findById(id);
+        if (postOptional.isPresent()) {
+            return reactionRepository.findByPostId(id);
+        } else {
+            throw new ReactionNotFoundException("Post with ID: " + id + " not found");
+        }
+    }
+
 
     // GET REACTION BY ID METHOD
     public Optional<Reaction> getReactionById(int id) {

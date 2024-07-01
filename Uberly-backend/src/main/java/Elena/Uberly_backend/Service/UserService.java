@@ -134,7 +134,7 @@ public class UserService {
             user.setRole(userDTO.getRole());
             user.setEmail(userDTO.getEmail());
             user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-            user.setPictureProfile("https://ui-avatars.com/api/?name=" + user.getName() + "+" + user.getSurname());
+            user.setPictureProfile("https://source.boringavatars.com/beam/120/" +user.getName()+ "?colors=ff6d1f,f5e7c6,#faf3e1" );
             userRepository.save(user);
             sendMailProfileCreated(user.getEmail(), user.getName(), user.getSurname(), String.valueOf(user.getRole()));
             return "User with ID: " + user.getId() + " , with role: " + user.getRole();
@@ -153,10 +153,10 @@ public class UserService {
             user.setSurname(userUpdate.getSurname());
             user.setRole(userUpdate.getRole());
             user.setEmail(userUpdate.getEmail());
-            user.setPassword(passwordEncoder.encode(userUpdate.getPassword()));
+            user.setPassword(userOpt.get().getPassword());
 
             if (user.getPictureProfile() == null || user.getPictureProfile().isEmpty()) {
-                user.setPictureProfile("https://ui-avatars.com/api/?name=" + user.getName() + "+" + user.getSurname());
+                user.setPictureProfile("https://source.boringavatars.com/beam/120/" +user.getName()+ "?colors=ff6d1f,f5e7c6,#faf3e1" );
             }
             // sendMailProfileUpdated(user.getEmail(), user.getName(), user.getSurname(), String.valueOf(user.getRole()));
             return userRepository.save(user);
@@ -176,6 +176,26 @@ public class UserService {
             return "User with id: " + id + " has been deleted";
         } else {
             throw new UserNotFoundException("User with ID: " + id + " hasn't been found");
+        }
+    }
+
+    public List<User> getAllFollowers(int userId) {
+        Optional<User> userOpt = userRepository.findById(userId);
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+            return user.getFollowers();
+        } else {
+            throw new UserNotFoundException("User not found");
+        }
+    }
+
+    public List<User> getAllFollowings(int userId) {
+        Optional<User> userOpt = userRepository.findById(userId);
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+            return user.getFollowing();
+        } else {
+            throw new UserNotFoundException("User not found");
         }
     }
 
@@ -287,7 +307,7 @@ public class UserService {
             User user = userOptional.get();
             user.setPictureProfile(url);
             userRepository.save(user);
-            return "Profile picture updated!";
+            return url;
         } else {
             throw new UserNotFoundException("Impossible to update profile picture, user with id: " + id + " not found");
         }

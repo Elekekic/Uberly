@@ -1,1 +1,25 @@
-<p>explore-page works!</p>
+<body> 
+    <header>
+        <nav class="flex">
+            <ul class="primary-navigation flex list-unstyled align-items-center" data-visible="false">
+
+                <li *ngIf="user">
+                    <a [routerLink]="['/home']" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+                        <i class="bi bi-house"></i> </a>
+                </li>
+                <li *ngIf="user">
+                    <a>
+                        <i class="bi bi-plus-square-dotted"></i> </a>
+                </li>
+                <li *ngIf="user">
+                    <a [routerLink]="['/explore-page']" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+                    ><i class="bi bi-search"></i> </a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <section>
+        
+    </section>
+</body>

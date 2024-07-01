@@ -6,5 +6,6 @@ import { Component } from '@angular/core';
   styleUrls: ['./for-you-page.component.scss']
 })
 export class ForYouPageComponent {
-
+  /* user!: AuthData | null;*/
+  
 }

@@ -25,7 +25,7 @@ public class Meme {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    @JsonIncludeProperties(value = { "username", "pictureProfile"})
+    @JsonIncludeProperties(value = {"id","name", "username", "pictureProfile","role"})
     private User user;
 
     @OneToMany(mappedBy = "meme", cascade = CascadeType.ALL, orphanRemoval = true)

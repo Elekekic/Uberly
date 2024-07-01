@@ -1,0 +1,133 @@
+<body>
+    <section *ngIf="user">
+        <div class="container-pfp">
+            <img src="{{ user.pictureProfile }}"
+                alt="{{ user.name }}{{ user.surname }} pfp" class="profile-picture">
+            <button class="update-toggle pfp-button align-items-center" data-target="#meme">Update profile
+                picture</button>
+            <div class="creation-meme" id="meme">
+                <form class="row d-flex justify-content-center" #createMemeForm="ngForm"
+                    (ngSubmit)="onSubmitMeme(createMemeForm)">
+                    <div>
+                        <div class="d-flex" *ngIf="pictureProfile">
+                            <div class="w-50 d-flex justify-content-center align-items-center">
+                                <img #preview id="preview" [src]="imagePreview" alt="Preview"
+                                    style="max-width: 70%; cursor: pointer;" class="profile-picture">
+                            </div>
+                            <div class="verifying mt-4 d-flex align-items-center flex-column align-items-center">
+                                <p>Is this your new picture?</p>
+                                <div class="buttons d-flex w-100 justify-content-around">
+                                    <button (click)="clearImage()">Remove</button>
+                                    <button class="submit" type="submit" data-target="#meme">UPDATE</button>
+                                </div>
+                            </div>
+                        </div>
+                        <label for="file" class="labelFile preview-container">
+                            <span><i class="bi bi-upload"></i></span>
+                            <p>Click to add a new picture</p>
+                        </label>
+                        <input #fileInput class="input-meme" (change)="handleFileInput($event)" id="file" type="file"
+                            accept="image/*" />
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="text-center">
+            <form class="form" #updateForm="ngForm" (ngSubmit)="onSubmit(updateForm)">
+                <div class="row">
+                    <div class="col-6">
+                        <div class="form__group field">
+                            <input type="input" [(ngModel)]="user.username" class="form__field"
+                                placeholder="Username" name="username" id="username" required>
+                            <label for="username" class="form__label">Username</label>
+                            <div *ngIf="user.username === ''" class="error-message">
+                                You must fill out this field.
+                            </div>
+                        </div>
+
+                        <div class="form__group field">
+                            <input type="input" [(ngModel)]="user.name" class="form__field"
+                                placeholder="Name" name="name" id="name" required>
+                            <label for="name" class="form__label">Name</label>
+                            <div *ngIf="user.name === ''" class="error-message">
+                                You must fill out this field.
+                            </div>
+                        </div>
+
+                        <div class="form__group field">
+                            <input type="input" [(ngModel)]="user.surname" class="form__field"
+                                placeholder="Surname" name="surname" id="surname" required>
+                            <label for="surname" class="form__label">Surname</label>
+                            <div *ngIf="user.surname === ''" class="error-message">
+                                You must fill out this field.
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="col-6">
+
+                        <div class="form__group field">
+                            <input type="password" class="form__field" placeholder="Password" name="password" id="password" ngModel
+                                #password="ngModel" required autocomplete="new-password">
+                            <label for="name" class="form__label">Password</label>
+                            <div *ngIf="password.invalid" class="error-message">
+                                You must fill out this field.
+                            </div>
+                        </div>
+                
+                        <div class="form__group field">
+                            <input type="input" [(ngModel)]="user.email" class="form__field"
+                                placeholder="Email" name="email" id="email" required>
+                            <label for="email" class="form__label">Email</label>
+                            <div *ngIf="user.email === ''" class="error-message">
+                                You must fill out this field.
+                            </div>
+                        </div>
+
+                        <div class="form__group field">
+                            <textarea [(ngModel)]="user.bio" class="form__field" placeholder="Bio" name="bio"
+                                id="bio" required></textarea>
+                            <label for="bio" class="form__label">Bio</label>
+                            <div *ngIf="user.bio === ''" class="error-message">
+                                You must fill out this field.
+                            </div>
+                        </div>
+
+                        <div class="form__group field">
+                            <input type="input" [(ngModel)]="user.pronouns" class="form__field"
+                                placeholder="Pronouns" name="pronouns" id="pronouns">
+                            <label for="pronouns" class="form__label">Pronouns</label>
+                            <div *ngIf="user.pronouns === ''" class="error-message">
+                                You must fill out this field.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+                <div class="d-flex flex-column justify-content-center align-items-center">
+                    <p class="title-inputs-tags"> Choose your Role</p>
+                    <div class="radio-inputs">
+                        <label class="radio">
+                            <input type="radio" name="role" data-val="DRIVER" (click)="selectRole($event)">
+                            <span class="name">DRIVER</span>
+                        </label>
+                        <label class="radio">
+                            <input type="radio" name="role" data-val="RIDER" (click)="selectRole($event)">
+                            <span class="name">RIDER</span>
+                        </label>
+                    </div>
+
+                    <button type="submit" [disabled]="updateForm.invalid" class="button">UPDATE</button>
+                </div>
+            </form>
+            <button class="delete-button" (click)="Ondelete(user.id)"> DELETE </button>
+        </div>
+
+    </section>
+
+
+</body>

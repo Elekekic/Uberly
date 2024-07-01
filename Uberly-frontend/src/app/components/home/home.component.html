@@ -1,4 +1,4 @@
-<body>
+<body >
     <header>
         <nav class="flex">
             <ul class="primary-navigation flex list-unstyled align-items-center" data-visible="false">
@@ -8,20 +8,27 @@
                         <i class="bi bi-house"></i> </a>
                 </li>
                 <li *ngIf="user">
-                    <a>
-                        <i class="bi bi-plus-square-dotted"></i> </a>
+                    <a [routerLink]="['/profile', user.user.id]" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+                        <i class="bi bi-person-fill"></i>
+                    </a>
                 </li>
                 <li *ngIf="user">
-                    <a [routerLink]="['/explore-page']" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
-                    ><i class="bi bi-search"></i> </a>
+                    <a [routerLink]="['/explore-page']" routerLinkActive="active"
+                        [routerLinkActiveOptions]="{ exact: true }"><i class="bi bi-search"></i> </a>
                 </li>
             </ul>
         </nav>
     </header>
 
+    <div id="loader">
+     <div class="loader"></div>    
+    </div>
+    
 
     <h1> Hi <img [src]="[user?.user?.pictureProfile]" alt="user profile picture">,
         what are <br> you gonna do today? </h1>
+           
+       
 
     <section class="breaking-news">
         <div class="breaking-news-header">
@@ -47,7 +54,7 @@
                     </div>
                     <div class="slider-item">
                         <figure>
-                            <img src="../../../assets/img/img1.png" alt="">
+                            <img src="../../../assets/img/img13.png" alt="">
                         </figure>
                     </div>
                 </div>
@@ -58,20 +65,301 @@
         </div>
     </section>
 
-    <section class="posts">
-        <div class="row">
-            <div class="col-6">
-                <h2> Following </h2>
-                <div>
-                    
+    <section class="home-info">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-4 home-left">
+                    <div *ngIf="user" class="profile-container">
+                        <div class="profile-pfp">
+                            <img src="{{user.user.pictureProfile}}"
+                                alt="{{user.user.name}}{{user.user.surname}} profile picture"
+                                style="width: 120px; border-radius: 50%;">
+                        </div>
+                        <div class="profile-details">
+                            <h3> {{user.user.name}} {{user.user.surname}}</h3>
+                            <p class="fs-5 opacity-75"> <i class="bi bi-threads"></i>{{user.user.username}}</p>
+                            <p class="fst-italic"> <i class="bi bi-quote"></i> {{user.user.bio}} <i
+                                    class="bi bi-quote"></i></p>
+                            <p class="fw-bold"> Role : {{user.user.role}}</p>
+                            <div class="row pt-4">
+                                <div class="col-6 d-flex justify-content-center align-items-center flex-column">
+                                    <p class="m-0 p-0 fs-5"> Following</p>
+                                    <p class="fs-5"> {{following}}</p>
+                                </div>
+                                <div class="col-6 d-flex justify-content-center align-items-center flex-column">
+                                    <p class="m-0 p-0 fs-5">Followers</p>
+                                    <p class="fs-5"> {{followers}}</p>
+                                </div>
+                            </div>
+                            <a [routerLink]="['/profile', user.user.id]"> My profile </a>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="col-6">
-                <h2> Recent Posts </h2>
-                <div>
-                    
+                <div class="col-8 home-right">
+                    <div class="creation d-flex justify-content-center align-items-center flex-column">
+                        <h4> Do you have something in your mind?</h4>
+                        <div class="creation-buttons">
+                            <button *ngIf="user?.user?.role === 'ADMIN' || user?.user?.role === 'DRIVER'"
+                                class="post-toggle" data-target="#post"> create a post</button>
+                            <button
+                                *ngIf="user?.user?.role === 'ADMIN' || user?.user?.role === 'DRIVER' || user?.user?.role === 'RIDER'"
+                                class="meme-toggle" data-target="#meme"> create a meme </button>
+                        </div>
+
+                        <div class="creation-posts" id="post">
+                            <form class="row d-flex justify-content-center" #createPostForm="ngForm"
+                                (ngSubmit)="onSubmit(createPostForm)">
+                                <div class="col-6">
+                                    <div class="form__group field">
+                                        <input type="text" class="form__field" placeholder="Title of the post"
+                                            name="title" id="title" ngModel>
+                                    </div>
+                                    <div class="form__group field">
+                                        <textarea class="form__field" placeholder="Add a description" name="description"
+                                            id="description" ngModel> </textarea>
+                                    </div>
+                                    <div class="form__group field">
+                                        <input type="text" class="form__field"
+                                            placeholder="Where are you gonna start the trip?" name="startingPoint"
+                                            id="startingPoint" ngModel>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="form__group field">
+                                        <input type="text" class="form__field" placeholder="where is the destination?"
+                                            name="endPoint" id="endPoint" ngModel>
+                                    </div>
+                                    <div class="form__group field">
+                                        <input type="number" class="form__field"
+                                            placeholder="How many riders can u bring?" name="spacesRiders"
+                                            id="spacesRiders" ngModel>
+                                    </div>
+                                    <div class="form__group field">
+                                        <input type="text" class="form__field" placeholder="what vehicle do you have?"
+                                            name="vehicle" id="vehicle" ngModel>
+                                    </div>
+                                </div>
+                                <div class="d-flex flex-column justify-content-center align-items-center">
+                                    <p class="title-inputs-tags"> Choose your tag <i class="bi bi-tags-fill"></i></p>
+                                    <div class="radio-inputs">
+                                        <label class="radio">
+                                            <input type="checkbox" name="tags" data-val="SHORT_TRAVEL"
+                                                (click)="getSelectedTags($event)">
+                                            <span class="name">SHORT TRAVEL</span>
+                                        </label>
+                                        <label class="radio">
+                                            <input type="checkbox" name="tags" data-val="LONG_TRAVEL"
+                                                (click)="getSelectedTags($event)">
+                                            <span class="name">LONG TRAVEL</span>
+                                        </label>
+                                        <label class="radio">
+                                            <input type="checkbox" name="tags" data-val="ADVENTURE"
+                                                (click)="getSelectedTags($event)">
+                                            <span class="name">ADVENTURE</span>
+                                        </label>
+                                        <label class="radio">
+                                            <input type="checkbox" name="tags" data-val="CITY EXPLORATION"
+                                                (click)="getSelectedTags($event)">
+                                            <span class="name">CITY EXPLORATION</span>
+                                        </label>
+                                        <label class="radio">
+                                            <input type="checkbox" name="radio" data-val="TO_THE_BEACH"
+                                                (click)="getSelectedTags($event)">
+                                            <span class="name">TO THE BEACH</span>
+                                        </label>
+                                        <label class="radio">
+                                            <input type="checkbox" name="radio" data-val="FULL_NATURE"
+                                                (click)="getSelectedTags($event)">
+                                            <span class="name">FULL NATURE</span>
+                                        </label>
+                                        <label class="radio">
+                                            <input type="checkbox" name="radio" data-val="FUN"
+                                                (click)="getSelectedTags($event)">
+                                            <span class="name">FUN</span>
+                                        </label>
+                                        <label class="radio">
+                                            <input type="checkbox" name="radio" data-val="CHILL"
+                                                (click)="getSelectedTags($event)">
+                                            <span class="name">CHILL</span>
+                                        </label>
+                                        <label class="radio">
+                                            <input type="checkbox" name="radio" data-val="EVENT"
+                                                (click)="getSelectedTags($event)">
+                                            <span class="name">EVENT</span>
+                                        </label>
+                                        <label class="radio">
+                                            <input type="checkbox" name="radio" data-val="TRAVEL_GUIDE"
+                                                (click)="getSelectedTags($event)">
+                                            <span class="name">TRAVEL GUIDE</span>
+                                        </label>
+                                        <label class="radio">
+                                            <input type="checkbox" name="radio" data-val="QUICK_RIDE"
+                                                (click)="getSelectedTags($event)">
+                                            <span class="name">QUICK RIDE</span>
+                                        </label>
+                                        <label class="radio">
+                                            <input type="checkbox" name="radio" data-val="TO_THE_MOUNTAINS"
+                                                (click)="getSelectedTags($event)">
+                                            <span class="name">TO THE MOUNTAINS</span>
+                                        </label>
+                                    </div>
+                                    <button type="submit" class="w-50 submit" data-target="#post"> Done </button>
+                                </div>
+
+                            </form>
+                        </div>
+
+                        <div class="creation-meme" id="meme">
+                            <form class="row d-flex justify-content-center" #createMemeForm="ngForm"
+                                (ngSubmit)="onSubmitMeme(createMemeForm)">
+                                <div>
+                                    <div class="d-flex mt-4" *ngIf="uploadedImage">
+                                        <div class=" w-50 d-flex justify-content-center align-items-center">
+                                            <img #preview id="preview" [src]="imagePreview" alt="Preview"
+                                                style="max-width: 70%; cursor: pointer;">
+                                        </div>
+                                        <div
+                                            class="verifying mt-4 d-flex justify-content-start align-items-start flex-column">
+                                            <p>is this your meme? </p>
+                                            <div class="buttons">
+                                                <button class=" w-75" (click)="clearImage()">Remove</button>
+                                                <button class=" w-75 submit" type="submit" data-target="#meme">
+                                                    Done
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <label for="file" class="labelFile preview-container"><span>
+                                            <i class="bi bi-upload"></i>
+                                        </span>
+                                        <p>Click to select your meme here!</p>
+                                    </label>
+                                    <input #fileInput class="input-meme" (change)="handleFileInput($event)" id="file"
+                                        type="file" accept="image/*" />
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
+    </section>
+
+    <section class="posts-section">
+        <p class="text-center posts-section-p ">People you follow</p>
+        <div class="following" *ngIf="followingUsers && followingUsers.length > 0; else noFollowing">
+            <div class="d-flex ms-2">
+                <div class="mx-4" *ngFor="let user of followingUsers">
+                    <div class="pfp">
+                        <a [routerLink]="['/profile', user.id]">
+                            <img src="{{user.pictureProfile}}" alt="{{user.name}}{{user.surname}} profile picture">
+                        </a>
+                    </div>
+                    <div class="a-user-following">
+                        <a [routerLink]="['/profile', user.id]">{{user.name}}</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <ng-template #noFollowing>
+            <div class="no-following">
+                <p>You don't follow any user yet 🤧 </p>
+                <p> It's okay tho, you can start in the <a [routerLink]="['/explore-page']">explore page</a>&nbsp;<i
+                        class="bi bi-search"></i> </p>
+            </div>
+        </ng-template>
+        <ng-container class="posts" *ngIf="followingUsers && followingUsers.length > 0; else noPostsYet">
+            <div class="container d-flex flex-wrap">
+                <ng-container *ngFor="let user of followingUsers">
+                    <div class="recent-posts" *ngIf="user && (user.role === 'DRIVER' || user.role === 'ADMIN')" else
+                        usersAreDrivers>
+                        <div class="container-header-posts">
+                            <img [src]="user.pictureProfile"
+                                [alt]="user.name + ' ' + user.surname + ' profile picture'">
+                            <div class=" container-fluid d-flex flex-column justify-content-center">
+                                <div class="row">
+                                    <div class="col-6 d-flex justify-content-center align-items-start flex-column">
+                                        <a [routerLink]="['/profile', user.id]">{{ user.username }} </a>
+                                        <p>Role: {{ user.role }}</p>
+                                    </div>
+                                    <div class="col-6 d-flex justify-content-end">
+                                        <i class="bi bi-three-dots-vertical"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex flex-column container-body-post">
+                            <div *ngFor="let user of followingUsers">
+
+                            </div>
+                            <ng-container *ngIf="recentPosts; else noPosts">
+                                <div *ngFor="let post of recentPosts['user_' + user.id]">
+                                    <div class="badge">
+                                        <p> {{ post.tags }}</p>
+                                    </div>
+                                    <h4>{{ post.title }}</h4>
+                                    <p class="description">{{ post.description }}</p>
+                                    <div class="d-flex justify-content-start">
+                                        <div class=" d-flex flex-column align-items-start my-1 ms-0 me-4">
+                                            <p class="title-badge"> Spaces </p>
+                                            <p class="p-badge"><span class="body-badge">{{ post.spacesRiders }}</span>
+                                                Riders
+                                            </p>
+                                        </div>
+                                        <div class=" d-flex flex-column align-items-start my-1 mx-4">
+                                            <p class="title-badge">Start point: </p>
+                                            <p class="body-badge">{{ post.startingPoint }}</p>
+                                        </div>
+                                        <div class=" d-flex flex-column align-items-start my-1 mx-4">
+                                            <p class="title-badge">End point: </p>
+                                            <p class="body-badge">{{ post.endPoint }}</p>
+                                        </div>
+                                        <div class=" d-flex flex-column align-items-start my-1 mx-4">
+                                            <p class="title-badge">Vehicle: </p>
+                                            <p class="body-badge">{{ post.vehicle }}</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="interactions">
+                                        <div class="d-flex align-items-center">
+                                            <i class="bi bi-hand-thumbs-up" style="cursor: pointer;" (click)="onLike(post.id)"></i>
+                                            <i class="bi bi-chat" id="comment-icon" (click)="ShowComments(post.id)"
+                                                style="cursor: pointer;"></i>
+                                        </div>
+                                        <i class="bi bi-bookmark" (click)="onSave(post.id)"
+                                            style="cursor: pointer;"></i>
+                                    </div>
+                                </div>
+                                <div #commentsSection *ngIf="recentComments" id="comments-section">
+                                    <div *ngFor="let comment of recentComments">
+                                        <img src="{{ comment.user.pictureProfile }}" alt=""
+                                            style="width: 50px; border-radius: 50%;">
+                                        <p> {{comment.content}}</p>
+                                        <p> {{comment.reactions}}</p>
+                                        <div *ngIf="comment.replies">
+                                            <div *ngFor="let replies of comment.replies">
+                                                <img src="{{ replies.user.pictureProfile }}" alt=""
+                                                    style="width: 50px; border-radius: 50%;">
+                                                <p> {{replies.content}}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </ng-container>
+                            <ng-template #noPosts>
+                                <p>This user hasn't created any posts </p>
+                            </ng-template>
+                        </div>
+                    </div>
+                </ng-container>
+            </div>
+        </ng-container>
+        <ng-template #noPostsYet>
+            <div class="no-following">
+                <p>Nobody that you follow has posted yet🤧 </p>
+                <p> Maybe you can go and look in the <a [routerLink]="['/explore-page']">explore page</a>&nbsp;<i
+                        class="bi bi-search"></i> </p>
+            </div>
+        </ng-template>
     </section>
 </body>

@@ -14,6 +14,7 @@ export class LoginComponent {
   login(form:NgForm){
     try {
       this.authSrv.login(form.value).subscribe();
+      alert ('Sign up successful! ')
       this.router.navigate(['/home'])
     } catch (error) {
       console.error(error)
