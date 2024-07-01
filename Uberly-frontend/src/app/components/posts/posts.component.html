@@ -1,0 +1,67 @@
+<body>
+    <section class="posts">
+        <ng-container *ngIf="postsUser && postsUser.length > 0; else noPosts">
+            <div class="recent-posts" *ngFor="let post of postsUser">
+                <div class="container-header-posts">
+                    <img [src]="post.user.pictureProfile"
+                        [alt]="post.user.name + ' ' + post.user.surname + ' profile picture'">
+                    <div class="container-fluid d-flex flex-column justify-content-center">
+                        <div class="row">
+                            <div class="col-6 d-flex justify-content-center align-items-start flex-column">
+                                <a [routerLink]="['/profile', post.user.id]">{{ post.user.username }} </a>
+                                <p>Role: {{ post.user.role }}</p>
+                            </div>
+                            <div class="col-6 d-flex justify-content-end">
+                                <i class="bi bi-three-dots-vertical"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex flex-column container-body-post">
+                    <div class="badge">
+                        <p>{{ post.tags }}</p>
+                    </div>
+                    <h4>{{ post.title }}</h4>
+                    <p class="description">{{ post.description }}</p>
+                    <div class="d-flex justify-content-start">
+                        <div class="d-flex flex-column align-items-start my-1 ms-0 me-4">
+                            <p class="title-badge"> Spaces </p>
+                            <p class="p-badge"><span class="body-badge">{{ post.spacesRiders }}</span>
+                                Riders
+                            </p>
+                        </div>
+                        <div class="d-flex flex-column align-items-start my-1 mx-4">
+                            <p class="title-badge">Start point: </p>
+                            <p class="body-badge">{{ post.startingPoint }}</p>
+                        </div>
+                        <div class="d-flex flex-column align-items-start my-1 mx-4">
+                            <p class="title-badge">End point: </p>
+                            <p class="body-badge">{{ post.endPoint }}</p>
+                        </div>
+                        <div class="d-flex flex-column align-items-start my-1 mx-4">
+                            <p class="title-badge">Vehicle: </p>
+                            <p class="body-badge">{{ post.vehicle }}</p>
+                        </div>
+                    </div>
+                    <div class="interactions">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-hand-thumbs-up" style="cursor: pointer;"></i>
+                            <i class="bi bi-chat" id="comment-icon" style="cursor: pointer;"></i>
+                        </div>
+                        <i class="bi bi-bookmark" style="cursor: pointer;"></i>
+                    </div>
+                </div>
+            </div>
+        </ng-container>
+        <ng-template #noPosts>
+            <div class="no-posts" *ngIf="loggedUser?.user?.id !== user.id">
+                <p>This user hasn't made any posts yet 🤌</p>
+                <p>If you don't wanna miss future posts, <a>follow them!</a></p>
+            </div>
+            <div class="no-posts" *ngIf="loggedUser?.user?.id === user.id">
+                <p>You haven't made any posts yet 🤌</p>
+                <p>No worries! You can start in the <a [routerLink]="['/home-page']">home page</a>&nbsp;<i class="bi bi-house-add"></i></p>
+            </div>
+        </ng-template>
+    </section>
+</body>

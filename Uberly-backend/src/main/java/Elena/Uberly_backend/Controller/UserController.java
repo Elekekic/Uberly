@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -29,11 +31,9 @@ public class UserController {
 
     @GetMapping("/users")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'DRIVER', 'RIDER')")
-    public Page<User> getUsers(@RequestParam(defaultValue = "0") int page,
-                               @RequestParam(defaultValue = "10") int size,
-                               @RequestParam(defaultValue = "id") String sortBy){
-        return userService.getUserConPaginazione(page, size, sortBy);
-         }
+    public List<User> getUsers(){
+        return userService.getUsers();
+    }
 
     @GetMapping("/users/{id}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'DRIVER', 'RIDER')")
@@ -60,8 +60,11 @@ public class UserController {
 
     @PatchMapping("/users/{id}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'DRIVER', 'RIDER')")
-    public String patchPictureProfile(@PathVariable int id, @RequestBody MultipartFile pictureProfile) throws IOException {
-        return userService.patchPictureProfileUser(id, pictureProfile);
+    public ResponseEntity<Map<String, String>> patchPictureProfile(@PathVariable int id, @RequestBody MultipartFile pictureProfile) throws IOException {
+        String newPictureUrl = userService.patchPictureProfileUser(id, pictureProfile);
+        Map<String, String> response = new HashMap<>();
+        response.put("newPictureUrl", newPictureUrl);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/users/search")
@@ -95,6 +98,16 @@ public class UserController {
     public ResponseEntity<String> unfollowUser(@PathVariable int userId, @PathVariable int unfollowUserId) {
         userService.unfollowUser(userId, unfollowUserId);
         return ResponseEntity.ok("User unfollowed successfully");
+    }
+
+    @GetMapping("users/following/{userId}")
+    public List<User> getFollowingUsers(@PathVariable int userId) {
+        return userService.getAllFollowings(userId);
+    }
+
+    @GetMapping("users/followers/{userId}")
+    public List<User> getFollowersUsers(@PathVariable int userId) {
+        return userService.getAllFollowers(userId);
     }
 
 

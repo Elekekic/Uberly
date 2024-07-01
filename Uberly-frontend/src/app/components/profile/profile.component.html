@@ -1,1 +1,67 @@
-<p>profile works!</p>
+<body>
+    <header>
+        <nav class="flex">
+            <ul class="primary-navigation flex list-unstyled align-items-center" data-visible="false">
+                <li *ngIf="user">
+                    <a [routerLink]="['/home']" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+                        <i class="bi bi-house"></i> </a>
+                </li>
+                <li *ngIf="loggedUser">
+                        <a [routerLink]="['/profile', loggedUser.user.id]" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+                            <i class="bi bi-person-fill"></i>
+                        </a>
+                </li>
+                <li *ngIf="user">
+                    <a [routerLink]="['/explore-page']" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"><i class="bi bi-search"></i> </a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <div *ngIf="user">
+        <div class="d-flex align-items-baseline">
+            <h1>{{user.name}} {{user.surname}}</h1>
+            <p class="pronouns">{{user.pronouns}}</p>
+        </div>
+        <p class="username"><i class="bi bi-threads"></i>{{user.username}}</p>
+        <div class="profile-info">
+            <div>
+                <img src="{{user.pictureProfile}}" alt="{{user.name}} {{user.surname}} picture profile" class="profile-picture">
+            </div>
+            <div>
+                <div class="w-100 d-flex justify-content-around">
+                    <div class="follows">
+                        <h2>Followers</h2>
+                        <p>{{followers}}</p>
+                    </div>
+                    <div class="follows">
+                        <h2>Following</h2>
+                        <p>{{following}}</p>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center justify-content-center pt-5 flex-column">
+                    <div class="user-info flex-column">
+                        <p><i class="bi bi-quote"></i> {{user.bio}}</p>
+                        <p>Role: {{user.role}}</p>
+                    </div>
+                    <button *ngIf="loggedUser?.user?.id === user.id" class="button" [routerLink]="['/settings']">
+                        change info
+                    </button>   
+                    <button *ngIf="loggedUser?.user?.id !== user.id && !shouldShowFollowButton(user.id)" class="button" (click)="follow(user.id)"> Follow </button>
+                    <button *ngIf="loggedUser?.user?.id !== user.id && shouldShowFollowButton(user.id)" class="button" (click)="Unfollow(user.id)"> UnFollow </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section *ngIf="user" class="section-user">
+        <div class="d-flex justify-content-around align-items-center icons">
+            <i *ngIf="user.role !== 'RIDER'" class="bi bi-card-text" (click)="navigateTo('posts')"></i>
+            <i *ngIf="user.role === 'RIDER' || user.role === 'DRIVER' || user.role === 'ADMIN'" class="bi bi-card-image" (click)="navigateTo('memes')"></i>
+            <i *ngIf="(user.role === 'RIDER' || user.role === 'DRIVER' || user.role === 'ADMIN') && loggedUser?.user?.id === user.id" class="bi bi-bookmark-star-fill" (click)="navigateTo('saved-posts')"></i>
+            <i *ngIf="(user.role === 'RIDER' || user.role === 'DRIVER' || user.role === 'ADMIN') && loggedUser?.user?.id === user.id" class="bi bi-bookmark-fill" (click)="navigateTo('saved-memes')"></i>
+            <i *ngIf="user.role === 'RIDER' || user.role === 'DRIVER' || user.role === 'ADMIN'" class="bi bi-chat-quote-fill" (click)="navigateTo('feedbacks')"></i>
+        </div>
+        <router-outlet></router-outlet>
+    </section>
+</body>

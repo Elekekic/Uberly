@@ -1,1 +1,64 @@
-<p>saved-posts works!</p>
+<body>
+    <section class="posts" *ngIf="user">
+        <ng-container *ngIf="user.favorites && user.favorites.length > 0; else noFavorites">
+            <div class="recent-posts" *ngFor="let posts of user.favorites">
+                <div class="container-header-posts">
+                    <img [src]="posts.user.pictureProfile"
+                        [alt]="posts.user.name + ' ' + posts.user.surname + ' profile picture'">
+                    <div class="container-fluid d-flex flex-column justify-content-center">
+                        <div class="row">
+                            <div class="col-6 d-flex justify-content-center align-items-start flex-column">
+                                <a [routerLink]="['/profile', posts.user.id]">{{ posts.user.username }} </a>
+                                <p>Role: {{ posts.user.role }}</p>
+                            </div>
+                            <div class="col-6 d-flex justify-content-end">
+                                <i class="bi bi-three-dots-vertical"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex flex-column container-body-post">
+                    <div class="badge">
+                        <p>{{ posts.tags }}</p>
+                    </div>
+                    <h4>{{ posts.title }}</h4>
+                    <p class="description">{{ posts.description }}</p>
+                    <div class="d-flex justify-content-start">
+                        <div class="d-flex flex-column align-items-start my-1 ms-0 me-4">
+                            <p class="title-badge">Spaces</p>
+                            <p class="p-badge"><span class="body-badge">{{ posts.spacesRiders }}</span> Riders</p>
+                        </div>
+                        <div class="d-flex flex-column align-items-start my-1 mx-4">
+                            <p class="title-badge">Start point:</p>
+                            <p class="body-badge">{{ posts.startingPoint }}</p>
+                        </div>
+                        <div class="d-flex flex-column align-items-start my-1 mx-4">
+                            <p class="title-badge">End point:</p>
+                            <p class="body-badge">{{ posts.endPoint }}</p>
+                        </div>
+                        <div class="d-flex flex-column align-items-start my-1 mx-4">
+                            <p class="title-badge">Vehicle:</p>
+                            <p class="body-badge">{{ posts.vehicle }}</p>
+                        </div>
+                    </div>
+
+                    <div class="interactions">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-hand-thumbs-up" style="cursor: pointer;"></i>
+                            <i class="bi bi-chat" id="comment-icon" style="cursor: pointer;"></i>
+                        </div>
+                        <i class="bi bi-bookmark" style="cursor: pointer;"></i>
+                    </div>
+                </div>
+            </div>
+        </ng-container>
+        
+        <ng-template #noFavorites>
+            <div class="no-ngcontainer">
+                <p>You didn't save any post yet 🫥 </p>
+                <p>Well, you can take a look in the <a [routerLink]="['/explore-page']">explore page</a>&nbsp;<i
+                    class="bi bi-search"></i> </p>
+            </div>
+        </ng-template>
+    </section>
+</body>

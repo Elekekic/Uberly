@@ -1,6 +1,5 @@
 package Elena.Uberly_backend.Repository;
 
-import Elena.Uberly_backend.Entity.Comment;
 import Elena.Uberly_backend.Entity.Reply;
 import org.springframework.data.jpa.repository.JpaRepository;
 

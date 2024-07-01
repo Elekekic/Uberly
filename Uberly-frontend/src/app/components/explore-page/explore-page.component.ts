@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { AuthService } from 'src/app/auth/auth.service';
+import { AuthData } from 'src/app/interfaces/auth-data';
 
 @Component({
   selector: 'app-explore-page',
@@ -6,5 +8,13 @@ import { Component } from '@angular/core';
   styleUrls: ['./explore-page.component.scss']
 })
 export class ExplorePageComponent {
+
+  user!: AuthData | null;
+
+  constructor(private authSrv: AuthService) {}
+
+  ngOnInit(): void {
+    this.authSrv.user$.subscribe((user) => (this.user = user));
+  }
 
 }

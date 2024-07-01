@@ -10,10 +10,11 @@ export interface Post {
   startingPoint: string;
   endPoint: string;
   spacesRiders: number;
-  tag: Tags; 
-  car: string;
+  tags: Tags[]; 
+  vehicle: string;
   user: User; 
   comments: Comment[];
   reactions: Reaction[];
-  usersWhoSaved: User[];
+  usersWhoSaved: User[]; 
+  showComments?: boolean;
 }

@@ -19,6 +19,6 @@ export interface User {
     favorites: Post[];
     favoritesMemes: Meme[];
     memes: Meme[];
-    followers: User[];
-    following: User[];
+    followers: User[] | number;
+    following: User[] | number;
 }

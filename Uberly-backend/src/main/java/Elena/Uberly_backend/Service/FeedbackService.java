@@ -70,7 +70,7 @@ public class FeedbackService {
     }
 
     //QUERY - GET FEEDBACKS BY AUTHOR
-    public List<Feedback> getFeedbacksByPostId(int authorId) {
+    public List<Feedback> getFeedbacksByAuthorId(int authorId) {
         User author = userRepository.findById(authorId).orElseThrow(() -> new UserNotFoundException("Author user not found"));
         return feedbackRepository.findByAuthor(author);
     }

@@ -33,7 +33,7 @@ public class UserDTO {
     @NotBlank
     private String email;
 
-    @NotBlank(message = "Please enter your password")
+
     private String password;
 
 
