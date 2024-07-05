@@ -1,19 +1,28 @@
 <body>
-    <section class="posts">
+    <section class="posts" *ngIf="user">
         <ng-container *ngIf="postsUser && postsUser.length > 0; else noPosts">
-            <div class="recent-posts" *ngFor="let post of postsUser">
+            <div class="recent-posts" *ngFor="let post of postsUser; let postIndex = index">
                 <div class="container-header-posts">
                     <img [src]="post.user.pictureProfile"
                         [alt]="post.user.name + ' ' + post.user.surname + ' profile picture'">
                     <div class="container-fluid d-flex flex-column justify-content-center">
                         <div class="row">
                             <div class="col-6 d-flex justify-content-center align-items-start flex-column">
-                                <a [routerLink]="['/profile', post.user.id]">{{ post.user.username }} </a>
+                                <a [routerLink]="['/profile', post.user.id]">{{ post.user.username }}</a>
                                 <p>Role: {{ post.user.role }}</p>
                             </div>
                             <div class="col-6 d-flex justify-content-end">
-                                <i class="bi bi-three-dots-vertical"></i>
+                                <i class="bi bi-three-dots-vertical three-dots"
+                                    [attr.data-target]="'#post-menu-' + postIndex"></i>
                             </div>
+
+
+                        </div>
+                    </div>
+                    <div class="menu close" [attr.id]="'post-menu-' + postIndex">
+                        <div class="menu-container">
+                            <p class="d-flex flex-row align-items-center" style="cursor: pointer;"
+                                (click)="onDeletePost(post.id)">Delete <i class="bi bi-trash-fill"></i></p>
                         </div>
                     </div>
                 </div>
@@ -25,30 +34,133 @@
                     <p class="description">{{ post.description }}</p>
                     <div class="d-flex justify-content-start">
                         <div class="d-flex flex-column align-items-start my-1 ms-0 me-4">
-                            <p class="title-badge"> Spaces </p>
-                            <p class="p-badge"><span class="body-badge">{{ post.spacesRiders }}</span>
-                                Riders
-                            </p>
+                            <p class="title-badge">Spaces</p>
+                            <p class="p-badge"><span class="body-badge">{{ post.spacesRiders }}</span> Riders</p>
                         </div>
                         <div class="d-flex flex-column align-items-start my-1 mx-4">
-                            <p class="title-badge">Start point: </p>
+                            <p class="title-badge">Start point:</p>
                             <p class="body-badge">{{ post.startingPoint }}</p>
                         </div>
                         <div class="d-flex flex-column align-items-start my-1 mx-4">
-                            <p class="title-badge">End point: </p>
+                            <p class="title-badge">End point:</p>
                             <p class="body-badge">{{ post.endPoint }}</p>
                         </div>
                         <div class="d-flex flex-column align-items-start my-1 mx-4">
-                            <p class="title-badge">Vehicle: </p>
+                            <p class="title-badge">Vehicle:</p>
                             <p class="body-badge">{{ post.vehicle }}</p>
                         </div>
                     </div>
                     <div class="interactions">
                         <div class="d-flex align-items-center">
-                            <i class="bi bi-hand-thumbs-up" style="cursor: pointer;"></i>
-                            <i class="bi bi-chat" id="comment-icon" style="cursor: pointer;"></i>
+                            <i class="bi bi-chat comments-toggle" style="cursor: pointer;"
+                                [attr.data-target]="'#comments-' + postIndex"></i>
                         </div>
                         <i class="bi bi-bookmark" style="cursor: pointer;"></i>
+                    </div>
+
+                    <div class="comments close" [attr.id]="'comments-' + postIndex">
+                        <form class="container-input-comment" #commentForm="ngForm"
+                            (ngSubmit)="onSubmitComment(post.id, commentForm)">
+                            <div class="form__group field">
+                                <textarea type="input" class="form__field" placeholder="Write your comment here..."
+                                    name="content" id="content" ngModel #content="ngModel" required></textarea>
+                            </div>
+                            <div class="creation">
+                                <button type="submit" class="button" [disabled]="commentForm.invalid">Send</button>
+                            </div>
+                        </form>
+                        <ng-container *ngIf="commentsByPost[post.id] && commentsByPost[post.id].length > 0">
+                            <div *ngFor="let comment of commentsByPost[post.id]; let commentIndex = index">
+                                <div class="container-header-comments mt-2">
+                                    <img [src]="comment.user.pictureProfile"
+                                        [alt]="comment.user.name + ' ' + comment.user.surname + ' profile picture'">
+                                    <div class="container-fluid d-flex flex-column justify-content-center p-0">
+                                        <div class="row">
+                                            <div
+                                                class="col-4 d-flex justify-content-center align-items-start flex-column">
+                                                <a [routerLink]="['/profile', comment.user.id]">{{ comment.user.username
+                                                    }}</a>
+                                                <p>Role: {{ comment.user.role }}</p>
+                                            </div>
+                                            <div
+                                                class="col-8 d-flex justify-content-center align-items-start flex-column">
+                                                <p class="comment">{{ comment.content }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="interactions-comments">
+                                        <i class="bi bi-chat-quote replies-toggle"
+                                            [attr.data-target]="'#replies-' + postIndex + '-' + commentIndex"
+                                            style="cursor: pointer"></i>
+                                        <i class="bi bi-three-dots-vertical three-dots"
+                                            [attr.data-target]="'#comment-menu-' + postIndex + '-' + commentIndex"
+                                            style="cursor: pointer;"></i>
+                                        <div class="menu close"
+                                            [attr.id]="'comment-menu-' + postIndex + '-' + commentIndex">
+                                            <div class="menu-container">
+                                                <p class="d-flex flex-row align-items-center" style="cursor: pointer;"
+                                                    (click)="onDelete(comment.id)">Delete <i
+                                                        class="bi bi-trash-fill"></i></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="replies close" [attr.id]="'replies-' + postIndex + '-' + commentIndex">
+                                    <form class="container-input-reply" #replyForm="ngForm"
+                                        (ngSubmit)="onSubmitReply(post.id, comment.id, replyForm)">
+                                        <p class="m-0">Reply to: {{ comment.user.username }}</p>
+                                        <div class="form__group field">
+                                            <textarea type="input" class="form__field"
+                                                placeholder="Write your your reply here..." name="content" id="content"
+                                                ngModel #content="ngModel" required></textarea>
+                                        </div>
+                                        <div class="creation">
+                                            <button type="submit" class="button"
+                                                [disabled]="replyForm.invalid">Send</button>
+                                        </div>
+                                    </form>
+                                    <ng-container *ngIf="(repliesByComment[comment.id]?.length || 0) > 0">
+                                        <div *ngFor="let reply of repliesByComment[comment.id]; let replyIndex = index">
+                                            <div class="container-header-comments mt-2">
+                                                <i class="bi bi-arrow-return-right ps-4"></i>
+                                                <img [src]="reply.user.pictureProfile"
+                                                    [alt]="reply.user.name + ' ' + reply.user.surname + ' profile picture'">
+                                                <div class="container-fluid d-flex flex-column justify-content-center">
+                                                    <div class="row">
+                                                        <div
+                                                            class="col-4 d-flex justify-content-center align-items-start flex-column">
+                                                            <a [routerLink]="['/profile', reply.user.id]">{{
+                                                                reply.user.username }}</a>
+                                                            <p>Role: {{ reply.user.role }}</p>
+                                                            <p>Replying to: {{ comment.user.username }}</p>
+                                                        </div>
+                                                        <div
+                                                            class="col-8 d-flex justify-content-center align-items-start flex-column">
+                                                            <p class="comment">{{ reply.content }}</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="interactions-comments">
+                                                    <button type="button" class="three-dots"
+                                                        [attr.data-target]="'#reply-menu-' + postIndex + '-' + commentIndex + '-' + replyIndex">
+                                                        <i class="bi bi-three-dots-vertical"></i>
+                                                    </button>
+                                                    <div class="menu close"
+                                                        [attr.id]="'reply-menu-' + postIndex + '-' + commentIndex + '-' + replyIndex">
+                                                        <div class="menu-container">
+                                                            <p class="d-flex flex-row align-items-center"
+                                                                style="cursor: pointer;"
+                                                                (click)="onDeleteReply(reply.id)">Delete <i
+                                                                    class="bi bi-trash-fill"></i></p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </ng-container>
+                                </div>
+                            </div>
+                        </ng-container>
                     </div>
                 </div>
             </div>
@@ -60,8 +172,11 @@
             </div>
             <div class="no-posts" *ngIf="loggedUser?.user?.id === user.id">
                 <p>You haven't made any posts yet 🤌</p>
-                <p>No worries! You can start in the <a [routerLink]="['/home-page']">home page</a>&nbsp;<i class="bi bi-house-add"></i></p>
+                <p>No worries! You can start in the <a [routerLink]="['/home-page']">home page</a>&nbsp;<i
+                        class="bi bi-house-add"></i></p>
             </div>
         </ng-template>
     </section>
+
+
 </body>

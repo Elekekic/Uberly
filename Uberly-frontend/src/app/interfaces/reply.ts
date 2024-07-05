@@ -5,7 +5,7 @@ import { User } from "./user";
 export interface Reply {
     id: number,
     content: String, 
-    commentid : Comment,
+    commentId: number,
     user: User,
     reactions: Reaction[]
 }

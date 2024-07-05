@@ -28,7 +28,6 @@
                             <button type="submit" [disabled]="feedbackForm.invalid"> Send </button>
                         </div>
                     </form>
-
                 </div>
 
             </div>
@@ -66,7 +65,7 @@
                                 </form>
                             </div>
                             <div class="interactions">
-                                <div class="d-flex align-items-center" *ngIf="loggedUser?.user?.id !== user.id || loggedUser?.user?.role === 'ADMIN'">
+                                <div class="d-flex align-items-center" *ngIf="loggedUser?.user?.id === feedback.author.id || loggedUser?.user?.role === 'ADMIN'">
                                     <i class="bi bi-arrow-clockwise" (click)="showUpdateForm(feedback.id)"></i>
                                 </div>
                                 <div *ngIf="loggedUser?.user?.id === user.id || loggedUser?.user?.role === 'ADMIN'">   

@@ -1,6 +1,134 @@
 <body>
-    <div class="group">
-        <i class="bi bi-arrow-return-right icon"></i>
-        <input class="input" type="search" placeholder="Search" />
-    </div>
+    <section>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-9">
+                    <div class="group">
+                        <i class="bi bi-arrow-return-right icon"></i>
+                        <input class="input" type="search" placeholder="What are you searching for?"
+                            [(ngModel)]="searching" (input)="filter()" />
+                    </div>
+                    <div class="posts">
+                        <ng-container *ngIf="filteredPosts && filteredPosts.length > 0; else noPosts">
+                            <div class="recent-posts" *ngFor="let post of filteredPosts">
+                                <div class="container-header-posts">
+                                    <img [src]="post.user.pictureProfile"
+                                        [alt]="post.user.name + ' ' + post.user.surname + ' profile picture'">
+                                    <div class="container-fluid d-flex flex-column justify-content-center">
+                                        <div class="row">
+                                            <div
+                                                class="col-6 d-flex justify-content-center align-items-start flex-column">
+                                                <a [routerLink]="['/profile', post.user.id]">{{ post.user.username
+                                                    }} </a>
+                                                <p>Role: {{ post.user.role }}</p>
+                                            </div>
+                                            <div class="col-6 d-flex justify-content-end">
+                                                <i class="bi bi-three-dots-vertical"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-flex flex-column container-body-post">
+                                    <div class="badge">
+                                        <p>{{ post.tags }}</p>
+                                    </div>
+                                    <h4>{{ post.title }}</h4>
+                                    <p class="description">{{ post.description }}</p>
+                                    <div class="d-flex justify-content-start">
+                                        <div class="d-flex flex-column align-items-start my-1 ms-0 me-4">
+                                            <p class="title-badge"> Spaces </p>
+                                            <p class="p-badge"><span class="body-badge">{{ post.spacesRiders
+                                                    }}</span>
+                                                Riders
+                                            </p>
+                                        </div>
+                                        <div class="d-flex flex-column align-items-start my-1 mx-2">
+                                            <p class="title-badge">Start point: </p>
+                                            <p class="body-badge">{{ post.startingPoint }}</p>
+                                        </div>
+                                        <div class="d-flex flex-column align-items-start my-1 mx-2">
+                                            <p class="title-badge">End point: </p>
+                                            <p class="body-badge">{{ post.endPoint }}</p>
+                                        </div>
+                                        <div class="d-flex flex-column align-items-start my-1 mx-2">
+                                            <p class="title-badge">Vehicle: </p>
+                                            <p class="body-badge">{{ post.vehicle }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="interactions">
+                                        <div class="d-flex align-items-center">
+                                            <i class="bi bi-chat" id="comment-icon" style="cursor: pointer;"></i>
+                                        </div>
+                                        <i class="bi bi-bookmark" style="cursor: pointer;"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </ng-container>
+                        <ng-template #noPosts>
+                            <p>NO POSTS WERE FOUNDDDDDD UGH </p>
+                        </ng-template>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div class="radio-inputs">
+                        <h3 class="title-inputs-tags text-center"> Tags</h3>
+                        <label class="radio">
+                            <input type="checkbox" name="tags" data-val="SHORT_TRAVEL"
+                                (click)="getSelectedTags($event)">
+                            <span class="name">SHORT TRAVEL</span>
+                        </label>
+                        <label class="radio">
+                            <input type="checkbox" name="tags" data-val="LONG_TRAVEL" (click)="getSelectedTags($event)">
+                            <span class="name">LONG TRAVEL</span>
+                        </label>
+                        <label class="radio">
+                            <input type="checkbox" name="tags" data-val="ADVENTURE" (click)="getSelectedTags($event)">
+                            <span class="name">ADVENTURE</span>
+                        </label>
+                        <label class="radio">
+                            <input type="checkbox" name="tags" data-val="CITY_EXPLORATION"
+                                (click)="getSelectedTags($event)">
+                            <span class="name">CITY EXPLORATION</span>
+                        </label>
+                        <label class="radio">
+                            <input type="checkbox" name="radio" data-val="TO_THE_BEACH"
+                                (click)="getSelectedTags($event)">
+                            <span class="name">TO THE BEACH</span>
+                        </label>
+                        <label class="radio">
+                            <input type="checkbox" name="radio" data-val="FULL_NATURE"
+                                (click)="getSelectedTags($event)">
+                            <span class="name">FULL NATURE</span>
+                        </label>
+                        <label class="radio">
+                            <input type="checkbox" name="radio" data-val="FUN" (click)="getSelectedTags($event)">
+                            <span class="name">FUN</span>
+                        </label>
+                        <label class="radio">
+                            <input type="checkbox" name="radio" data-val="CHILL" (click)="getSelectedTags($event)">
+                            <span class="name">CHILL</span>
+                        </label>
+                        <label class="radio">
+                            <input type="checkbox" name="radio" data-val="EVENT" (click)="getSelectedTags($event)">
+                            <span class="name">EVENT</span>
+                        </label>
+                        <label class="radio">
+                            <input type="checkbox" name="radio" data-val="TRAVEL_GUIDE"
+                                (click)="getSelectedTags($event)">
+                            <span class="name">TRAVEL GUIDE</span>
+                        </label>
+                        <label class="radio">
+                            <input type="checkbox" name="radio" data-val="QUICK_RIDE" (click)="getSelectedTags($event)">
+                            <span class="name">QUICK RIDE</span>
+                        </label>
+                        <label class="radio">
+                            <input type="checkbox" name="radio" data-val="TO_THE_MOUNTAINS"
+                                (click)="getSelectedTags($event)">
+                            <span class="name">TO THE MOUNTAINS</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 </body>

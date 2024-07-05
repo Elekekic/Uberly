@@ -3,6 +3,7 @@ package Elena.Uberly_backend.Controller;
 import Elena.Uberly_backend.Entity.Meme;
 import Elena.Uberly_backend.Entity.Post;
 import Elena.Uberly_backend.Service.MemeService;
+import Elena.Uberly_backend.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,6 +21,9 @@ public class MemeController {
 
     @Autowired
     private MemeService memeService;
+
+    @Autowired
+    private UserService userService;
 
     @GetMapping("/memes")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'DRIVER', 'RIDER')")
@@ -50,6 +54,7 @@ public class MemeController {
     public String updateMeme(@PathVariable int id, @RequestBody MultipartFile url) throws IOException {
         return memeService.patchMemeUrl(id, url);
     }
+
 
     @DeleteMapping("/memes/{id}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'DRIVER', 'RIDER')")

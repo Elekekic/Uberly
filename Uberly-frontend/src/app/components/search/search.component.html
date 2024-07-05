@@ -1,0 +1,35 @@
+<body>
+    <div class="container-fluid">
+
+        <div class="group">
+            <i class="bi bi-arrow-return-right icon"></i>
+            <input class="input" type="search" placeholder="What are you searching for?" [(ngModel)]="searching"
+                (input)="filter()" />
+        </div>
+        <div class="posts">
+            <ng-container *ngIf="filteredUsers && filteredUsers.length > 0; else noPosts">
+                <div class="recent-posts" *ngFor="let user of filteredUsers">
+                    <div class="container-header-posts">
+                        <img [src]="user.pictureProfile" [alt]="user.name + ' ' + user.surname + ' profile picture'">
+                        <div class="container-fluid d-flex flex-column justify-content-center">
+                            <div class="row">
+                                <div class="col-6 d-flex justify-content-center align-items-start flex-column">
+                                    <a [routerLink]="['/profile', user.id]">{{ user.username
+                                        }} </a>
+                                    <p>Role: {{ user.role }}</p>
+                                </div>
+                                <div class="col-6 d-flex justify-content-end">
+                                    <i class="bi bi-three-dots-vertical"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </ng-container>
+            <ng-template #noPosts>
+                <p>NO POSTS WERE FOUNDDDDDD UGH </p>
+            </ng-template>
+        </div>
+    </div>
+</body>

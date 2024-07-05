@@ -25,7 +25,7 @@
         <div class="loader"></div>
     </div>
 
-    <div>
+    <div class="body">
         <h1> Hi <img [src]="[user?.user?.pictureProfile]" alt="user profile picture">,
             what are <br> you gonna do today? </h1>
 
@@ -162,7 +162,7 @@
                                                 <span class="name">ADVENTURE</span>
                                             </label>
                                             <label class="radio">
-                                                <input type="checkbox" name="tags" data-val="CITY EXPLORATION"
+                                                <input type="checkbox" name="tags" data-val="CITY_EXPLORATION"
                                                     (click)="getSelectedTags($event)">
                                                 <span class="name">CITY EXPLORATION</span>
                                             </label>
@@ -328,7 +328,7 @@
                                         <div class="interactions">
                                             <div class="d-flex align-items-center">
                                                 <i class="bi bi-hand-thumbs-up" style="cursor: pointer;"
-                                                    (click)="onLike(post.id)"></i>
+                                                    ></i>
                                                 <i class="bi bi-chat" id="comment-icon" (click)="ShowComments(post.id)"
                                                     style="cursor: pointer;"></i>
                                             </div>

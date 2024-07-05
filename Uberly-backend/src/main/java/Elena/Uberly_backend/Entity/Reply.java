@@ -27,7 +27,7 @@ public class Reply {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    @JsonIncludeProperties(value = {"id", "username", "pictureProfile", "role"})
+    @JsonIncludeProperties(value = {"id", "name", "surname",  "username", "pictureProfile", "role"})
     private User user;
 
     @OneToMany(mappedBy = "reply", orphanRemoval = true)

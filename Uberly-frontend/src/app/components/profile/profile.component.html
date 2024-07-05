@@ -2,7 +2,7 @@
     <header>
         <nav class="flex">
             <ul class="primary-navigation flex list-unstyled align-items-center" data-visible="false">
-                <li *ngIf="user">
+                <li *ngIf="loggedUser">
                     <a [routerLink]="['/home']" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
                         <i class="bi bi-house"></i> </a>
                 </li>
@@ -11,7 +11,7 @@
                             <i class="bi bi-person-fill"></i>
                         </a>
                 </li>
-                <li *ngIf="user">
+                <li *ngIf="loggedUser">
                     <a [routerLink]="['/explore-page']" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"><i class="bi bi-search"></i> </a>
                 </li>
             </ul>
@@ -47,8 +47,8 @@
                     <button *ngIf="loggedUser?.user?.id === user.id" class="button" [routerLink]="['/settings']">
                         change info
                     </button>   
-                    <button *ngIf="loggedUser?.user?.id !== user.id && !shouldShowFollowButton(user.id)" class="button" (click)="follow(user.id)"> Follow </button>
-                    <button *ngIf="loggedUser?.user?.id !== user.id && shouldShowFollowButton(user.id)" class="button" (click)="Unfollow(user.id)"> UnFollow </button>
+                    <button *ngIf="loggedUser?.user?.id !== user.id && !shouldShowFollowButton(user.id)" class="button" (click)="follow(user.id)"> <i class="bi bi-person-fill-add"></i> Follow </button>
+                    <button *ngIf="loggedUser?.user?.id !== user.id && shouldShowFollowButton(user.id)" class="button" (click)="Unfollow(user.id)"> <i class="bi bi-person-fill-dash"></i> UnFollow </button>
                 </div>
             </div>
         </div>

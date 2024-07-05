@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from 'src/app/auth/auth.service';
 import { AuthData } from 'src/app/interfaces/auth-data';
 
@@ -11,10 +12,12 @@ export class ExplorePageComponent {
 
   user!: AuthData | null;
 
-  constructor(private authSrv: AuthService) {}
+  constructor(private authSrv: AuthService,
+  ) {}
 
   ngOnInit(): void {
     this.authSrv.user$.subscribe((user) => (this.user = user));
   }
+
 
 }

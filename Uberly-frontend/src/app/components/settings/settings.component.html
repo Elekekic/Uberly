@@ -1,4 +1,27 @@
 <body>
+
+    <header>
+        <nav class="flex">
+            <ul class="primary-navigation flex list-unstyled align-items-center" data-visible="false">
+
+                <li *ngIf="user">
+                    <a [routerLink]="['/home']" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+                        <i class="bi bi-house"></i> </a>
+                </li>
+                <li *ngIf="user">
+                    <a [routerLink]="['/profile', user.id]" routerLinkActive="active"
+                        [routerLinkActiveOptions]="{ exact: true }">
+                        <i class="bi bi-person-fill"></i>
+                    </a>
+                </li>
+                <li *ngIf="user">
+                    <a [routerLink]="['/explore-page']" routerLinkActive="active"
+                        [routerLinkActiveOptions]="{ exact: true }"><i class="bi bi-search"></i> </a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+    
     <section *ngIf="user">
         <div class="container-pfp">
             <img src="{{ user.pictureProfile }}"

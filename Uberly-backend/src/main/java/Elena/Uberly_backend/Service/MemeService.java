@@ -8,6 +8,7 @@ import Elena.Uberly_backend.Exception.UserNotFoundException;
 import Elena.Uberly_backend.Repository.MemeRepository;
 import Elena.Uberly_backend.Repository.UserRepository;
 import com.cloudinary.Cloudinary;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,6 +29,9 @@ public class MemeService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private UserService userService;
 
     // GET ALL MEMES METHOD
     public List<Meme> getAllMemes() {
@@ -83,16 +87,17 @@ public String patchMemeUrl(int id, MultipartFile url) throws UserNotFoundExcepti
     }
 }
 
+    public String deleteMeme(int memeId) {
+        Meme meme = memeRepository.findById(memeId).orElseThrow(() -> new RuntimeException("Meme non trovato"));
 
-// DELETE MEME METHOD
-public String deleteMeme(int id) {
-    Optional<Meme> memesOptional = memeRepository.findById(id);
-    if (memesOptional.isPresent()) {
-        memeRepository.deleteById(id);
-        return "Meme deleted successfully";
-    } else {
-        throw new MemeNotFoundException("Meme with ID: " + id + " not found");
+        for (User user : meme.getUsersWhoSaved()) {
+            user.getFavoritesMemes().remove(meme);
+        }
+
+        userRepository.saveAll(meme.getUsersWhoSaved());
+        memeRepository.delete(meme);
+
+        return "Meme eliminato con successo";
     }
-}
 
 }

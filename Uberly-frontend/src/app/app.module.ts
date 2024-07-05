@@ -25,6 +25,7 @@ import { SettingsComponent } from './components/settings/settings.component';
 import { PostsComponent } from './components/posts/posts.component';
 import { MemesComponent } from './components/memes/memes.component';
 import { AuthGuard } from './auth/auth-.guard';
+import { SearchComponent } from './components/search/search.component';
 
 const routes: Route[] = [
   {
@@ -41,7 +42,18 @@ const routes: Route[] = [
     component: ExplorePageComponent,
     canActivate: [AuthGuard],
     children: [
-      { path: 'for-you',
+      {
+        path: '',
+        redirectTo: 'search',
+        pathMatch: 'full',
+      },
+      {
+        path: 'search',
+        component: SearchComponent,
+        canActivate: [AuthGuard]
+      },
+      {
+        path: 'for-you',
         component: ForYouPageComponent,
         canActivate: [AuthGuard]
       },
@@ -106,7 +118,8 @@ const routes: Route[] = [
     Error404Component,
     SettingsComponent,
     PostsComponent,
-    MemesComponent
+    MemesComponent,
+    SearchComponent
   ],
   imports: [
     BrowserModule,
