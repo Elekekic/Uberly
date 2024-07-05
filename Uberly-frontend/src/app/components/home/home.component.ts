@@ -102,6 +102,11 @@ export class HomeComponent implements OnInit, AfterViewInit {
   }
 
   showLoader(): void {
+    const body: HTMLElement | null = document.querySelector('.body');
+    if (body) {
+      body.style.opacity = '0'; 
+    }
+
     window.scrollTo(0, 0);
 
     const loader = document.querySelector('#loader');
@@ -118,15 +123,14 @@ export class HomeComponent implements OnInit, AfterViewInit {
         duration: 0.5,
         onComplete: () => {
           loader.classList.add('hidden');
-
-          const body: HTMLElement | null = document.querySelector('.body');
-          if (body) {
-            body.style.opacity = '0'; 
-            body.classList.remove('hidden');
-            gsap.to(body, { opacity: 1, duration: 0.7 }); 
-          }
         },
       });
+    }
+
+    const body: HTMLElement | null = document.querySelector('.body');
+    if (body) {
+      body.style.opacity = '0'; 
+      gsap.to(body, { opacity: 1, duration: 1 }); 
     }
   }
 
@@ -246,43 +250,6 @@ export class HomeComponent implements OnInit, AfterViewInit {
     }
   }
 
-  onLike(postId: number): void {
-    const post = this.allPosts.find((p) => p.id === postId);
-    const user = this.allUsers.find((u) => u.id === this.userId);
-
-    if (post && user) {
-      const index = post.reactions.findIndex((r) => r.userId === this.userId);
-      if (index !== -1) {
-        post.reactions.splice(index, 1);
-        this.postService
-          .getPost(post.id)
-          .pipe(debounceTime(300))
-          .subscribe(
-            () => {
-              console.log('Reaction removed');
-            },
-            (err) => {
-              console.error('Error removing reaction:', err);
-            }
-          );
-      } else {
-        const data: Reaction = {
-          userId: user.id,
-          type: Reactiontypes.LIKE,
-          postId: post.id,
-        };
-        this.reactionService.addAReaction(data).subscribe(
-          (reaction) => {
-            console.log('Reaction added:', reaction);
-            post.reactions.push(reaction);
-          },
-          (err) => {
-            console.error('Error adding reaction:', err);
-          }
-        );
-      }
-    }
-  }
 
   ShowComments(postId: number): void {
     if (postId) {

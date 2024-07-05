@@ -1,1 +1,44 @@
-<p>memes-page works!</p>
+<body>
+    <section>
+        <div class="container-fluid">
+            <div class="group">
+                <i class="bi bi-arrow-return-right icon"></i>
+                <input class="input" type="search" placeholder="Where do you wanna go today?" [(ngModel)]="searching"
+                    (input)="filter()" />
+            </div>
+        </div>
+        <section class="d-flex align-items-baseline flex-wrap justify-content-center">
+            <ng-container *ngIf="filteredmemes && filteredmemes.length > 0;">
+                <div class="recent-posts" *ngFor="let meme of filteredmemes">
+                    <div class="container-header-posts">
+                        <img [src]="meme.user.pictureProfile"
+                            [alt]="meme.user.name + ' ' + meme.user.surname + ' profile picture'">
+                        <div class="w-100 d-flex flex-column justify-content-between ps-3">
+                            <div class="row">
+                                <div class="col-6 d-flex justify-content-center align-items-start flex-column">
+                                    <a [routerLink]="['/profile', meme.user.id]">{{ meme.user.username }} </a>
+                                    <p>Role: {{ meme.user.role }}</p>
+                                </div>
+                                <div class="col-6 d-flex justify-content-end">
+                                    <i class="bi bi-three-dots-vertical"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex container-body-post">
+                        <div class="d-flex flex-column align-items-start my-1 ms-0 me-4">
+                            <img [src]="meme.url" [alt]="meme.user.name + ' ' + meme.user.surname + ' meme'">
+                        </div>
+                    </div>
+
+                    <div class="interactions">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-chat" id="comment-icon" style="cursor: pointer;"></i>
+                        </div>
+                        <i class="bi bi-bookmark" style="cursor: pointer;"></i>
+                    </div>
+                </div>
+            </ng-container>
+        </section>
+    </section>
+</body>

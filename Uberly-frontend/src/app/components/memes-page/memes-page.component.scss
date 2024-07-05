@@ -1,0 +1,131 @@
+body {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 40px 0 0 0;
+}
+
+/* INPUT */
+.group {
+  display: flex;
+  line-height: 28px;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 0 4em;
+  width: 100%;
+}
+
+.input {
+  width: 80%;
+  height: 40px;
+  line-height: 28px;
+  padding: 0 2.5rem;
+  margin-bottom: 1em;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  outline: none;
+  display: block;
+  background-color: #fef2d6;
+  color: #0d0c22;
+  transition: 0.3s ease;
+}
+
+.input::placeholder {
+  color: #9e9ea7;
+}
+
+.input:focus,
+input:hover {
+  outline: none;
+  border-color: rgba(255, 109, 31, 0.5);
+  background-color: #fef2d6;
+  box-shadow: 0 0 0 3px rgba(255, 109, 31, 0.5);
+}
+
+.icon {
+  position: absolute;
+  left: 14.5%;
+  top: 7px;
+  color: #0e0e0e;
+  width: 1rem;
+  height: 1rem;
+}
+
+/* MEMES POST */
+
+.recent-posts {
+  border-radius: 20px;
+  margin: 20px;
+  background-color: #141414;
+  color: #f3f3f4;
+  flex: 1 1 calc(50% - 40px);
+  max-width: calc(30% - 40px);
+  box-sizing: border-box;
+}
+
+.container-header-posts {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.container-header-posts img {
+  margin: 1em 0 0.5em 1em;
+  padding: 0.2em;
+  width: 75px;
+  height: 75px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.container-header-posts a {
+  text-decoration: none;
+  font-size: 19px;
+  background: linear-gradient(to right, #ff6d1f, #f5e7c6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.container-header-posts p {
+  margin: 0;
+  font-size: 14px;
+  color: #9b9b9b;
+}
+
+.container-header-posts i {
+  margin: 1.2em;
+  font-size: 1.2em;
+}
+
+.container-body-post {
+  margin: 1.2em;
+  width: 95%;
+
+  display: flex;
+  justify-content: center;
+}
+
+.container-body-post img {
+  width: 100%;
+  object-fit: cover;
+  border-radius: 20px;
+}
+
+.interactions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid #f5e7c6;
+  margin: 1.3em;
+}
+
+.interactions i {
+  font-size: 1.7em;
+  margin: 0.2em;
+}
+
+#comments-section {
+  display: none;
+}

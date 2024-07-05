@@ -34,7 +34,7 @@ public class Comment {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    @JsonIncludeProperties(value = {"id", "username", "pictureProfile", "role"})
+    @JsonIncludeProperties(value = {"id", "name", "surname",  "username", "pictureProfile", "role"})
     private User user;
 
     @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)

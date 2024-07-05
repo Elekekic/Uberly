@@ -25,7 +25,6 @@
 
                 <div class="interactions">
                     <div class="d-flex align-items-center">
-                        <i class="bi bi-hand-thumbs-up" style="cursor: pointer;"></i>
                         <i class="bi bi-chat" id="comment-icon" style="cursor: pointer;"></i>
                     </div>
                     <i class="bi bi-bookmark" style="cursor: pointer;"></i>
@@ -38,7 +37,7 @@
                 <p>If you don't wanna miss future posts, <a>follow them!</a></p>
             </div>
             <div class="no-memes" *ngIf="loggedUser?.user?.id === user.id">
-                <p>You haven't made any memes yet 🤌</p>
+                <p>You haven't posted any memes yet 🤌</p>
                 <p>No worries! You can start in the <a [routerLink]="['/home-page']">home page</a>&nbsp;<i class="bi bi-house-add"></i></p>
             </div>
         </ng-template>
