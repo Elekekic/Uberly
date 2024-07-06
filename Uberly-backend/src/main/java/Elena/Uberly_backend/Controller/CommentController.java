@@ -29,6 +29,12 @@ public class CommentController {
         return commentService.getCommentsByPostId(postId);
     }
 
+    @GetMapping("/comments/memes/{memesId}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'DRIVER', 'RIDER')")
+    public List<Comment> getCommentsByMemeId(@PathVariable int memesId) {
+        return commentService.getCommentsByMemeId(memesId);
+    }
+
     @GetMapping("/comments/{id}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'DRIVER', 'RIDER')")
     public Optional<Comment> getCommentById(@PathVariable int id) {

@@ -25,6 +25,15 @@ export class CommentService {
     );
   }
 
+  getCommentsByMemeId(memeId: number): Observable<Comment[]> {
+    return this.http.get<Comment[]>(`${this.apiURL}/memes/${memeId}`).pipe(
+      tap(comments => {
+        this.commentsByPost[memeId] = comments;
+        this.commentsByPostSub.next(this.commentsByPost);
+      })
+    );
+  }
+
   getCommentById(id: number): Observable<Comment> {
     return this.http.get<Comment>(`${this.apiURL}/${id}`);
   }

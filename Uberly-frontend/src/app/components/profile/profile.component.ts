@@ -30,6 +30,7 @@ export class ProfileComponent {
       setTimeout(async () => {
         this.userService.getUser(id).subscribe((profileUser) => {
           this.user = profileUser;
+          
           this.followers = this.extractNumber(this.user.followers);
           this.following = this.extractNumber(this.user.following);
         });
@@ -63,20 +64,26 @@ export class ProfileComponent {
   }
 
   follow(userId: number) {
-    if (this.loggedUser?.user.id){
+    if (this.loggedUser?.user.id) {
       this.userService.followUser(this.loggedUser?.user.id, userId).subscribe(
-        ()=> {
-          console.log("followed the user")
-      })
+        () => {
+          console.log("followed the user");
+          this.loadLoggedFollowing(); 
+          this.followers++; 
+        }
+      );
     }
   }
-
-  Unfollow(userId: number) {
-    if (this.loggedUser?.user.id){
+  
+  unfollow(userId: number) {
+    if (this.loggedUser?.user.id) {
       this.userService.unfollowUser(this.loggedUser?.user.id, userId).subscribe(
-        ()=> {
-          console.log("unfollowed the user")
-      })
+        () => {
+          console.log("unfollowed the user");
+          this.loadLoggedFollowing(); 
+          this.followers--; 
+        }
+      );
     }
   }
 

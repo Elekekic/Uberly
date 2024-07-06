@@ -48,7 +48,7 @@
                         change info
                     </button>   
                     <button *ngIf="loggedUser?.user?.id !== user.id && !shouldShowFollowButton(user.id)" class="button" (click)="follow(user.id)"> <i class="bi bi-person-fill-add"></i> Follow </button>
-                    <button *ngIf="loggedUser?.user?.id !== user.id && shouldShowFollowButton(user.id)" class="button" (click)="Unfollow(user.id)"> <i class="bi bi-person-fill-dash"></i> UnFollow </button>
+                    <button *ngIf="loggedUser?.user?.id !== user.id && shouldShowFollowButton(user.id)" class="button" (click)="unfollow(user.id)"> <i class="bi bi-person-fill-dash"></i> UnFollow </button>
                 </div>
             </div>
         </div>

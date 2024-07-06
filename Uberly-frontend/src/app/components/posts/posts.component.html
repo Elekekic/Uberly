@@ -13,16 +13,22 @@
                             </div>
                             <div class="col-6 d-flex justify-content-end">
                                 <i class="bi bi-three-dots-vertical three-dots"
-                                    [attr.data-target]="'#post-menu-' + postIndex"></i>
+                                    [attr.data-target]="'#post-menu-' + postIndex" style="cursor: pointer;"></i>
                             </div>
-
-
                         </div>
                     </div>
                     <div class="menu close" [attr.id]="'post-menu-' + postIndex">
                         <div class="menu-container">
-                            <p class="d-flex flex-row align-items-center" style="cursor: pointer;"
-                                (click)="onDeletePost(post.id)">Delete <i class="bi bi-trash-fill"></i></p>
+                            <div
+                                *ngIf="loggedUser && (loggedUser.user.id === user.id || loggedUser.user.role === 'ADMIN')">
+                                <p class="d-flex flex-row align-items-center" style="cursor: pointer;"
+                                    (click)="onDeletePost(post.id)">Delete <i class="bi bi-trash-fill"></i></p>
+                            </div>
+                            <div *ngIf="loggedUser && loggedUser.user.id !== user.id">
+                                <a class="d-flex flex-row align-items-center" style="cursor: pointer;"> Info <i
+                                        class="bi bi-person-fill"></i></a>
+                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -55,7 +61,14 @@
                             <i class="bi bi-chat comments-toggle" style="cursor: pointer;"
                                 [attr.data-target]="'#comments-' + postIndex"></i>
                         </div>
-                        <i class="bi bi-bookmark" style="cursor: pointer;"></i>
+                        <div *ngIf="loggedUser && loggedUser.user.id !== user.id">
+                            <i class="bi bi-bookmark save-toggle"
+                                [ngClass]="{'bi-bookmark-fill': isPostSaved(post.id, loggedUser), 'bi-bookmark': !isPostSaved(post.id, loggedUser)}"
+                                [attr.data-post-id]="post.id" [attr.data-target]="'#savePost-' + postIndex"
+                                style="cursor: pointer;"></i>
+                        </div>
+
+
                     </div>
 
                     <div class="comments close" [attr.id]="'comments-' + postIndex">
@@ -77,14 +90,16 @@
                                     <div class="container-fluid d-flex flex-column justify-content-center p-0">
                                         <div class="row">
                                             <div
-                                                class="col-4 d-flex justify-content-center align-items-start flex-column">
-                                                <a [routerLink]="['/profile', comment.user.id]">{{ comment.user.username
+                                                class="col-5 d-flex justify-content-center align-items-start flex-column">
+                                                <a class="w-100" style="font-size: 16px;"
+                                                    [routerLink]="['/profile', comment.user.id]">{{
+                                                    comment.user.username
                                                     }}</a>
                                                 <p>Role: {{ comment.user.role }}</p>
                                             </div>
                                             <div
-                                                class="col-8 d-flex justify-content-center align-items-start flex-column">
-                                                <p class="comment">{{ comment.content }}</p>
+                                                class="col-7 d-flex justify-content-center align-items-start flex-column">
+                                                <p style="word-wrap: break-word;">{{ comment.content }}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -98,9 +113,20 @@
                                         <div class="menu close"
                                             [attr.id]="'comment-menu-' + postIndex + '-' + commentIndex">
                                             <div class="menu-container">
-                                                <p class="d-flex flex-row align-items-center" style="cursor: pointer;"
-                                                    (click)="onDelete(comment.id)">Delete <i
-                                                        class="bi bi-trash-fill"></i></p>
+                                                <div
+                                                    *ngIf="loggedUser && loggedUser.user.id === user.id || loggedUser?.user?.role === 'ADMIN'">
+                                                    <p class="d-flex flex-row align-items-center"
+                                                        style="cursor: pointer;" (click)="onDelete(comment.id)">Delete
+                                                        <i class="bi bi-trash-fill"></i>
+                                                    </p>
+                                                </div>
+
+                                                <div *ngIf="loggedUser && loggedUser.user.id !== user.id">
+                                                    <a [routerLink]="['/profile', user.id]" routerLinkActive="active"
+                                                        [routerLinkActiveOptions]="{ exact: true }">
+                                                        <i class="bi bi-person-fill"></i>
+                                                    </a>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -177,6 +203,4 @@
             </div>
         </ng-template>
     </section>
-
-
 </body>

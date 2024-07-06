@@ -10,5 +10,5 @@ export interface Meme {
     user: User,
     comments : Comment[],
     reactions : Reaction[],
-    useraWhoSaved : User[]
+    usersWhoSaved : User[]
 }

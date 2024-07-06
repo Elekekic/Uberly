@@ -68,83 +68,86 @@ export class PostsComponent implements OnInit, AfterViewInit {
 
   initializeCommentsForPosts(): void {
     const commentObservables: Observable<Comment[]>[] = [];
-
+  
     this.postsUser.forEach((post) => {
       commentObservables.push(
         this.commentService.getCommentsByPostId(post.id).pipe(
           tap((comments) => {
-            if (comments !== null) {
-              this.commentsByPost[post.id] = comments;
-            } else {
-              this.commentsByPost[post.id] = [];
-            }
-            console.log(`Comments for post ${post.id}:`, this.commentsByPost[post.id]);
+            this.commentsByPost[post.id] = comments || [];
           })
         )
       );
     });
 
-    forkJoin(commentObservables).subscribe(() => {
-      console.log('All comments fetched: ', this.commentsByPost);
-      this.initializeRepliesForComments();
-    });
+    forkJoin(commentObservables).subscribe(
+      () => {
+        console.log('Comments initialized');
+      },
+      (error) => {
+        console.error('Error initializing comments: ', error);
+      }
+    );
   }
+  
 
   initializeRepliesForComments(): void {
     const replyObservables: Observable<Reply[]>[] = [];
-
+  
     this.postsUser.forEach((post) => {
       const comments = this.commentsByPost[post.id] || [];
       comments.forEach((comment) => {
         replyObservables.push(
           this.replyService.getRepliesByCommentId(comment.id).pipe(
             tap((replies) => {
-              if (replies !== null) {
-                this.repliesByComment[comment.id] = replies;
-              } else {
-                this.repliesByComment[comment.id] = [];
-              }
-              console.log(
-                `Replies for comment ${comment.id}:`,
-                this.repliesByComment[comment.id]
-              );
+              this.repliesByComment[comment.id] = replies || [];
             })
           )
         );
       });
     });
-
-    forkJoin(replyObservables).subscribe(() => {
-      console.log('All replies fetched: ', this.repliesByComment);
-    });
+  
+    forkJoin(replyObservables).subscribe(
+      () => {
+        console.log('Replies initialized');
+      },
+      (error) => {
+        console.error('Error initializing replies: ', error);
+      }
+    );
   }
+  
 
   ngAfterViewInit(): void {
     setTimeout(() => {
       this.initializeComments();
       this.initializeReplies();
       this.initializeMenu();
+      this.initializeSaveButtons();
     }, 200);
   }
 
   onSubmitComment(postId: number, form: NgForm) {
     form.value.userId = this.loggedUser?.user.id;
     form.value.postId = postId;
-  
+
     this.commentService.createComment(form.value).subscribe(
       () => {
         console.log('comment sent!');
         form.reset();
-  
-        const postIndex = this.postsUser.findIndex((post) => post.id === postId);
+
+        const postIndex = this.postsUser.findIndex(
+          (post) => post.id === postId
+        );
         if (postIndex !== -1) {
-          this.commentService.getCommentsByPostId(postId).subscribe((comments) => {
-            this.commentsByPost[postId] = comments;
-            setTimeout(() => {
-              this.initializeMenu();
-              this.initializeReplies();
-            }, 0);
-          });
+          this.commentService
+            .getCommentsByPostId(postId)
+            .subscribe((comments) => {
+              this.commentsByPost[postId] = comments;
+              setTimeout(() => {
+                this.initializeMenu();
+                this.initializeReplies();
+              }, 0);
+            });
         }
       },
       (error) => {
@@ -152,37 +155,44 @@ export class PostsComponent implements OnInit, AfterViewInit {
       }
     );
   }
-  
+
   onSubmitReply(postId: number, commentId: number, form: NgForm) {
     form.value.userId = this.loggedUser?.user.id;
     form.value.commentId = commentId;
-  
+
     this.replyService.createReply(form.value).subscribe(
       (response) => {
         console.log('reply sent!', response);
         form.reset();
-  
-        this.replyService.getRepliesByCommentId(commentId).subscribe((replies) => {
-          this.repliesByComment[commentId] = replies;
-  
-          const postIndex = this.postsUser.findIndex((post) => post.id === postId);
-          if (postIndex !== -1) {
-            const commentIndex = this.commentsByPost[postId].findIndex((comment) => comment.id === commentId);
-            if (commentIndex !== -1) {
-              this.commentsByPost[postId][commentIndex].replies = replies;
+
+        this.replyService
+          .getRepliesByCommentId(commentId)
+          .subscribe((replies) => {
+            this.repliesByComment[commentId] = replies;
+
+            const postIndex = this.postsUser.findIndex(
+              (post) => post.id === postId
+            );
+            if (postIndex !== -1) {
+              const commentIndex = this.commentsByPost[postId].findIndex(
+                (comment) => comment.id === commentId
+              );
+              if (commentIndex !== -1) {
+                this.commentsByPost[postId][commentIndex].replies = replies;
+              }
             }
-          }
-  
-          setTimeout(() => {
-            this.initializeMenu();
-          }, 0);
-        });
+
+            setTimeout(() => {
+              this.initializeMenu();
+            }, 0);
+          });
       },
       (error) => {
         console.error(error);
       }
     );
   }
+
 
   initializeMenu() {
     const menuToggles = document.querySelectorAll('.three-dots');
@@ -206,6 +216,17 @@ export class PostsComponent implements OnInit, AfterViewInit {
     });
   }
 
+  initializeSaveButtons() {
+    const saveToggleButtons = document.querySelectorAll('.save-toggle');
+    console.log(saveToggleButtons);
+    saveToggleButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        const postId = Number(button.getAttribute('data-post-id'));
+        this.onSaves(postId, button);
+      });
+    });
+  }
+
   initializeComments() {
     const commentToggle = document.querySelectorAll('.comments-toggle');
     commentToggle.forEach((button) => {
@@ -217,13 +238,78 @@ export class PostsComponent implements OnInit, AfterViewInit {
             const isOpen = !target.classList.contains('close');
             if (isOpen) {
               this.close(target);
+              this.toggleChatIconClass(button, false);
             } else {
               this.open(target);
+              this.toggleChatIconClass(button, true);
             }
           }
         }
       });
     });
+  }
+
+  toggleChatIconClass(button: Element, isOpen: boolean) {
+    if (isOpen) {
+      button.classList.remove('bi-chat');
+      button.classList.add('bi-chat-fill');
+    } else {
+      button.classList.remove('bi-chat-fill');
+      button.classList.add('bi-chat');
+    }
+  }
+
+  onSaves(postId: number, button: Element) {
+    const post = this.postsUser.find((p) => p.id === postId);
+    const loggedUser = this.loggedUser;
+  
+    if (loggedUser) {
+      if (post && !this.isPostSaved(postId, loggedUser)) {
+        this.userService.addSavedPost(loggedUser.user.id, postId).subscribe(
+          () => {
+            post.usersWhoSaved.push(loggedUser.user);
+            this.toggleSaveIconClass(button, true);
+            console.log('Post saved');
+          },
+          (err) => {
+            console.error('Error saving post:', err);
+          }
+        );
+      } else if (post && this.isPostSaved(post.id, loggedUser)) {
+        this.userService.deleteSavedPost(loggedUser.user.id, postId).subscribe(
+          () => {
+            const index = post.usersWhoSaved.findIndex((u) => u.id === loggedUser.user.id);
+            if (index !== -1) {
+              post.usersWhoSaved.splice(index, 1);
+            }
+            this.toggleSaveIconClass(button, false);
+            console.log('Post removed from saved');
+          },
+          (err) => {
+            console.error('Error removing post:', err);
+          }
+        );
+      }
+    }
+  }
+  
+  isPostSaved(postId: number, user: AuthData): boolean {
+    const post = this.postsUser.find((p) => p.id === postId);
+    if (!post) {
+      return false;
+    }
+    return post.usersWhoSaved.some((u) => u.id === user.user.id);
+  }
+
+
+  toggleSaveIconClass(button: Element, isSaved: boolean) {
+    if (isSaved) {
+      button.classList.remove('bi-bookmark');
+      button.classList.add('bi-bookmark-fill');
+    } else {
+      button.classList.remove('bi-bookmark-fill');
+      button.classList.add('bi-bookmark');
+    }
   }
 
   initializeReplies() {
@@ -246,8 +332,6 @@ export class PostsComponent implements OnInit, AfterViewInit {
       });
     });
   }
-
-  
 
   open(target: HTMLElement) {
     target.classList.remove('close');
@@ -283,10 +367,8 @@ export class PostsComponent implements OnInit, AfterViewInit {
   }
 
   onDeletePost(postId: number) {
-    this.postService.deletePost(postId).subscribe(
-      () => {
-        console.log('deleted post!'); 
-      }
-    )
+    this.postService.deletePost(postId).subscribe(() => {
+      console.log('deleted post!');
+    });
   }
 }

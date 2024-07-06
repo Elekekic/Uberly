@@ -1,12 +1,16 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { Meme } from '../interfaces/meme';
+import { Post } from '@app/interfaces/post';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MemeService {
+
+  private memesByUser: Meme[] = [];
+  memesByUserSub = new BehaviorSubject<Meme[]>([]);
  
   apiURL = 'http://localhost:8080/api';
 
@@ -17,7 +21,12 @@ export class MemeService {
   }
 
   getAllMemesByUserId(userId: number): Observable<Meme[]> {
-    return this.http.get<Meme[]>(`${this.apiURL}/users/${userId}/memes`);
+    return this.http.get<Meme[]>(`${this.apiURL}/users/${userId}/memes`).pipe(
+      tap(memes => {
+        this.memesByUser = memes;
+        this.memesByUserSub.next(this.memesByUser);
+      })
+    );
   }
 
   getMemeById(id: number): Observable<Meme> {
@@ -39,5 +48,9 @@ export class MemeService {
 
   deleteMeme(id: number): Observable<string> {
     return this.http.delete<string>(`${this.apiURL}/memes/${id}`);
+  }
+
+  refreshPostsByUser(userId: number): void {
+    this.getAllMemesByUserId(userId).subscribe();
   }
 }

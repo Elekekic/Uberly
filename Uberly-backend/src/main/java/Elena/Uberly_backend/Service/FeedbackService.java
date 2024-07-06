@@ -44,7 +44,7 @@ public class FeedbackService {
     }
 
     //SAVE FEEDBACK METHOD
-    public String createFeedback(FeedbackDTO feedbackDTO) {
+    public Feedback createFeedback(FeedbackDTO feedbackDTO) {
         User userAuthor = userRepository.findById(feedbackDTO.getAuthorId()).orElseThrow(() -> new UserNotFoundException("Author user not found"));
         User userRecipient = userRepository.findById(feedbackDTO.getRecipientId()).orElseThrow(() -> new UserNotFoundException("Author user not found"));
 
@@ -53,7 +53,7 @@ public class FeedbackService {
         feedback.setAuthor(userAuthor);
         feedback.setRecipient(userRecipient);
         feedbackRepository.save(feedback);
-        return "Feedback created successfully";
+        return feedback;
     }
 
     //UPDATE FEEDBACK METHOD
@@ -73,6 +73,12 @@ public class FeedbackService {
     public List<Feedback> getFeedbacksByAuthorId(int authorId) {
         User author = userRepository.findById(authorId).orElseThrow(() -> new UserNotFoundException("Author user not found"));
         return feedbackRepository.findByAuthor(author);
+    }
+
+    // QUERY - GET FEEDBACKS BY RECIPIENT
+    public List<Feedback> getFeedbacksByRecipientId(int recipientId) {
+        User recipient = userRepository.findById(recipientId).orElseThrow(() -> new UserNotFoundException("Recipient user not found"));
+        return feedbackRepository.findByRecipient(recipient);
     }
 
     //DELETE FEEDBACK METHOD

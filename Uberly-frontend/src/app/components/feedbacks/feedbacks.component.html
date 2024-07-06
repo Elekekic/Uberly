@@ -2,7 +2,6 @@
     <section *ngIf="user">
         <ng-container *ngIf="loggedUser?.user?.id !== user.id">
             <div class="creation-feedbacks">
-                <h1>Creation Feedbacks</h1>
                 <div class="container-feedback">
                     <div class="container-header-posts">
                         <img [src]="loggedUser?.user?.pictureProfile"
@@ -37,117 +36,107 @@
             <div class="row">
                 <section class="col-6 p-0">
                     <h1 class="title-feedback"> FEEDBACKS RECEIVED </h1>
-                    <div class="given-feedbacks-user" *ngIf="user.feedbacksReceived.length > 0">
-                        <div class="container-user-feedback" *ngFor="let feedback of user.feedbacksReceived">
+                    <div class="given-feedbacks-user" *ngIf="receivedFeedbacks && receivedFeedbacks.length > 0">
+                      <div class="container-user-feedback" *ngFor="let feedback of receivedFeedbacks">
+                        <div *ngIf="feedback.author">
+                          <div class="d-flex align-items-center">
                             <div class="d-flex align-items-center">
-                                <div class="d-flex align-items-center">
-                                    <img [src]="feedback.author.pictureProfile" alt="Profile picture" width="60px"
-                                        style="border-radius: 50%;">
-                                    <div class="recipient-info">
-                                        <a [routerLink]="['/profile', feedback.author.id]">{{ feedback.author.username
-                                            }}</a>
-                                        <p>Role: {{ feedback.author.role }}</p>
-                                    </div>
-                                </div>
+                              <img [src]="feedback.author.pictureProfile" alt="Profile picture" width="60px" style="border-radius: 50%;">
+                              <div class="recipient-info">
+                                <a [routerLink]="['/profile', feedback.author.id]">{{ feedback.author.username }}</a>
+                                <p>Role: {{ feedback.author.role }}</p>
+                              </div>
                             </div>
-                            <div class="recipient-content">
-                                <p> <i class="bi bi-quote"></i> {{ feedback.content }}</p>
+                          </div>
+                          <div class="recipient-content">
+                            <p> <i class="bi bi-quote"></i> {{ feedback.content }}</p>
+                          </div>
+                          <div *ngIf="feedback.id === updatingFeedbackId">
+                            <form class="form" #updateForm="ngForm" (ngSubmit)="onUpdate(feedback.id, updateForm)">
+                              <div class="form__group field">
+                                <textarea class="form__field" type="text" name="content" id="content" [(ngModel)]="feedback.content" required></textarea>
+                                <label for="content" class="form__label">Updating the content...</label>
+                              </div>
+                              <button class="button" type="submit" [disabled]="updateForm.invalid"> Update </button>
+                            </form>
+                          </div>
+                          <div class="interactions">
+                            <div class="d-flex align-items-center" *ngIf="loggedUser?.user?.id === feedback.author.id || loggedUser?.user?.role === 'ADMIN'">
+                              <i class="bi bi-arrow-clockwise" (click)="showUpdateForm(feedback.id)"></i>
                             </div>
-                            <div *ngIf="feedback.id === updatingFeedbackId">
-                                <form class="form" #updateForm="ngForm" (ngSubmit)="onUpdate(feedback.id, updateForm)">
-                                    <div class="form__group field">
-                                        <textarea class="form__field" type="text" name="content" id="content"
-                                            [(ngModel)]="feedback.content" required> </textarea>
-                                        <label for="content" class="form__label">Updating the content...</label>
-                                    </div>
-
-                                    <button class="button" type="submit" [disabled]="updateForm.invalid"> Update </button>
-                                </form>
+                            <div *ngIf="loggedUser?.user?.id === user.id || loggedUser?.user?.role === 'ADMIN'">
+                              <i class="bi bi-trash-fill" (click)="onDelete(feedback.id)"></i>
                             </div>
-                            <div class="interactions">
-                                <div class="d-flex align-items-center" *ngIf="loggedUser?.user?.id === feedback.author.id || loggedUser?.user?.role === 'ADMIN'">
-                                    <i class="bi bi-arrow-clockwise" (click)="showUpdateForm(feedback.id)"></i>
-                                </div>
-                                <div *ngIf="loggedUser?.user?.id === user.id || loggedUser?.user?.role === 'ADMIN'">   
-                                    <i class="bi bi-trash-fill" (click)="onDelete(feedback.id)"></i>
-                                </div>
-                            </div>
+                          </div>
                         </div>
+                      </div>
                     </div>
-                    <div class="no-feedback"
-                        *ngIf="!user.feedbacksReceived?.length && loggedUser?.user?.id === user.id">
-                        <p>No feedbacks received yet 🧐</p>
-                        <p> Maybe you should try interact with other users?</p>
+                    <div class="no-feedback" *ngIf="!receivedFeedbacks?.length && loggedUser?.user?.id === user.id">
+                      <p>No feedbacks received yet 🧐</p>
+                      <p> Maybe you should try interact with other users?</p>
                     </div>
-                    <div class="no-feedback"
-                        *ngIf="!user.feedbacksReceived?.length && loggedUser?.user?.id !== user.id">
-                        <p>No feedbacks received yet 🧐</p>
-                        <p>Maybe they haven't socialized much</p>
+                    <div class="no-feedback" *ngIf="!receivedFeedbacks?.length && loggedUser?.user?.id !== user.id">
+                      <p>No feedbacks received yet 🧐</p>
+                      <p>Maybe they haven't socialized much</p>
                     </div>
-                </section>
-                <section class="col-6">
+                  </section>
+                  <section class="col-6">
                     <h1 class="title-feedback"> FEEDBACKS GIVEN</h1>
-                    <div class="given-feedbacks-user" *ngIf="user.feedbacksAuthored.length > 0">
-                        <div class="container-user-feedback" *ngFor="let feedback of user.feedbacksAuthored">
-                            <div class="d-flex align-items-center justify-content-around">
-                                <div class="d-flex align-items-center">
-                                    <img [src]="feedback.author.pictureProfile" alt="Profile picture" width="60px"
-                                        style="border-radius: 50%;">
-                                    <div class="recipient-info">
-                                        <a>{{ feedback.author.username }}</a>
-                                        <p>Role: {{ feedback.author.role }}</p>
-                                    </div>
-                                </div>
-                                <div>
-                                    <h1>TO:</h1>
-                                </div>
-                                <div class="d-flex align-items-center">
-                                    <a [routerLink]="['/profile', feedback.recipient.id]">
-                                        <img [src]="feedback.recipient.pictureProfile" alt="Profile picture"
-                                            width="60px" style="border-radius: 50%;">
-                                    </a>
-                                    <div class="recipient-info">
-                                        <a [routerLink]="['/profile', feedback.recipient.id]">{{
-                                            feedback.recipient.username }}</a>
-                                        <p>Role: {{ feedback.recipient.role }}</p>
-                                    </div>
-                                </div>
+                    <div class="given-feedbacks-user" *ngIf="authoredFeedbacks && authoredFeedbacks.length > 0">
+                      <div class="container-user-feedback" *ngFor="let feedback of authoredFeedbacks">
+                        <div class="d-flex align-items-center justify-content-around">
+                          <div class="d-flex align-items-center">
+                            <img [src]="feedback.author.pictureProfile" alt="Profile picture" width="60px" style="border-radius: 50%;">
+                            <div class="recipient-info">
+                              <a>{{ feedback.author.username }}</a>
+                              <p>Role: {{ feedback.author.role }}</p>
                             </div>
-                            <div class="recipient-content">
-                                <p> <i class="bi bi-quote"></i> {{ feedback.content }}</p>
+                          </div>
+                          <div>
+                            <h1>TO:</h1>
+                          </div>
+                          <div class="d-flex align-items-center">
+                            <a [routerLink]="['/profile', feedback.recipient.id]">
+                              <img [src]="feedback.recipient.pictureProfile" alt="Profile picture" width="60px" style="border-radius: 50%;">
+                            </a>
+                            <div class="recipient-info">
+                              <a [routerLink]="['/profile', feedback.recipient.id]">{{ feedback.recipient.username }}</a>
+                              <p>Role: {{ feedback.recipient.role }}</p>
                             </div>
-                            <div *ngIf="feedback.id === updatingFeedbackId">
-                                <form class="form" #updateForm="ngForm" (ngSubmit)="onUpdate(feedback.id, updateForm)">
-                                    <div class="form__group field">
-                                        <textarea class="form__field" type="text" name="content" id="content"
-                                            [(ngModel)]="feedback.content" required> </textarea>
-                                        <label for="content" class="form__label">Updating the content...</label>
-                                    </div>
-
-                                    <button class="button" type="submit" [disabled]="updateForm.invalid"> Update </button>
-                                </form>
-                            </div>
-                            <div class="interactions">
-                                <div class="d-flex align-items-center" *ngIf="loggedUser?.user?.id === user.id || loggedUser?.user?.role === 'ADMIN'">
-                                    <i class="bi bi-arrow-clockwise" (click)="showUpdateForm(feedback.id)"></i>
-                                </div>
-                                <div *ngIf="loggedUser?.user?.id === user.id || loggedUser?.user?.role === 'ADMIN'">   
-                                    <i class="bi bi-trash-fill" (click)="onDelete(feedback.id)"></i>
-                                </div>
-                            </div>
+                          </div>
                         </div>
+                        <div class="recipient-content">
+                          <p> <i class="bi bi-quote"></i> {{ feedback.content }}</p>
+                        </div>
+                        <div *ngIf="feedback.id === updatingFeedbackId">
+                          <form class="form" #updateForm="ngForm" (ngSubmit)="onUpdate(feedback.id, updateForm)">
+                            <div class="form__group field">
+                              <textarea class="form__field" type="text" name="content" id="content" [(ngModel)]="feedback.content" required></textarea>
+                              <label for="content" class="form__label">Updating the content...</label>
+                            </div>
+                            <button class="button" type="submit" [disabled]="updateForm.invalid"> Update </button>
+                          </form>
+                        </div>
+                        <div class="interactions">
+                          <div class="d-flex align-items-center" *ngIf="loggedUser?.user?.id === feedback.author.id || loggedUser?.user?.role === 'ADMIN'">
+                            <i class="bi bi-arrow-clockwise" (click)="showUpdateForm(feedback.id)"></i>
+                          </div>
+                          <div *ngIf="loggedUser?.user?.id === feedback.author.id || loggedUser?.user?.role === 'ADMIN'">
+                            <i class="bi bi-trash-fill" (click)="onDelete(feedback.id)"></i>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    <div class="no-feedback"
-                        *ngIf="!user.feedbacksAuthored?.length && loggedUser?.user?.id === user.id">
-                        <p>No feedbacks authored yet 🤨</p>
-                        <p> Maybe you should try interact with other users?</p>
+                    <div class="no-feedback" *ngIf="!authoredFeedbacks?.length && loggedUser?.user?.id === user.id">
+                      <p>No feedbacks authored yet 🤨</p>
+                      <p> Maybe you should try interact with other users?</p>
                     </div>
-                    <div class="no-feedback"
-                        *ngIf="!user.feedbacksAuthored?.length && loggedUser?.user?.id !== user.id">
-                        <p>No feedbacks authored yet 🤨</p>
-                        <p> Who knows what they're up to</p>
+                    <div class="no-feedback" *ngIf="!authoredFeedbacks?.length && loggedUser?.user?.id !== user.id">
+                      <p>No feedbacks authored yet 🤨</p>
+                      <p> Who knows what they're up to</p>
                     </div>
-                </section>
+                  </section>
+                  
             </div>
         </div>
     </section>

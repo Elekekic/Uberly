@@ -87,6 +87,7 @@ public String patchMemeUrl(int id, MultipartFile url) throws UserNotFoundExcepti
     }
 }
 
+    //DELETE MEME METHOD
     public String deleteMeme(int memeId) {
         Meme meme = memeRepository.findById(memeId).orElseThrow(() -> new RuntimeException("Meme non trovato"));
 
