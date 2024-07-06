@@ -1,6 +1,7 @@
 <body>
     <section class="posts" *ngIf="user">
-        <ng-container  class="d-flex align-items-baseline flex-wrap justify-content-center" *ngIf="MemesUser && MemesUser.length > 0; else noPosts">
+        <ng-container class="d-flex align-items-baseline flex-wrap justify-content-center"
+            *ngIf="MemesUser && MemesUser.length > 0; else noPosts">
             <div class="recent-posts" *ngFor="let meme of MemesUser; let memeIndex = index">
                 <div class="container-header-posts">
                     <img [src]="meme.user.pictureProfile"
@@ -19,11 +20,11 @@
                     </div>
                     <div class="menu close" [attr.id]="'meme-menu-' + memeIndex">
                         <div class="menu-container">
-                            <div *ngIf="loggedUser && (loggedUser.user.id === user.id || loggedUser.user.role === 'ADMIN')">
+                            <div *ngIf="loggedUser && (loggedUser.user.id === meme.user.id)">
                                 <p class="d-flex flex-row align-items-center" style="cursor: pointer;"
                                     (click)="onDeleteMeme(meme.id)">Delete <i class="bi bi-trash-fill"></i></p>
                             </div>
-                            <div *ngIf="loggedUser && loggedUser.user.id !== user.id">
+                            <div *ngIf="loggedUser && loggedUser.user.id !== meme.user.id">
                                 <a class="d-flex flex-row align-items-center" style="cursor: pointer;"> Info <i
                                         class="bi bi-person-fill"></i></a>
                             </div>
@@ -42,7 +43,7 @@
                             <i class="bi bi-chat comments-toggle" style="cursor: pointer;"
                                 [attr.data-target]="'#comments-' + memeIndex"></i>
                         </div>
-                        <div *ngIf="loggedUser && loggedUser.user.id !== user.id">
+                        <div *ngIf="loggedUser && loggedUser.user.id !== meme.user.id">
                             <i class="bi bi-bookmark save-toggle"
                                 [ngClass]="{'bi-bookmark-fill': isMemeSaved(meme.id, loggedUser), 'bi-bookmark': !isMemeSaved(meme.id, loggedUser)}"
                                 [attr.data-meme-id]="meme.id" [attr.data-target]="'#savePost-' + memeIndex"
@@ -95,15 +96,15 @@
                                             [attr.id]="'comment-menu-' + memeIndex + '-' + commentIndex">
                                             <div class="menu-container">
                                                 <div
-                                                    *ngIf="loggedUser && loggedUser.user.id !== user.id || loggedUser?.user?.role === 'ADMIN'">
+                                                    *ngIf="loggedUser && loggedUser.user.id !== meme.user.id || loggedUser?.user?.role === 'ADMIN'">
                                                     <p class="d-flex flex-row align-items-center"
                                                         style="cursor: pointer;" (click)="onDelete(comment.id)">Delete
                                                         <i class="bi bi-trash-fill"></i>
                                                     </p>
                                                 </div>
 
-                                                <div *ngIf="loggedUser && loggedUser.user.id === user.id">
-                                                    <a [routerLink]="['/profile', user.id]" routerLinkActive="active"
+                                                <div *ngIf="loggedUser && loggedUser.user.id === meme.user.id">
+                                                    <a [routerLink]="['/profile', meme.user.id]" routerLinkActive="active"
                                                         [routerLinkActiveOptions]="{ exact: true }">
                                                         <i class="bi bi-person-fill"></i>
                                                     </a>
@@ -155,7 +156,7 @@
                                                     <div class="menu close"
                                                         [attr.id]="'reply-menu-' + memeIndex + '-' + commentIndex + '-' + replyIndex">
                                                         <div class="menu-container">
-                                                            <p *ngIf="loggedUser && loggedUser.user.id !== user.id || loggedUser?.user?.role === 'ADMIN'" class="d-flex flex-row align-items-center"
+                                                            <p *ngIf="loggedUser && loggedUser.user.id !== meme.user.id || loggedUser?.user?.role === 'ADMIN'" class="d-flex flex-row align-items-center"
                                                                 style="cursor: pointer;"
                                                                 (click)="onDeleteReply(reply.id)">Delete <i
                                                                     class="bi bi-trash-fill"></i></p>

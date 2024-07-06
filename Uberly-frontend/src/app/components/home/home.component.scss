@@ -22,8 +22,11 @@ h1 img {
   margin-bottom: 15px;
 }
 
-/* HTML: <div class="loader"></div> */
+.body {
+  opacity: 0;
+}
 
+/* HTML: <div class="loader"></div> */
 
 #loader {
   background-color: #0e0e0e;
@@ -460,7 +463,9 @@ nav {
   }
   
   .posts-section-p {
-    font-size: 16px;
+    text-align: center;
+    padding: 0.5em 0;
+    font-size: 18px;
     color: #9b9b9b;
     margin: 0;
   }
@@ -469,9 +474,8 @@ nav {
     display: flex;
     align-items: center;
     justify-content: center;
-
     width: 100%;
-    padding: 2.2em 0;
+    padding: 1em 0 ;
     border-radius: 20px;
   }
   

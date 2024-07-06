@@ -58,7 +58,7 @@ const routes: Route[] = [
         canActivate: [AuthGuard]
       },
       {
-        path: 'memes',
+        path: 'pictures',
         component: MemesPageComponent,
         canActivate: [AuthGuard]
       }
@@ -85,7 +85,7 @@ const routes: Route[] = [
       { path: 'saved-posts', component: SavedPostsComponent, canActivate: [AuthGuard] },
       { path: 'saved-memes', component: SavedMemesComponent, canActivate: [AuthGuard]  },
       { path: 'posts', component: PostsComponent, canActivate: [AuthGuard]  },
-      { path: 'memes', component: MemesComponent, canActivate: [AuthGuard]  }
+      { path: 'pictures', component: MemesComponent, canActivate: [AuthGuard]  }
     ]
   },
   {

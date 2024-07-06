@@ -166,11 +166,6 @@ export class HomeComponent implements OnInit, AfterViewInit {
   }
 
   showLoader(): void {
-    const body: HTMLElement | null = document.querySelector('.body');
-    if (body) {
-      body.style.opacity = '0';
-    }
-
     window.scrollTo(0, 0);
 
     const loader = document.querySelector('#loader');

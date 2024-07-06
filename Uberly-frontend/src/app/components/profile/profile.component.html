@@ -57,7 +57,7 @@
     <section *ngIf="user" class="section-user">
         <div class="d-flex justify-content-around align-items-center icons">
             <i *ngIf="user.role !== 'RIDER'" class="bi bi-card-text" (click)="navigateTo('posts')"></i>
-            <i *ngIf="user.role === 'RIDER' || user.role === 'DRIVER' || user.role === 'ADMIN'" class="bi bi-card-image" (click)="navigateTo('memes')"></i>
+            <i *ngIf="user.role === 'RIDER' || user.role === 'DRIVER' || user.role === 'ADMIN'" class="bi bi-card-image" (click)="navigateTo('pictures')"></i>
             <i *ngIf="(user.role === 'RIDER' || user.role === 'DRIVER' || user.role === 'ADMIN') && loggedUser?.user?.id === user.id" class="bi bi-bookmark-star-fill" (click)="navigateTo('saved-posts')"></i>
             <i *ngIf="(user.role === 'RIDER' || user.role === 'DRIVER' || user.role === 'ADMIN') && loggedUser?.user?.id === user.id" class="bi bi-bookmark-fill" (click)="navigateTo('saved-memes')"></i>
             <i *ngIf="user.role === 'RIDER' || user.role === 'DRIVER' || user.role === 'ADMIN'" class="bi bi-chat-quote-fill" (click)="navigateTo('feedbacks')"></i>
