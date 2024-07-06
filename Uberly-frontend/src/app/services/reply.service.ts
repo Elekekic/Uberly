@@ -21,11 +21,10 @@ export class ReplyService {
   getRepliesByCommentId(commentId: number): Observable<Reply[]> {
     return this.http.get<Reply[]>(`${this.apiURL}/comments/${commentId}/replies`).pipe(
       tap(replies => {
-        console.log(`API call for comment ${commentId} returned:`, replies); // Debugging log
         if (replies !== null) {
           this.repliesByComment[commentId] = replies;
         } else {
-          this.repliesByComment[commentId] = []; // Initialize with an empty array if null
+          this.repliesByComment[commentId] = []; 
         }
         this.repliesByCommentSub.next(this.repliesByComment);
       })

@@ -1,5 +1,6 @@
 package Elena.Uberly_backend.Repository;
 
+import Elena.Uberly_backend.Entity.Meme;
 import Elena.Uberly_backend.Entity.Post;
 import Elena.Uberly_backend.Entity.User;
 import jakarta.transaction.Transactional;
@@ -20,4 +21,7 @@ public interface UserRepository extends JpaRepository<User,Integer> {
 
     @Query("SELECT u.favorites FROM User u WHERE u.id = :userId")
     List<Post> findFavoritesByUserId(@Param("userId") int userId);
+
+    @Query("SELECT u.favoritesMemes FROM User u WHERE u.id = :userId")
+    List<Meme> findFavoritesMemesByUserId(@Param("userId") int userId);
 }

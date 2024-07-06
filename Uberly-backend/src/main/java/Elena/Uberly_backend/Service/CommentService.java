@@ -47,6 +47,11 @@ public class CommentService {
         return commentRepository.findByPostId(postId);
     }
 
+    // QUERY - GET ALL COMMENTS BY MEME ID
+    public List<Comment> getCommentsByMemeId(int memeId) {
+        return commentRepository.findByMemeId(memeId);
+    }
+
     // GET COMMENT BY ID METHOD
     public Optional<Comment> getCommentById(int id) {
         Optional<Comment> commentOptional = commentRepository.findById(id);

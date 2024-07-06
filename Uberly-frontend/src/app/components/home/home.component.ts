@@ -4,7 +4,6 @@ import {
   ElementRef,
   ViewChild,
   AfterViewInit,
-  ChangeDetectorRef,
 } from '@angular/core';
 import { AuthService } from 'src/app/auth/auth.service';
 import { AuthData } from 'src/app/interfaces/auth-data';
@@ -12,19 +11,17 @@ import { User } from 'src/app/interfaces/user';
 import { UserService } from 'src/app/services/user.service';
 import { PostService } from 'src/app/services/post.service';
 import { Post } from 'src/app/interfaces/post';
-import { debounceTime, switchMap } from 'rxjs';
+import { forkJoin, Observable, switchMap, tap } from 'rxjs';
 
 import gsap from 'gsap';
 
 import { NgForm } from '@angular/forms';
 import { Tags } from 'src/app/interfaces/tags';
 import { MemeService } from 'src/app/services/meme.service';
-import { ReactionService } from 'src/app/services/reaction.service';
-import { Reaction } from 'src/app/interfaces/reaction';
-import { Reactiontypes } from 'src/app/interfaces/reactiontypes';
 import { CommentService } from 'src/app/services/comment.service';
 import { Comment } from '../../interfaces/comment';
-import { data } from 'jquery';
+import { Reply } from '@app/interfaces/reply';
+import { ReplyService } from '@app/services/reply.service';
 
 @Component({
   selector: 'app-home',
@@ -32,8 +29,8 @@ import { data } from 'jquery';
   styleUrls: ['./home.component.scss'],
 })
 export class HomeComponent implements OnInit, AfterViewInit {
-  user!: AuthData | null;
-  allUsers!: User[];
+  loggedUser!: AuthData | null;
+  user!: User | undefined;
   followingUsers: User[] = [];
   userId: number | undefined;
   following!: number;
@@ -41,11 +38,10 @@ export class HomeComponent implements OnInit, AfterViewInit {
   tags: Tags[] = [];
   uploadedImage: File | null = null;
   imagePreview: string | null = null;
-  recentPosts: Record<string, Post[]> = {};
   fileUpload: any;
-  allPosts!: Post[];
-  allReactions!: Reaction[];
-  recentComments: Comment[] = [];
+  recentPosts: Post[] = [];
+  repliesByComment: { [commentId: number]: Reply[] } = {};
+  commentsByPost: { [postId: number]: Comment[] } = {};
 
   @ViewChild('slider', { static: true }) sliderRef!: ElementRef;
   @ViewChild('fileInput') fileInput!: ElementRef;
@@ -57,37 +53,105 @@ export class HomeComponent implements OnInit, AfterViewInit {
     private userService: UserService,
     private postService: PostService,
     private memeService: MemeService,
-    private reactionService: ReactionService,
-    private commentService: CommentService
+    private commentService: CommentService,
+    private replyService: ReplyService
   ) {}
 
+  
   ngOnInit(): void {
     this.authSrv.user$.subscribe((user) => {
-      this.user = user;
+      this.loggedUser = user;
+      if (this.loggedUser) {
+        this.userService.getUser(this.loggedUser.user.id).subscribe((profileUser) => {
+          this.user = profileUser;
+          this.initializeUserDetails();
+        });
+      }
     });
     this.showLoader();
+  }
+  
+  initializeUserDetails(): void {
     setTimeout(() => {
-      this.followers = this.extractNumber(this.user?.user.followers);
-      this.following = this.extractNumber(this.user?.user.following);
-      this.userId = this.user?.user.id;
-      this.loadFollowingUsers();
-      this.postService.getAllPosts().subscribe((posts) => {
-        this.allPosts = posts;
-      });
-
-      this.userService.getUsers().subscribe((users) => {
-        this.allUsers = users;
-      });
-
-      this.reactionService.getAllReactions().subscribe((reactions) => {
-        this.allReactions = reactions;
-      });
-      this.hideLoader();
+      if (this.user) {
+        this.followers = this.extractNumber(this.user.followers);
+        this.following = this.extractNumber(this.user.following);
+        this.userId = this.user.id;
+        this.loadFollowingUsers();
+  
+        this.postService.recentPostsSub.subscribe((recentPosts) => {
+          this.recentPosts = recentPosts;
+           this.initializeCommentsForPosts();
+          this.initializeRepliesForComments();
+        });
+  
+        this.postService.getRecentPostsForFollowedUsers(this.userId);
+  
+        this.hideLoader();
+      }
     }, 1700);
   }
 
+
+  initializeCommentsForPosts(): void {
+    const commentObservables: Observable<Comment[]>[] = [];
+  
+    this.recentPosts.forEach((post) => {
+      commentObservables.push(
+        this.commentService.getCommentsByPostId(post.id).pipe(
+          tap((comments) => {
+            this.commentsByPost[post.id] = comments || [];
+          })
+        )
+      );
+    });
+
+    forkJoin(commentObservables).subscribe(
+      () => {
+        console.log('Comments initialized');
+      },
+      (error) => {
+        console.error('Error initializing comments: ', error);
+      }
+    );
+  }
+  
+
+  initializeRepliesForComments(): void {
+    const replyObservables: Observable<Reply[]>[] = [];
+  
+    this.recentPosts.forEach((post) => {
+      const comments = this.commentsByPost[post.id] || [];
+      comments.forEach((comment) => {
+        replyObservables.push(
+          this.replyService.getRepliesByCommentId(comment.id).pipe(
+            tap((replies) => {
+              this.repliesByComment[comment.id] = replies || [];
+            })
+          )
+        );
+      });
+    });
+  
+    forkJoin(replyObservables).subscribe(
+      () => {
+        console.log('Replies initialized');
+      },
+      (error) => {
+        console.error('Error initializing replies: ', error);
+      }
+    );
+  }
+  
+
+  
+
   ngAfterViewInit(): void {
     setTimeout(() => {
+      this.initializeComments();
+      this.initializeReplies();
+      this.initializeMenu();
+      this.initializeSaveButtons();
       this.createPost();
       this.createMeme();
       const scrollbreakingnews = new ScrollingNews({
@@ -98,15 +162,10 @@ export class HomeComponent implements OnInit, AfterViewInit {
       });
 
       this.animateScroll(scrollbreakingnews);
-    }, 200);
+    }, 1900);
   }
 
   showLoader(): void {
-    const body: HTMLElement | null = document.querySelector('.body');
-    if (body) {
-      body.style.opacity = '0'; 
-    }
-
     window.scrollTo(0, 0);
 
     const loader = document.querySelector('#loader');
@@ -129,15 +188,84 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
     const body: HTMLElement | null = document.querySelector('.body');
     if (body) {
-      body.style.opacity = '0'; 
-      gsap.to(body, { opacity: 1, duration: 1 }); 
+      body.style.opacity = '0';
+      gsap.to(body, { opacity: 1, duration: 1 });
     }
+  }
+
+  onSubmitComment(postId: number, form: NgForm) {
+    form.value.userId = this.loggedUser?.user.id;
+    form.value.postId = postId;
+
+    this.commentService.createComment(form.value).subscribe(
+      () => {
+        console.log('comment sent!');
+        form.reset();
+
+        const postIndex = this.recentPosts.findIndex(
+          (post) => post.id === postId
+        );
+        if (postIndex !== -1) {
+          this.commentService
+            .getCommentsByPostId(postId)
+            .subscribe((comments) => {
+              this.commentsByPost[postId] = comments;
+              setTimeout(() => {
+                this.initializeMenu();
+                this.initializeReplies();
+              }, 0);
+            });
+        }
+      },
+      (error) => {
+        console.error(error);
+      }
+    );
+  }
+
+  onSubmitReply(postId: number, commentId: number, form: NgForm) {
+    form.value.userId = this.loggedUser?.user.id;
+    form.value.commentId = commentId;
+
+    this.replyService.createReply(form.value).subscribe(
+      (response) => {
+        console.log('reply sent!', response);
+        form.reset();
+
+        this.replyService
+          .getRepliesByCommentId(commentId)
+          .subscribe((replies) => {
+            this.repliesByComment[commentId] = replies;
+
+            const postIndex = this.recentPosts.findIndex(
+              (post) => post.id === postId
+            );
+            if (postIndex !== -1) {
+              const commentIndex = this.commentsByPost[postId].findIndex(
+                (comment) => comment.id === commentId
+              );
+              if (commentIndex !== -1) {
+                this.commentsByPost[postId][commentIndex].replies = replies;
+              }
+            }
+
+            setTimeout(() => {
+              this.initializeMenu();
+            }, 0);
+          });
+      },
+      (error) => {
+        console.error(error);
+      }
+    );
   }
 
   onSubmit(form: NgForm) {
     form.value.userId = this.userId;
     form.value.tags = this.tags;
-    console.log(form.value);
+  
+    console.log(form.value); 
+  
     this.postService.savePost(form.value).subscribe(
       () => {
         form.resetForm();
@@ -165,7 +293,6 @@ export class HomeComponent implements OnInit, AfterViewInit {
       console.error('No image uploaded');
       return;
     }
-
     form.value.userId = this.userId;
     form.value.tag = Tags.MEMES;
 
@@ -205,40 +332,17 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
   loadFollowingUsers(): void {
     if (this.userId !== undefined) {
-      this.userService
-        .getFollowingUsers(this.userId)
-        .pipe(
-          switchMap((users: User[]) => {
-            this.followingUsers = users;
-            return this.postService.getRecentPostsForFollowedUsers(
-              this.userId!
-            );
-          })
-        )
-        .subscribe(
-          (posts: Post[]) => {
-            this.recentPosts = this.groupBy(posts, 'user.id');
-          },
-          (error) => {
-            console.error(
-              'Error fetching following users or their posts',
-              error
-            );
-          }
-        );
+      this.userService.getFollowingUsers(this.userId).subscribe(
+        (users: User[]) => {
+          this.followingUsers = users;
+        },
+        (error: any) => {
+          console.error('Error fetching following users', error);
+        }
+      );
     }
   }
 
-  groupBy(array: Post[], key: string): Record<string, Post[]> {
-    return array.reduce((result, currentValue) => {
-      const groupKey = `user_${currentValue.user.id}`;
-      if (!result[groupKey]) {
-        result[groupKey] = [];
-      }
-      result[groupKey].push(currentValue);
-      return result;
-    }, {} as Record<string, Post[]>);
-  }
 
   private extractNumber(value: User[] | number | undefined): number {
     if (typeof value === 'number') {
@@ -251,39 +355,95 @@ export class HomeComponent implements OnInit, AfterViewInit {
   }
 
 
-  ShowComments(postId: number): void {
-    if (postId) {
-      this.commentService
-        .getCommentsByPostId(postId)
-        .subscribe((comments: unknown) => {
-          this.recentComments = comments as Comment[];
-          this.commentsSection.nativeElement.style.display = 'block';
-        });
+  initializeMenu() {
+    const menuToggles = document.querySelectorAll('.three-dots');
+    console.log('all the menus: ', menuToggles);
+    menuToggles.forEach((button) => {
+      button.addEventListener('click', () => {
+        console.log('button clicked', button);
+        const targetSelector = button.getAttribute('data-target');
+        if (targetSelector) {
+          const target = document.querySelector(targetSelector) as HTMLElement;
+          if (target) {
+            const isOpen = !target.classList.contains('close');
+            if (isOpen) {
+              this.close(target);
+            } else {
+              this.open(target);
+            }
+          }
+        }
+      });
+    });
+  }
+
+  initializeSaveButtons() {
+    const saveToggleButtons = document.querySelectorAll('.save-toggle');
+    console.log(saveToggleButtons);
+    saveToggleButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        const postId = Number(button.getAttribute('data-post-id'));
+        this.onSaves(postId, button);
+      });
+    });
+  }
+
+  initializeComments() {
+    const commentToggle = document.querySelectorAll('.comments-toggle');
+    commentToggle.forEach((button) => {
+      button.addEventListener('click', () => {
+        const targetSelector = button.getAttribute('data-target');
+        if (targetSelector) {
+          const target = document.querySelector(targetSelector) as HTMLElement;
+          if (target) {
+            const isOpen = !target.classList.contains('close');
+            if (isOpen) {
+              this.close(target);
+              this.toggleChatIconClass(button, false);
+            } else {
+              this.open(target);
+              this.toggleChatIconClass(button, true);
+            }
+          }
+        }
+      });
+    });
+  }
+
+  toggleChatIconClass(button: Element, isOpen: boolean) {
+    if (isOpen) {
+      button.classList.remove('bi-chat');
+      button.classList.add('bi-chat-fill');
+    } else {
+      button.classList.remove('bi-chat-fill');
+      button.classList.add('bi-chat');
     }
   }
 
-  onSave(postId: number) {
-    const post = this.allPosts.find((p) => p.id === postId);
-    const user = this.allUsers.find((u) => u.id === this.userId);
-
-    if (user && this.userId) {
-      if (post && !this.isPostSaved(post, user)) {
-        this.userService.addSavedPost(this.userId, postId).subscribe(
+  onSaves(postId: number, button: Element) {
+    const post = this.recentPosts.find((p) => p.id === postId);
+    const loggedUser = this.loggedUser;
+  
+    if (loggedUser) {
+      if (post && !this.isPostSaved(postId, loggedUser)) {
+        this.userService.addSavedPost(loggedUser.user.id, postId).subscribe(
           () => {
-            post.usersWhoSaved.push(user);
+            post.usersWhoSaved.push(loggedUser.user);
+            this.toggleSaveIconClass(button, true);
             console.log('Post saved');
           },
           (err) => {
             console.error('Error saving post:', err);
           }
         );
-      } else if (post && this.isPostSaved(post, user)) {
-        this.userService.deleteSavedPost(this.userId, postId).subscribe(
+      } else if (post && this.isPostSaved(post.id, loggedUser)) {
+        this.userService.deleteSavedPost(loggedUser.user.id, postId).subscribe(
           () => {
-            const index = post.usersWhoSaved.findIndex((u) => u.id === user.id);
+            const index = post.usersWhoSaved.findIndex((u) => u.id === loggedUser.user.id);
             if (index !== -1) {
               post.usersWhoSaved.splice(index, 1);
             }
+            this.toggleSaveIconClass(button, false);
             console.log('Post removed from saved');
           },
           (err) => {
@@ -293,9 +453,66 @@ export class HomeComponent implements OnInit, AfterViewInit {
       }
     }
   }
+  
+  isPostSaved(postId: number, user: AuthData): boolean {
+    const post = this.recentPosts.find((p) => p.id === postId);
+    if (!post) {
+      return false;
+    }
+    return post.usersWhoSaved.some((u) => u.id === user.user.id);
+  }
 
-  isPostSaved(post: Post, user: User): boolean {
-    return post.usersWhoSaved.some((u) => u.id === user.id);
+
+  toggleSaveIconClass(button: Element, isSaved: boolean) {
+    if (isSaved) {
+      button.classList.remove('bi-bookmark');
+      button.classList.add('bi-bookmark-fill');
+    } else {
+      button.classList.remove('bi-bookmark-fill');
+      button.classList.add('bi-bookmark');
+    }
+  }
+
+  initializeReplies() {
+    const repliesToggle = document.querySelectorAll('.replies-toggle');
+    console.log(repliesToggle);
+    repliesToggle.forEach((button) => {
+      button.addEventListener('click', () => {
+        const targetSelector = button.getAttribute('data-target');
+        if (targetSelector) {
+          const target = document.querySelector(targetSelector) as HTMLElement;
+          if (target) {
+            const isOpen = !target.classList.contains('close');
+            if (isOpen) {
+              this.close(target);
+            } else {
+              this.open(target);
+            }
+          }
+        }
+      });
+    });
+  }
+
+  open(target: HTMLElement) {
+    target.classList.remove('close');
+    gsap.fromTo(
+      target,
+      { opacity: 0, height: 0 },
+      { opacity: 1, height: 'auto', duration: 0.7, ease: 'power3.inOut' }
+    );
+  }
+
+  close(target: HTMLElement) {
+    gsap.to(target, {
+      opacity: 0,
+      height: 0,
+      duration: 0.7,
+      ease: 'power3.inOut',
+      onComplete: () => {
+        target.classList.add('close');
+      },
+    });
   }
 
   animateScroll(scroll: ScrollingNews) {
@@ -395,25 +612,22 @@ export class HomeComponent implements OnInit, AfterViewInit {
     containerInput?.classList.remove('hidden');
   }
 
-  followingUsersPosts() {
-    console.log(this.userId);
-    this.postService
-      .getRecentPostsForFollowedUsers(this.userId!)
-      .subscribe((posts: Post[]) => {
-        const groupBy = (array: Post[]) => {
-          const res: Record<any, any> = {};
-          for (const el of array) {
-            if (Object.keys(res).includes(`user_${el.user.id}`)) {
-              res[`user_${el.user.id}`].push(el);
-            } else {
-              res[`user_${el.user.id}`] = [el];
-            }
-          }
-          return res;
-        };
-        this.recentPosts = groupBy(posts);
-        console.log((this.recentPosts = groupBy(posts)));
-      });
+  onDelete(commentId: number) {
+    this.commentService.deleteComment(commentId).subscribe(() => {
+      console.log('comment deleted!');
+    });
+  }
+
+  onDeleteReply(replyId: number) {
+    this.replyService.deleteReply(replyId).subscribe(() => {
+      console.log('reply deleted!');
+    });
+  }
+
+  onDeletePost(postId: number) {
+    this.postService.deletePost(postId).subscribe(() => {
+      console.log('deleted post!');
+    });
   }
 }
 

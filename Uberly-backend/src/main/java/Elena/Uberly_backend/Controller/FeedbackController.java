@@ -34,9 +34,21 @@ public class FeedbackController {
         return feedbackService.getFeedbackById(id);
     }
 
+    @GetMapping("/feedbacks/author/{authorId}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'DRIVER', 'RIDER')")
+    public List<Feedback> getFeedbacksByAuthorId(@PathVariable int authorId) {
+        return feedbackService.getFeedbacksByAuthorId(authorId);
+    }
+
+    @GetMapping("/feedbacks/recipient/{recipientId}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'DRIVER', 'RIDER')")
+    public List<Feedback> getFeedbacksByRecipientId(@PathVariable int recipientId) {
+        return feedbackService.getFeedbacksByRecipientId(recipientId);
+    }
+
     @PostMapping("/feedbacks")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'DRIVER', 'RIDER')")
-    public String createFeedback(@Validated @RequestBody FeedbackDTO feedbackDTO, BindingResult bindingResult) {
+    public Feedback createFeedback(@Validated @RequestBody FeedbackDTO feedbackDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new BadRequestException(bindingResult.getAllErrors().stream()
                     .map(objectError -> objectError.getDefaultMessage()).reduce("", (s, s2) -> s + s2));

@@ -1,6 +1,7 @@
 package Elena.Uberly_backend.Controller;
 
 import Elena.Uberly_backend.DTO.UserDTO;
+import Elena.Uberly_backend.Entity.Meme;
 import Elena.Uberly_backend.Entity.Post;
 import Elena.Uberly_backend.Entity.User;
 import Elena.Uberly_backend.Exception.BadRequestException;
@@ -76,6 +77,11 @@ public class UserController {
     @GetMapping("/users/{userId}/favorites")
     public List<Post> getSavedPostsByUserId(@PathVariable int userId) {
         return userService.getFavoritesByUserId(userId);
+    }
+
+    @GetMapping("/users/{userId}/favoritesMemes")
+    public List<Meme> getSavedMemesByUserId(@PathVariable int userId) {
+        return userService.getFavoritesMemesByUserId(userId);
     }
 
     @PostMapping("/users/{userId}/favorites/{postId}")

@@ -71,10 +71,10 @@ public class PostController {
     }
 
 
-    @DeleteMapping("/posts/{id}")
+    @DeleteMapping("/posts/{postId}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'DRIVER')")
-    public String deletePost(@PathVariable int id) {
-        return postService.deletePost(id);
+    public String deletePost(@PathVariable int postId) {
+        return postService.deletePost(postId);
     }
 
     // QUERY - SEARCHING POSTS BY USER

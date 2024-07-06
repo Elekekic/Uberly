@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Post } from '../interfaces/post';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { Tags } from '../interfaces/tags';
+import { PostDto } from '@app/interfaces/post-dto';
 
 @Injectable({
   providedIn: 'root'
@@ -11,6 +12,9 @@ export class PostService {
 
   private postsByUser: Post[] = [];
   postsByUserSub = new BehaviorSubject<Post[]>([]);
+
+  private recentPosts: Post[] = [];
+recentPostsSub = new BehaviorSubject<Post[]>([]);
 
   apiURL = 'http://localhost:8080/api';
 
@@ -24,18 +28,22 @@ export class PostService {
     return this.http.get<Post>(`${this.apiURL}/posts/${id}`);
   }
 
-  getRecentPostsForFollowedUsers(userId: number): Observable<Post[]> {
-    return this.http.get<Post[]>(`${this.apiURL}/posts/recent/${userId}`);
+  getRecentPostsForFollowedUsers(userId: number): void {
+    this.http.get<Post[]>(`${this.apiURL}/posts/recent/${userId}`).subscribe(posts => {
+      this.recentPosts = posts;
+      this.recentPostsSub.next(this.recentPosts);
+    });
   }
+  
 
-  savePost(postDTO: Post): Observable<Post> {
-    return this.http.post<Post>(`${this.apiURL}/posts`, postDTO).pipe(
-      tap(() => this.refreshPostsByUser(postDTO.user.id))
+  savePost(postDTO: PostDto): Observable<string> {
+    return this.http.post<string>(`${this.apiURL}/posts`, postDTO, { responseType: 'text' as 'json' }).pipe(
+      tap(() => this.refreshPostsByUser(postDTO.userId))
     );
   }
 
   updatePost(id: number, postDTO: Post): Observable<Post> {
-    return this.http.put<Post>(`${this.apiURL}/posts/${id}`, postDTO).pipe(
+    return this.http.put<Post>(`${this.apiURL}/posts/${id}`, postDTO, { responseType: 'text' as 'json' }).pipe(
       tap(() => this.refreshPostsByUser(postDTO.user.id))
     );
   }

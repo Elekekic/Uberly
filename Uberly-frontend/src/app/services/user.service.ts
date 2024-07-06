@@ -1,14 +1,19 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Post } from '../interfaces/post';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { User } from '../interfaces/user';
 import { AuthData } from '@app/interfaces/auth-data';
+import { Meme } from '@app/interfaces/meme';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
+  private favPostsByUser: Post[] = [];
+  private favMemesByUser: Meme[] = [];
+  favMemesByUserSub = new BehaviorSubject<Meme[]>([]);
+  favPostsByUserSub = new BehaviorSubject<Post[]>([]);
 
   private apiURL = 'http://localhost:8080/api/users';
 
@@ -43,8 +48,32 @@ export class UserService {
   }
 
   getSavedPostsByUserId(userId: number): Observable<Post[]> {
-    return this.http.get<Post[]>(`${this.apiURL}/${userId}/favorites`);
+    return this.http.get<Post[]>(`${this.apiURL}/${userId}/favorites`).pipe(
+      tap(posts => {
+        this.favPostsByUser = posts;
+        this.favPostsByUserSub.next(this.favPostsByUser);
+      })
+    );
   }
+
+  getSavedMemesByUserId(userId: number): Observable<Meme[]> {
+    console.log(`Fetching memes for user ID: ${userId}`);
+    const url = `${this.apiURL}/${userId}/favoritesMemes`;
+    console.log(`API URL: ${url}`);
+  
+    return this.http.get<Meme[]>(url).pipe(
+      tap(memes => {
+        console.log('API response:', memes);  // Log the API response
+        this.favMemesByUser = memes;
+        console.log('Updated favMemesByUser:', this.favMemesByUser);  // Log the updated state
+        this.favMemesByUserSub.next(this.favMemesByUser);
+        console.log('Data emitted via favMemesByUserSub');  // Confirm data emission
+      })
+    );
+  }
+  
+
+  
 
   addSavedPost(userId: number, postId: number): Observable<void> {
     return this.http.post<void>(`${this.apiURL}/${userId}/favorites/${postId}`, {});
@@ -71,11 +100,11 @@ export class UserService {
     return this.http.get<User[]>(`${this.apiURL}/followers/${userId}`);
   }
 
-  saveMeme(userId: number, memeId: number): Observable<string> {
-    return this.http.post<string>(`${this.apiURL}/${userId}/memes/${memeId}`, {});
+  addSavedMeme(userId: number, memeId: number): Observable<string> {
+    return this.http.post(`${this.apiURL}/${userId}/memes/${memeId}`, {}, { responseType: 'text' });
   }
 
-  unsaveMeme(userId: number, memeId: number): Observable<string> {
-    return this.http.delete<string>(`${this.apiURL}/${userId}/memes/${memeId}`);
+  deleteSavedMeme(userId: number, memeId: number): Observable<string> {
+    return this.http.delete(`${this.apiURL}/${userId}/memes/${memeId}`, { responseType: 'text' });
   }
 }

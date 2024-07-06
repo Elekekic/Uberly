@@ -8,6 +8,9 @@ import java.util.List;
 
 public interface FeedbackRepository extends JpaRepository<Feedback, Integer> {
 
-    public List<Feedback> findByAuthor(User author);
+     List<Feedback> findByAuthor(User author);
+
+     List<Feedback> findByRecipient(User recipient);
+
 
 }

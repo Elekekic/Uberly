@@ -2,6 +2,7 @@ package Elena.Uberly_backend.Service;
 
 import Elena.Uberly_backend.DTO.PostDTO;
 import Elena.Uberly_backend.DTO.UserDTO;
+import Elena.Uberly_backend.Entity.Meme;
 import Elena.Uberly_backend.Entity.Post;
 import Elena.Uberly_backend.Entity.User;
 import Elena.Uberly_backend.Enum.Tags;
@@ -138,13 +139,16 @@ public class PostService {
     }
 
     // DELETE POST METHOD
-    public String deletePost(int id) {
-        Optional<Post> postOptional = postRepository.findById(id);
-        if (postOptional.isPresent()) {
-            postRepository.delete(postOptional.get());
-            return "Post with ID: " + id + " deleted successfully.";
-        } else {
-            throw new PostNotFoundException("Post with ID: " + id + " not found.");
+    public String deletePost(int postId) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new RuntimeException("Post non trovato"));
+
+        for (User user : post.getUsersWhoSaved()) {
+            user.getFavorites().remove(post);
         }
-    }
+
+        userRepository.saveAll(post.getUsersWhoSaved());
+        postRepository.delete(post);
+
+        return "Meme eliminato con successo";
+}
 }

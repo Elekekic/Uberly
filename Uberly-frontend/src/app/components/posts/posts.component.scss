@@ -81,6 +81,7 @@ body {
     width: 100%;
     display: flex;
     justify-content: center;
+    align-items: baseline;
     flex-wrap: wrap;
     margin: auto;
   }
@@ -396,7 +397,7 @@ body {
   position: absolute;
   top: -5px;
   width: 200px;
-  height: 60px;
+  height: auto;
   display: flex;
   flex-direction: column;
   align-content: center;
@@ -405,6 +406,24 @@ body {
   border-radius: 20px;
   width: 100px;
   padding: 10px;
+}
+
+.menu-container a {
+  color: #f5e7c6;
+}
+
+.menu-container p {
+  color: #f5e7c6; 
+  font-size: 16px;
+}
+
+.menu-container i {
+  margin: 0;
+  padding: 0.1em 0.5em;
+}
+
+.replies {
+  transform: all 0.3 ease;
 }
 
 .replies.close {
@@ -417,5 +436,21 @@ body {
   opacity: 0;
   display: none;
   pointer-events: none;  
+}
+
+
+.save-toggle:active {
+  transform: scale(0.95);
+  transition: transform 0.3s ease;
+}
+
+.replies-toggle:hover {
+  transform: scale(1.1);
+  transition: transform 0.3s ease;
+}
+
+.replies-toggle:active {
+  transform: scale(0.95);
+  transition: transform 0.3s ease;
 }
 
