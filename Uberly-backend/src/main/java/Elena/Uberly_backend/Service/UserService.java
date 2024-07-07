@@ -141,7 +141,7 @@ public class UserService {
             user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
             user.setPictureProfile("https://source.boringavatars.com/beam/120/" +user.getName()+ "?colors=ff6d1f,f5e7c6,#faf3e1" );
             userRepository.save(user);
-//            sendMailProfileCreated(user.getEmail(), user.getName(), user.getSurname(), String.valueOf(user.getRole()));
+            sendMailProfileCreated(user.getEmail(), user.getName(), user.getSurname(), String.valueOf(user.getRole()));
             return "User with ID: " + user.getId() + " , with role: " + user.getRole();
         }
     }

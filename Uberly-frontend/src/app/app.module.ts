@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { Route, RouterModule } from '@angular/router';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { AppComponent } from './app.component';
 import { LoginComponent } from './auth/login/login.component';
@@ -124,6 +124,7 @@ const routes: Route[] = [
   imports: [
     BrowserModule,
     HttpClientModule, 
+    ReactiveFormsModule,
     FormsModule, 
     RouterModule.forRoot(routes),
   ],

@@ -20,6 +20,7 @@ public class UserDTO {
     @NotBlank
     private String bio;
 
+    @NotBlank(message = "The pronouns cannot be empty")
     private String pronouns;
 
     @NotBlank(message = "The surname cannot be empty")

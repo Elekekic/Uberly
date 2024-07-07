@@ -1,5 +1,5 @@
-import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
-import { NgForm } from '@angular/forms';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '@app/auth/auth.service';
 import { AuthData } from '@app/interfaces/auth-data';
@@ -26,7 +26,6 @@ export class SettingsComponent implements OnInit, OnDestroy {
   constructor(
     private authSrv: AuthService,
     private userService: UserService,
-    private commentService: CommentService,
     private router: Router
   ) {}
 
@@ -57,6 +56,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
 
   Ondelete(userId: number) {
     this.userService.deleteUser(userId).subscribe(() => {
+      this.authSrv.clearUser(); 
       this.router.navigate(['/']);
     });
   }

@@ -27,35 +27,25 @@ export class AuthService {
   login(data: { email: string, password: string }) {
     return this.http.post<AuthData>(`${this.apiURL}login`, data).pipe(
       tap((data) => {
-        console.log('auth data: ', data)
-      }),
-      tap((data) => {
         this.authSub.next(data);
         localStorage.setItem('user', JSON.stringify(data));
-        this.autologout(data)
-      }), catchError(this.errors)
+        this.autologout(data);
+      })
     )
   }
-  private errors(err: any) {
-    console.log(err.error)
-    switch (err.error) {
-      case 'Email already exists':
-        return throwError('utente già presente');
-        break;
-      case 'Incorrect password':
-        return throwError('password errata');
-        break;
-      case 'Cannot find user':
-        return throwError('utente inesistente')
-      default:
-        return throwError('errore generico')
-    }
+
+  setUser(user: AuthData | null) {
+    this.authSub.next(user);
+  }
+
+  clearUser() {
+    this.authSub.next(null);
+    localStorage.removeItem('user');
   }
 
   logout() {
-    this.authSub.next(null);
-    localStorage.removeItem('user');
-    this.router.navigate(['/'])
+    this.clearUser();
+    this.router.navigate(['/']);
   }
 
   restore() {

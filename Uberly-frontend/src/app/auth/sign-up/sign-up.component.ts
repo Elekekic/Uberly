@@ -6,6 +6,7 @@ import { NgForm } from '@angular/forms';
 import { gsap } from 'gsap';
 import $ from 'jquery';
 import { CSSPlugin, TextPlugin, Elastic } from 'gsap/all';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-sign-up',
@@ -16,6 +17,8 @@ export class SignUpComponent implements OnInit, AfterViewInit {
 
   userReg!: SignUp;
   selectedRole: string = '';
+  errorMessage: string = '';
+
 
   constructor(private authSrv: AuthService, private router: Router) {}
 
@@ -30,12 +33,14 @@ export class SignUpComponent implements OnInit, AfterViewInit {
     console.log(form.value);
     this.authSrv.signup(form.value).subscribe(
       (response) => {
-        alert("Registrazione effettuata")
+        alert("Registration successful")
         console.log(response);
         this.router.navigate(['/login']);
       },
-      (error) => {
-        console.error(error);
+      (error: HttpErrorResponse) => {
+        console.error('Error signing up:', error);
+          const errorObj = JSON.parse(error.error);
+          this.errorMessage = errorObj.messaggio;
       }
     );
   }

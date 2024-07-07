@@ -7,9 +7,9 @@ import lombok.Data;
 @Data
 public class UserLoginDTO {
 
-    @Email(message = "Inserire l'email")
+    @Email(message = "Email has to be valid")
     private String email;
 
-    @NotBlank(message = "Inserire la password")
+    @NotBlank(message = "Password cannot be empty")
     private String password;
 }

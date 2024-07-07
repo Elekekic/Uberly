@@ -29,6 +29,10 @@
 
                 <button type="submit" [disabled]="loginForm.invalid" class="button">
                     Login </button>
+
+                    <div *ngIf="errorMessage" class="error-message mb-5">
+                        Oh no! There's an error: {{ errorMessage }}
+                    </div>
             </form>
         </div>
     </div>
