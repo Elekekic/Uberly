@@ -33,29 +33,45 @@
 
         <section class="breaking-news">
             <div class="breaking-news-header">
-                <h2> BREAKING NEWS <i class="bi bi-lightning-charge-fill"></i> </h2>
+                <h2> BREAKING NEWS <i class="bi bi-lightning-charge-fill" style="color: #ff6d1f;"></i> </h2>
             </div>
             <div class="breaking-news-body">
                 <div class="slider">
                     <div class="slider-wrapper">
                         <div class="slider-item">
                             <figure>
-                                <img src="../../../assets/img/news-1.jpg" alt="">
+                                <img src="../../../assets/img/news-4.jpg"
+                                    alt="Image promoting driver and rider to make posts">
                             </figure>
                         </div>
                         <div class="slider-item">
                             <figure>
-                                <img src="../../../assets/img/news-2.jpg" alt="">
+                                <img src="../../../assets/img/news-1.jpg"
+                                    alt="Image promoting driver and rider to post pictures">
                             </figure>
                         </div>
                         <div class="slider-item">
                             <figure>
-                                <img src="../../../assets/img/news-3.jpg" alt="">
+                                <img src="../../../assets/img/news-2.jpg"
+                                    alt="Image informing users that they can follow each other">
                             </figure>
                         </div>
                         <div class="slider-item">
                             <figure>
-                                <img src="../../../assets/img/img13.png" alt="">
+                                <img src="../../../assets/img/news-3.jpg"
+                                    alt="Image informing users that they can leave feedbacks to other users">
+                            </figure>
+                        </div>
+                        <div class="slider-item">
+                            <figure>
+                                <img src="../../../assets/img/news-5.jpg"
+                                    alt="Image informing users of the future update regards the chats between users">
+                            </figure>
+                        </div>
+                        <div class="slider-item">
+                            <figure>
+                                <img src="../../../assets/img/news-6.jpg"
+                                    alt="Image - Please report any bugs you encounter">
                             </figure>
                         </div>
                     </div>
@@ -78,8 +94,8 @@
                             <div class="profile-details">
                                 <h3> {{user.name}} {{user.surname}}</h3>
                                 <p class="fs-5 opacity-75"> <i class="bi bi-threads"></i>{{user.username}}</p>
-                                <p class="fst-italic w-75"> <i class="bi bi-quote"></i> {{user.bio}} <i
-                                        class="bi bi-quote"></i></p>
+                                <p class="fst-italic w-75 text-center" style="word-wrap: break-word;"><i
+                                        class="bi bi-quote"></i> {{user.bio}} <i class="bi bi-quote"></i></p>
                                 <p class="fw-bold"> Role : {{user.role}}</p>
                                 <div class="row pt-4">
                                     <div class="col-6 d-flex justify-content-center align-items-center flex-column">
@@ -100,10 +116,10 @@
                             <h4> Do you have something in your mind?</h4>
                             <div class="creation-buttons">
                                 <button *ngIf="user?.role === 'ADMIN' || user?.role === 'DRIVER'" class="post-toggle"
-                                    data-target="#post"> create a post</button>
+                                    data-target="#post"> add a post </button>
                                 <button
                                     *ngIf="user?.role === 'ADMIN' || user?.role === 'DRIVER' || user?.role === 'RIDER'"
-                                    class="meme-toggle" data-target="#meme"> create a meme </button>
+                                    class="meme-toggle" data-target="#meme"> add a picture </button>
                             </div>
 
                             <div class="creation-posts" id="post">
@@ -223,7 +239,7 @@
                                             </div>
                                             <div
                                                 class="verifying mt-4 d-flex justify-content-start align-items-start flex-column">
-                                                <p>is this your meme? </p>
+                                                <p>is this your picture? </p>
                                                 <div class="buttons">
                                                     <button class=" w-75" (click)="clearImage()">Remove</button>
                                                     <button class=" w-75 submit" type="submit" data-target="#meme">
@@ -235,7 +251,7 @@
                                         <label for="file" class="labelFile preview-container"><span>
                                                 <i class="bi bi-upload"></i>
                                             </span>
-                                            <p>Click to select your meme here!</p>
+                                            <p>Click to select your picture here!</p>
                                         </label>
                                         <input #fileInput class="input-meme" (change)="handleFileInput($event)"
                                             id="file" type="file" accept="image/*" />
@@ -298,7 +314,8 @@
                                         </p>
                                     </div>
                                     <div *ngIf="loggedUser && loggedUser.user.id === user.id">
-                                        <a class="d-flex flex-row align-items-center" style="cursor: pointer;"> Info
+                                        <a [routerLink]="['/profile', user.id]"
+                                            class="d-flex flex-row align-items-center" style="cursor: pointer;"> Info
                                             <i class="bi bi-person-fill"></i></a>
                                     </div>
 
@@ -400,10 +417,9 @@
 
                                                         <div *ngIf="loggedUser && loggedUser.user.id === user.id">
                                                             <a [routerLink]="['/profile', user.id]"
-                                                                routerLinkActive="active"
-                                                                [routerLinkActiveOptions]="{ exact: true }">
-                                                                <i class="bi bi-person-fill"></i>
-                                                            </a>
+                                                                class="d-flex flex-row align-items-center"
+                                                                style="cursor: pointer;"> Info
+                                                                <i class="bi bi-person-fill"></i></a>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -420,7 +436,7 @@
                                                         id="content" ngModel #content="ngModel" required></textarea>
                                                 </div>
                                                 <div class="creation">
-                                                    <button type="submit" class="button-send" 
+                                                    <button type="submit" class="button-send"
                                                         [disabled]="replyForm.invalid">Send</button>
                                                 </div>
                                             </form>
@@ -455,10 +471,21 @@
                                                             <div class="menu close"
                                                                 [attr.id]="'reply-menu-' + postIndex + '-' + commentIndex + '-' + replyIndex">
                                                                 <div class="menu-container">
-                                                                    <p class="d-flex flex-row align-items-center"
-                                                                        style="cursor: pointer;"
-                                                                        (click)="onDeleteReply(reply.id)">Delete <i
-                                                                            class="bi bi-trash-fill"></i></p>
+                                                                    <div
+                                                                        *ngIf="loggedUser && loggedUser.user.id !== user.id || loggedUser?.user?.role === 'ADMIN'">
+                                                                        <p class="d-flex flex-row align-items-center"
+                                                                            style="cursor: pointer;" (click)="onDeleteReply(comment.id)">
+                                                                            Delete
+                                                                            <i class="bi bi-trash-fill"></i>
+                                                                        </p>
+                                                                    </div>
+            
+                                                                    <div *ngIf="loggedUser && loggedUser.user.id === user.id">
+                                                                        <a [routerLink]="['/profile', user.id]"
+                                                                            class="d-flex flex-row align-items-center"
+                                                                            style="cursor: pointer;"> Info
+                                                                            <i class="bi bi-person-fill"></i></a>
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         </div>

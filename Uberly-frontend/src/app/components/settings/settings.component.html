@@ -35,7 +35,7 @@
                         <div class="d-flex" *ngIf="pictureProfile">
                             <div class="w-50 d-flex justify-content-center align-items-center">
                                 <img #preview id="preview" [src]="imagePreview" alt="Preview"
-                                    style="max-width: 70%; cursor: pointer;" class="profile-picture">
+                                    style="max-width: 100%; cursor: pointer;" class="profile-picture">
                             </div>
                             <div class="verifying mt-4 d-flex align-items-center flex-column align-items-center">
                                 <p>Is this your new picture?</p>
@@ -95,7 +95,7 @@
                                 #password="ngModel" required autocomplete="new-password">
                             <label for="name" class="form__label">Password</label>
                             <div *ngIf="password.invalid" class="error-message">
-                                You must fill out this field.
+                                To verify it's you, please enter your password before updating.
                             </div>
                         </div>
                 

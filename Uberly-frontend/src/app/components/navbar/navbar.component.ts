@@ -14,8 +14,7 @@ export class NavbarComponent implements AfterViewInit, OnInit {
   constructor(private authSrv: AuthService, private renderer: Renderer2) { }
 
   ngOnInit(): void {
-    this.authSrv.user$.subscribe((user) =>
-      this.user = user)
+    this.authSrv.user$.subscribe((user) => this.user = user);
   }
 
   logout() {
