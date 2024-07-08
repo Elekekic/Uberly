@@ -17,7 +17,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "https://outer-lane-kekice-635da50d.koyeb.app")
+@CrossOrigin(origins = "https://uberly-gamma.vercel.app")
 public class CommentController {
 
     @Autowired
