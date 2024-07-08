@@ -12,7 +12,7 @@ export class MemeService {
   private memesByUser: Meme[] = [];
   memesByUserSub = new BehaviorSubject<Meme[]>([]);
  
-  apiURL = 'http://localhost:8080/api';
+  apiURL = 'https://outer-lane-kekice-635da50d.koyeb.app/api';
 
   constructor(private http: HttpClient) { }
 
