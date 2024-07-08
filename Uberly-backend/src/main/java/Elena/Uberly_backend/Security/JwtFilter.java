@@ -31,10 +31,13 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
     String authHeader = request.getHeader("Authorization");
-        response.setHeader("Access-Control-Allow-Origin", "https://uberly-gamma.vercel.app");
-        response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD, PATCH");
-        response.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type");
-        response.setHeader("Access-Control-Allow-Credentials", "true");
+
+        if ("OPTIONS".equals(request.getMethod())) {
+            response.setHeader("Access-Control-Allow-Origin", "https://uberly-gamma.vercel.app");
+            response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD, PATCH");
+            response.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type");
+            response.setHeader("Access-Control-Allow-Credentials", "true");
+        } ;
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             throw new UnauthorizedException("Error in authorization, token is null or Bearer is null");
