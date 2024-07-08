@@ -83,6 +83,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
           this.recentPosts = recentPosts;
            this.initializeCommentsForPosts();
           this.initializeRepliesForComments();
+          this.initializeCommentsAndReplies();
         });
   
         this.postService.getRecentPostsForFollowedUsers(this.userId);
@@ -117,9 +118,33 @@ export class HomeComponent implements OnInit, AfterViewInit {
   }
   
 
+  initializeCommentsAndReplies(): void {
+    const commentObservables: Observable<Comment[]>[] = [];
+    const replyObservables: Observable<Reply[]>[] = [];
+
+    this.recentPosts.forEach((post) => {
+      commentObservables.push(this.commentService.getCommentsByPostId(post.id)
+        .pipe(
+          tap((comments) => {
+            this.commentsByPost[post.id] = comments || [];
+          })
+        ));
+    });
+
+    forkJoin(commentObservables).subscribe(
+      () => {
+        console.log('Comments initialized');
+        this.initializeRepliesForComments();
+      },
+      (error) => {
+        console.error('Error initializing comments: ', error);
+      }
+    );
+  }
+
   initializeRepliesForComments(): void {
     const replyObservables: Observable<Reply[]>[] = [];
-  
+
     this.recentPosts.forEach((post) => {
       const comments = this.commentsByPost[post.id] || [];
       comments.forEach((comment) => {
@@ -132,7 +157,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
         );
       });
     });
-  
+
     forkJoin(replyObservables).subscribe(
       () => {
         console.log('Replies initialized');
@@ -147,6 +172,14 @@ export class HomeComponent implements OnInit, AfterViewInit {
   
 
   ngAfterViewInit(): void {
+    const scrollbreakingnews = new ScrollingNews({
+      el: '.slider',
+      wrap: '.slider-wrapper',
+      item: '.slider-item',
+      bar: '.slider-progress-bar',
+    });
+
+    this.animateScroll(scrollbreakingnews);
     setTimeout(() => {
       this.initializeComments();
       this.initializeReplies();
@@ -154,15 +187,8 @@ export class HomeComponent implements OnInit, AfterViewInit {
       this.initializeSaveButtons();
       this.createPost();
       this.createMeme();
-      const scrollbreakingnews = new ScrollingNews({
-        el: '.slider',
-        wrap: '.slider-wrapper',
-        item: '.slider-item',
-        bar: '.slider-progress-bar',
-      });
-
-      this.animateScroll(scrollbreakingnews);
-    }, 3000);
+      
+    }, 4000);
   }
 
   showLoader(): void {
@@ -357,7 +383,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
   initializeMenu() {
     const menuToggles = document.querySelectorAll('.three-dots');
-    console.log('all the menus: ', menuToggles);
+    console.log('Menu toggles: ', menuToggles);
     menuToggles.forEach((button) => {
       button.addEventListener('click', () => {
         console.log('button clicked', button);
@@ -379,7 +405,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
   initializeSaveButtons() {
     const saveToggleButtons = document.querySelectorAll('.save-toggle');
-    console.log(saveToggleButtons);
+    console.log("Save toggles: ", saveToggleButtons);
     saveToggleButtons.forEach((button) => {
       button.addEventListener('click', () => {
         const postId = Number(button.getAttribute('data-post-id'));
@@ -390,6 +416,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
   initializeComments() {
     const commentToggle = document.querySelectorAll('.comments-toggle');
+    console.log("Comment toggles: ", commentToggle);
     commentToggle.forEach((button) => {
       button.addEventListener('click', () => {
         const targetSelector = button.getAttribute('data-target');
@@ -475,7 +502,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
   initializeReplies() {
     const repliesToggle = document.querySelectorAll('.replies-toggle');
-    console.log(repliesToggle);
+    console.log("Replies toggle: ", repliesToggle);
     repliesToggle.forEach((button) => {
       button.addEventListener('click', () => {
         const targetSelector = button.getAttribute('data-target');
