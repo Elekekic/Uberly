@@ -15,7 +15,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "https://outer-lane-kekice-635da50d.koyeb.app")
 public class ReplyController {
 
     @Autowired
