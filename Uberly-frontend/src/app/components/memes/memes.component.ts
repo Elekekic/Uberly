@@ -58,6 +58,7 @@ export class MemesComponent implements OnInit, AfterViewInit {
       });
     }
   }
+  
 
   initializeCommentsForPosts(): void {
     const commentObservables: Observable<Comment[]>[] = [];
@@ -141,7 +142,7 @@ export class MemesComponent implements OnInit, AfterViewInit {
       this.initializeReplies();
       this.initializeMenu();
       this.initializeSaveButtons();
-    }, 1200);
+    }, 1700);
   }
 
   onSubmitComment(memeId: number, form: NgForm) {

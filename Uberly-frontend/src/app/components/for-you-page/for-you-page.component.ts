@@ -51,7 +51,7 @@ export class ForYouPageComponent {
       this.initializeReplies();
       this.initializeMenu();
       this.initializeSaveButtons();
-    }, 200);
+    }, 1500);
   }
 
   loadAllPosts(): void {

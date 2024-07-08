@@ -103,4 +103,27 @@ body {
     margin: 1.2em;
     font-size: 1.2em;
   }
+
+  /* NG CONTAINER NOPOSTS */
+.no-posts {
+  display: flex;
+  height: 50vh;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.4em 0 4em 0;
+}
+.no-posts p:nth-child(1) {
+  font-size: 6vh;
+  margin: 0;
+  color: #ff6d1f;
+}
+
+.no-posts p:nth-child(2) {
+  color: #9b9b9b;
+}
+
+.no-posts a,
+i {
+  color: #f5e7c6;
+}
   
