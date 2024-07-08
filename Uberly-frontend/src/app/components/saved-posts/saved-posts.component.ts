@@ -40,13 +40,7 @@ export class SavedPostsComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.authService.user$.subscribe((user) => (this.loggedUser = user));
-
-    this.userService.favPostsByUserSub.subscribe((posts) => {
-      this.postsUser = posts;
-      console.log(this.postsUser);
-      this.initializeCommentsForPosts();
-      this.initializeRepliesForComments();
-    });
+    this.initializeUserPosts();
 
     const parentRoute = this.route.parent;
     if (parentRoute) {
@@ -60,6 +54,16 @@ export class SavedPostsComponent implements OnInit, AfterViewInit {
         });
       });
     }
+  }
+
+  initializeUserPosts(): void {
+    setTimeout(() => {
+      this.userService.favPostsByUserSub.subscribe((posts) => {
+        this.postsUser = posts;
+        this.initializeCommentsForPosts();
+        this.initializeRepliesForComments();
+      });
+    }, 1000);
   }
 
   initializeCommentsForPosts(): void {
@@ -78,6 +82,31 @@ export class SavedPostsComponent implements OnInit, AfterViewInit {
     forkJoin(commentObservables).subscribe(
       () => {
         console.log('Comments initialized');
+      },
+      (error) => {
+        console.error('Error initializing comments: ', error);
+      }
+    );
+  }
+
+  initializeCommentsAndReplies(): void {
+    const commentObservables: Observable<Comment[]>[] = [];
+    const replyObservables: Observable<Reply[]>[] = [];
+
+    this.postsUser.forEach((post) => {
+      commentObservables.push(
+        this.commentService.getCommentsByPostId(post.id).pipe(
+          tap((comments) => {
+            this.commentsByPost[post.id] = comments || [];
+          })
+        )
+      );
+    });
+
+    forkJoin(commentObservables).subscribe(
+      () => {
+        console.log('Comments initialized');
+        this.initializeRepliesForComments();
       },
       (error) => {
         console.error('Error initializing comments: ', error);
@@ -117,7 +146,7 @@ export class SavedPostsComponent implements OnInit, AfterViewInit {
       this.initializeReplies();
       this.initializeMenu();
       this.initializeSaveButtons();
-    }, 200);
+    }, 1000);
   }
 
   onSubmitComment(postId: number, form: NgForm) {

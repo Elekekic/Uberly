@@ -32,7 +32,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
   ngAfterViewInit(): void {
     setTimeout(() => {
       this.OnUpdatePfp();
-    }, 200);
+    }, 1000);
   }
 
   ngOnInit(): void {

@@ -81,6 +81,30 @@ export class MemesComponent implements OnInit, AfterViewInit {
       }
     );
   }
+
+  initializeCommentsAndReplies(): void {
+    const commentObservables: Observable<Comment[]>[] = [];
+    const replyObservables: Observable<Reply[]>[] = [];
+
+    this.MemesUser.forEach((meme) => {
+      commentObservables.push(this.commentService.getCommentsByMemeId(meme.id)
+        .pipe(
+          tap((comments) => {
+            this.commentsByMeme[meme.id] = comments || [];
+          })
+        ));
+    });
+
+    forkJoin(commentObservables).subscribe(
+      () => {
+        console.log('Comments initialized');
+        this.initializeRepliesForComments();
+      },
+      (error) => {
+        console.error('Error initializing comments: ', error);
+      }
+    );
+  }
   
 
  
@@ -117,7 +141,7 @@ export class MemesComponent implements OnInit, AfterViewInit {
       this.initializeReplies();
       this.initializeMenu();
       this.initializeSaveButtons();
-    }, 200);
+    }, 1200);
   }
 
   onSubmitComment(memeId: number, form: NgForm) {

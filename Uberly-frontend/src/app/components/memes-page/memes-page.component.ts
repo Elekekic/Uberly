@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { AuthService } from '@app/auth/auth.service';
 import { AuthData } from '@app/interfaces/auth-data';
-import { Comment } from '@app/interfaces/comment';
 import { Meme } from '@app/interfaces/meme';
 import { Reply } from '@app/interfaces/reply';
 import { CommentService } from '@app/services/comment.service';
@@ -12,6 +11,7 @@ import { UserService } from '@app/services/user.service';
 import { forkJoin, Observable, tap } from 'rxjs';
 
 import gsap from 'gsap';
+import { Comment } from '@app/interfaces/comment';
 
 @Component({
   selector: 'app-memes-page',
@@ -86,6 +86,30 @@ export class MemesPageComponent implements OnInit {
       }
     );
   }
+
+  initializeCommentsAndReplies(): void {
+    const commentObservables: Observable<Comment[]>[] = [];
+    const replyObservables: Observable<Reply[]>[] = [];
+
+    this.MemesUser.forEach((meme) => {
+      commentObservables.push(this.commentService.getCommentsByMemeId(meme.id)
+        .pipe(
+          tap((comments) => {
+            this.commentsByMeme[meme.id] = comments || [];
+          })
+        ));
+    });
+
+    forkJoin(commentObservables).subscribe(
+      () => {
+        console.log('Comments initialized');
+        this.initializeRepliesForComments();
+      },
+      (error) => {
+        console.error('Error initializing comments: ', error);
+      }
+    );
+  }
   
 
  
@@ -122,7 +146,7 @@ export class MemesPageComponent implements OnInit {
       this.initializeReplies();
       this.initializeMenu();
       this.initializeSaveButtons();
-    }, 200);
+    }, 500);
   }
 
   onSubmitComment(memeId: number, form: NgForm) {
