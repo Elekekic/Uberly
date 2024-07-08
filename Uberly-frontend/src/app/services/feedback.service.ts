@@ -15,7 +15,7 @@ export class FeedbackService {
   private feedbacksRecipient: Feedbacks[] = [];
   feedbacksRecipientSub = new BehaviorSubject<Feedbacks[]>([]);
 
-  apiURL = 'http://localhost:8080/api';
+  apiURL = 'https://outer-lane-kekice-635da50d.koyeb.app/api';
 
   constructor(private http: HttpClient) { }
 

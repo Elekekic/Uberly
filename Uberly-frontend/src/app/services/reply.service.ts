@@ -10,7 +10,7 @@ export class ReplyService {
   private repliesByComment: { [commentId: number]: Reply[] } = {};
   repliesByCommentSub = new BehaviorSubject<{ [commentId: number]: Reply[] }>({});
 
-  apiURL = 'http://localhost:8080/api';
+  apiURL = 'https://outer-lane-kekice-635da50d.koyeb.app/api';
 
   constructor(private http: HttpClient) { }
 
