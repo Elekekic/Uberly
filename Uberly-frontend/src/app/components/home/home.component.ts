@@ -162,7 +162,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
       });
 
       this.animateScroll(scrollbreakingnews);
-    }, 1900);
+    }, 3000);
   }
 
   showLoader(): void {

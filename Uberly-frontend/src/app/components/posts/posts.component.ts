@@ -123,7 +123,7 @@ export class PostsComponent implements OnInit, AfterViewInit {
       this.initializeReplies();
       this.initializeMenu();
       this.initializeSaveButtons();
-    }, 200);
+    }, 1000);
   }
 
   onSubmitComment(postId: number, form: NgForm) {
