@@ -83,7 +83,6 @@ export class HomeComponent implements OnInit, AfterViewInit {
           this.recentPosts = recentPosts;
            this.initializeCommentsForPosts();
           this.initializeRepliesForComments();
-          this.initializeCommentsAndReplies();
         });
   
         this.postService.getRecentPostsForFollowedUsers(this.userId);
@@ -172,14 +171,6 @@ export class HomeComponent implements OnInit, AfterViewInit {
   
 
   ngAfterViewInit(): void {
-    const scrollbreakingnews = new ScrollingNews({
-      el: '.slider',
-      wrap: '.slider-wrapper',
-      item: '.slider-item',
-      bar: '.slider-progress-bar',
-    });
-
-    this.animateScroll(scrollbreakingnews);
     setTimeout(() => {
       this.initializeComments();
       this.initializeReplies();
@@ -187,7 +178,14 @@ export class HomeComponent implements OnInit, AfterViewInit {
       this.initializeSaveButtons();
       this.createPost();
       this.createMeme();
-      
+      const scrollbreakingnews = new ScrollingNews({
+        el: '.slider',
+        wrap: '.slider-wrapper',
+        item: '.slider-item',
+        bar: '.slider-progress-bar',
+      });
+
+      this.animateScroll(scrollbreakingnews);
     }, 4000);
   }
 
@@ -383,7 +381,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
   initializeMenu() {
     const menuToggles = document.querySelectorAll('.three-dots');
-    console.log('Menu toggles: ', menuToggles);
+    console.log('Menu Toggles: ', menuToggles);
     menuToggles.forEach((button) => {
       button.addEventListener('click', () => {
         console.log('button clicked', button);
