@@ -72,23 +72,24 @@ export class HomeComponent implements OnInit, AfterViewInit {
   }
   
   initializeUserDetails(): void {
+    if (this.user) {
+      this.followers = this.extractNumber(this.user.followers);
+      this.following = this.extractNumber(this.user.following);
+      this.userId = this.user.id;
+      this.loadFollowingUsers();
+
+      this.postService.recentPostsSub.subscribe((recentPosts) => {
+        this.recentPosts = recentPosts;
+         this.initializeCommentsForPosts();
+        this.initializeRepliesForComments();
+      });
+
+      this.postService.getRecentPostsForFollowedUsers(this.userId);
+
+     
+    }
     setTimeout(() => {
-      if (this.user) {
-        this.followers = this.extractNumber(this.user.followers);
-        this.following = this.extractNumber(this.user.following);
-        this.userId = this.user.id;
-        this.loadFollowingUsers();
-  
-        this.postService.recentPostsSub.subscribe((recentPosts) => {
-          this.recentPosts = recentPosts;
-           this.initializeCommentsForPosts();
-          this.initializeRepliesForComments();
-        });
-  
-        this.postService.getRecentPostsForFollowedUsers(this.userId);
-  
-        this.hideLoader();
-      }
+      this.hideLoader();
     }, 1700);
   }
 
@@ -186,7 +187,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
       });
 
       this.animateScroll(scrollbreakingnews);
-    }, 4000);
+    }, 3000);
   }
 
   showLoader(): void {
