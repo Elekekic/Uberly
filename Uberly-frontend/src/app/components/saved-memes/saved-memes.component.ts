@@ -43,13 +43,6 @@ export class SavedMemesComponent implements OnInit, AfterViewInit {
       this.loggedUser = user;
     });
   
-    this.userService.favMemesByUserSub.subscribe((memes) => {
-      this.MemesUser = memes;
-      console.log('MemesUser:', this.MemesUser);
-      this.initializeCommentsForPosts();
-      this.initializeRepliesForComments();
-    });
-  
     const parentRoute = this.route.parent;
     if (parentRoute) {
       parentRoute.params.subscribe((parentParams) => {
@@ -57,7 +50,6 @@ export class SavedMemesComponent implements OnInit, AfterViewInit {
   
         this.userService.getUser(id).subscribe((profileUser) => {
           this.user = profileUser;
-          console.log('Profile user:', this.user);
           this.memeService.refreshPostsByUser(id);
           this.userService.getSavedMemesByUserId(id).subscribe();
           
@@ -66,6 +58,17 @@ export class SavedMemesComponent implements OnInit, AfterViewInit {
     }
   }
 
+  initializeUserPosts(): void {
+    setTimeout(() => {
+      this.userService.favMemesByUserSub.subscribe((memes) => {
+        this.MemesUser = memes;
+        this.initializeCommentsForPosts();
+        this.initializeRepliesForComments();
+      });
+    }, 1000);
+  }
+
+ 
   initializeCommentsForPosts(): void {
     const commentObservables: Observable<Comment[]>[] = [];
   
@@ -82,6 +85,30 @@ export class SavedMemesComponent implements OnInit, AfterViewInit {
     forkJoin(commentObservables).subscribe(
       () => {
         console.log('Comments initialized');
+      },
+      (error) => {
+        console.error('Error initializing comments: ', error);
+      }
+    );
+  }
+
+  initializeCommentsAndReplies(): void {
+    const commentObservables: Observable<Comment[]>[] = [];
+    const replyObservables: Observable<Reply[]>[] = [];
+
+    this.MemesUser.forEach((meme) => {
+      commentObservables.push(this.commentService.getCommentsByMemeId(meme.id)
+        .pipe(
+          tap((comments) => {
+            this.commentsByMeme[meme.id] = comments || [];
+          })
+        ));
+    });
+
+    forkJoin(commentObservables).subscribe(
+      () => {
+        console.log('Comments initialized');
+        this.initializeRepliesForComments();
       },
       (error) => {
         console.error('Error initializing comments: ', error);
@@ -124,7 +151,7 @@ export class SavedMemesComponent implements OnInit, AfterViewInit {
       this.initializeReplies();
       this.initializeMenu();
       this.initializeSaveButtons();
-    }, 200);
+    }, 1200);
   }
 
   onSubmitComment(memeId: number, form: NgForm) {

@@ -33,7 +33,7 @@ public class JwtFilter extends OncePerRequestFilter {
     String authHeader = request.getHeader("Authorization");
 
             response.setHeader("Access-Control-Allow-Origin", "https://uberly-gamma.vercel.app");
-            response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD, PATCH");
+            response.setHeader("Access-Control-Allow-MethSods", "GET, POST, PUT, DELETE, OPTIONS, HEAD, PATCH");
             response.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type");
             response.setHeader("Access-Control-Allow-Credentials", "true");
 

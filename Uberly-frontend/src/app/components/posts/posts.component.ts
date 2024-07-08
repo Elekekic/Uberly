@@ -55,20 +55,25 @@ export class PostsComponent implements OnInit, AfterViewInit {
         this.userService.getUser(id).subscribe((profileUser) => {
           this.user = profileUser;
           this.postService.refreshPostsByUser(id);
-        });
-
-        this.postService.postsByUserSub.subscribe((posts) => {
-          this.postsUser = posts;
-          this.initializeCommentsForPosts();
-          this.initializeRepliesForComments();
+          this.initializeUserPosts();
         });
       });
     }
   }
 
+  initializeUserPosts(): void {
+    setTimeout(() => {
+      this.postService.postsByUserSub.subscribe((posts) => {
+        this.postsUser = posts;
+        this.initializeCommentsForPosts();
+        this.initializeRepliesForComments();
+      });
+    }, 1000);
+  }
+
   initializeCommentsForPosts(): void {
     const commentObservables: Observable<Comment[]>[] = [];
-  
+
     this.postsUser.forEach((post) => {
       commentObservables.push(
         this.commentService.getCommentsByPostId(post.id).pipe(
@@ -88,11 +93,35 @@ export class PostsComponent implements OnInit, AfterViewInit {
       }
     );
   }
-  
+
+  initializeCommentsAndReplies(): void {
+    const commentObservables: Observable<Comment[]>[] = [];
+    const replyObservables: Observable<Reply[]>[] = [];
+
+    this.postsUser.forEach((post) => {
+      commentObservables.push(
+        this.commentService.getCommentsByPostId(post.id).pipe(
+          tap((comments) => {
+            this.commentsByPost[post.id] = comments || [];
+          })
+        )
+      );
+    });
+
+    forkJoin(commentObservables).subscribe(
+      () => {
+        console.log('Comments initialized');
+        this.initializeRepliesForComments();
+      },
+      (error) => {
+        console.error('Error initializing comments: ', error);
+      }
+    );
+  }
 
   initializeRepliesForComments(): void {
     const replyObservables: Observable<Reply[]>[] = [];
-  
+
     this.postsUser.forEach((post) => {
       const comments = this.commentsByPost[post.id] || [];
       comments.forEach((comment) => {
@@ -105,7 +134,7 @@ export class PostsComponent implements OnInit, AfterViewInit {
         );
       });
     });
-  
+
     forkJoin(replyObservables).subscribe(
       () => {
         console.log('Replies initialized');
@@ -115,7 +144,6 @@ export class PostsComponent implements OnInit, AfterViewInit {
       }
     );
   }
-  
 
   ngAfterViewInit(): void {
     setTimeout(() => {
@@ -193,7 +221,6 @@ export class PostsComponent implements OnInit, AfterViewInit {
     );
   }
 
-
   initializeMenu() {
     const menuToggles = document.querySelectorAll('.three-dots');
     console.log('all the menus: ', menuToggles);
@@ -262,7 +289,7 @@ export class PostsComponent implements OnInit, AfterViewInit {
   onSaves(postId: number, button: Element) {
     const post = this.postsUser.find((p) => p.id === postId);
     const loggedUser = this.loggedUser;
-  
+
     if (loggedUser) {
       if (post && !this.isPostSaved(postId, loggedUser)) {
         this.userService.addSavedPost(loggedUser.user.id, postId).subscribe(
@@ -278,7 +305,9 @@ export class PostsComponent implements OnInit, AfterViewInit {
       } else if (post && this.isPostSaved(post.id, loggedUser)) {
         this.userService.deleteSavedPost(loggedUser.user.id, postId).subscribe(
           () => {
-            const index = post.usersWhoSaved.findIndex((u) => u.id === loggedUser.user.id);
+            const index = post.usersWhoSaved.findIndex(
+              (u) => u.id === loggedUser.user.id
+            );
             if (index !== -1) {
               post.usersWhoSaved.splice(index, 1);
             }
@@ -292,7 +321,7 @@ export class PostsComponent implements OnInit, AfterViewInit {
       }
     }
   }
-  
+
   isPostSaved(postId: number, user: AuthData): boolean {
     const post = this.postsUser.find((p) => p.id === postId);
     if (!post) {
@@ -300,7 +329,6 @@ export class PostsComponent implements OnInit, AfterViewInit {
     }
     return post.usersWhoSaved.some((u) => u.id === user.user.id);
   }
-
 
   toggleSaveIconClass(button: Element, isSaved: boolean) {
     if (isSaved) {

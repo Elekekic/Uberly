@@ -314,7 +314,7 @@
                                         </p>
                                     </div>
                                     <div *ngIf="loggedUser && loggedUser.user.id === user.id">
-                                        <a [routerLink]="['/profile', user.id]"
+                                        <a [routerLink]="['/profile', post.user.id]"
                                             class="d-flex flex-row align-items-center" style="cursor: pointer;"> Info
                                             <i class="bi bi-person-fill"></i></a>
                                     </div>
@@ -416,7 +416,7 @@
                                                         </div>
 
                                                         <div *ngIf="loggedUser && loggedUser.user.id === user.id">
-                                                            <a [routerLink]="['/profile', user.id]"
+                                                            <a [routerLink]="['/profile', comment.user.id]"
                                                                 class="d-flex flex-row align-items-center"
                                                                 style="cursor: pointer;"> Info
                                                                 <i class="bi bi-person-fill"></i></a>
@@ -481,7 +481,7 @@
                                                                     </div>
             
                                                                     <div *ngIf="loggedUser && loggedUser.user.id === user.id">
-                                                                        <a [routerLink]="['/profile', user.id]"
+                                                                        <a [routerLink]="['/profile', reply.user.id]"
                                                                             class="d-flex flex-row align-items-center"
                                                                             style="cursor: pointer;"> Info
                                                                             <i class="bi bi-person-fill"></i></a>
