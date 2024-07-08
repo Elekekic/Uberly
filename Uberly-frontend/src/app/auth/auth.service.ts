@@ -12,7 +12,7 @@ import { AuthData } from '../interfaces/auth-data';
 
 export class AuthService {
   
-  apiURL = "http://localhost:8080/auth/"
+  apiURL = "https://outer-lane-kekice-635da50d.koyeb.app/auth/"
   jwtHelper = new JwtHelperService;
   private authSub = new BehaviorSubject<AuthData | null>(null)
   user$ = this.authSub.asObservable();
