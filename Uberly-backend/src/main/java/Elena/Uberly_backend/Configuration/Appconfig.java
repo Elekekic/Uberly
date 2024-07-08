@@ -1,5 +1,6 @@
 package Elena.Uberly_backend.Configuration;
 
+import Elena.Uberly_backend.Security.JwtTool;
 import com.cloudinary.Cloudinary;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -12,7 +13,6 @@ import java.util.Map;
 import java.util.Properties;
 
 @Configuration
-@PropertySource("application.properties")
 public class Appconfig {
 
     @Bean
