@@ -43,11 +43,11 @@ export class MemeService {
   updateMeme(id: number, file: File): Observable<string> {
     const formData: FormData = new FormData();
     formData.append('url', file, file.name);
-    return this.http.patch<string>(`${this.apiURL}/memes/${id}`, formData);
+    return this.http.patch<string>(`${this.apiURL}/memes/${id}`, formData, { responseType: 'text' as 'json' });
   }
 
   deleteMeme(id: number): Observable<string> {
-    return this.http.delete<string>(`${this.apiURL}/memes/${id}`);
+    return this.http.delete<string>(`${this.apiURL}/memes/${id}`, { responseType: 'text' as 'json' } );
   }
 
   refreshPostsByUser(userId: number): void {

@@ -23,9 +23,12 @@
                                 <p class="d-flex flex-row align-items-center" style="cursor: pointer;"
                                     (click)="onDeleteMeme(meme.id)">Delete <i class="bi bi-trash-fill"></i></p>
                             </div>
-                            <div *ngIf="loggedUser && loggedUser.user.id === user.id">
-                                <a class="d-flex flex-row align-items-center" style="cursor: pointer;"> Info <i
-                                        class="bi bi-person-fill"></i></a>
+                            <div *ngIf="loggedUser && loggedUser.user.id !== user.id">
+                                <a [routerLink]="['/profile', meme.user.id]"
+                                    routerLinkActive="active"
+                                    [routerLinkActiveOptions]="{ exact: true }">
+                                    Info <i class="bi bi-person-fill"></i>
+                                </a>
                             </div>
 
                         </div>
@@ -103,9 +106,9 @@
                                                 </div>
 
                                                 <div *ngIf="loggedUser && loggedUser.user.id !== user.id">
-                                                    <a [routerLink]="['/profile', user.id]" routerLinkActive="active"
+                                                    <a [routerLink]="['/profile', comment.user.id]" routerLinkActive="active"
                                                         [routerLinkActiveOptions]="{ exact: true }">
-                                                        <i class="bi bi-person-fill"></i>
+                                                        Info <i class="bi bi-person-fill"></i>
                                                     </a>
                                                 </div>
                                             </div>
@@ -155,10 +158,19 @@
                                                     <div class="menu close"
                                                         [attr.id]="'reply-menu-' + memeIndex + '-' + commentIndex + '-' + replyIndex">
                                                         <div class="menu-container">
-                                                            <p *ngIf="loggedUser && loggedUser.user.id === user.id || loggedUser?.user?.role === 'ADMIN'" class="d-flex flex-row align-items-center"
+                                                            <div>
+                                                             <p *ngIf="loggedUser && loggedUser.user.id === user.id || loggedUser?.user?.role === 'ADMIN'" class="d-flex flex-row align-items-center"
                                                                 style="cursor: pointer;"
                                                                 (click)="onDeleteReply(reply.id)">Delete <i
-                                                                    class="bi bi-trash-fill"></i></p>
+                                                                    class="bi bi-trash-fill"></i></p>   
+                                                            </div>
+                                                            <div *ngIf="loggedUser && loggedUser.user.id !== user.id">
+                                                                <a [routerLink]="['/profile', reply.user.id]"
+                                                                    routerLinkActive="active"
+                                                                    [routerLinkActiveOptions]="{ exact: true }">
+                                                                    Info <i class="bi bi-person-fill"></i>
+                                                                </a>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>

@@ -39,9 +39,8 @@ export class SavedMemesComponent implements OnInit, AfterViewInit {
   ) {}
 
   ngOnInit(): void {
-    this.authService.user$.subscribe((user) => {
-      this.loggedUser = user;
-    });
+    this.authService.user$.subscribe((user) => {this.loggedUser = user});
+    this.initializeUserPosts();
   
     const parentRoute = this.route.parent;
     if (parentRoute) {
