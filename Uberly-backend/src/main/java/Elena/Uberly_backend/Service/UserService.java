@@ -177,7 +177,45 @@ public class UserService {
         Optional<User> userOpt = getUserById(id);
 
         if (userOpt.isPresent()) {
-            userRepository.delete(userOpt.get());
+            User user = userOpt.get();
+
+            // Remove user from following lists of other users
+            for (User followedUser : user.getFollowing()) {
+                followedUser.getFollowers().remove(user);
+            }
+
+            // Remove user from followers lists of other users
+            for (User follower : user.getFollowers()) {
+                follower.getFollowing().remove(user);
+            }
+
+            // Remove references to user's memes in saved_memes table
+            for (Meme meme : user.getMemes()) {
+                for (User u : meme.getUsersWhoSaved()) {
+                    u.getFavoritesMemes().remove(meme);
+                }
+            }
+
+            // Clear the user's favorites lists
+            user.getFavorites().clear();
+            user.getFavoritesMemes().clear();
+
+            // Clear user's comments
+            user.getComments().clear();
+
+            // Clear user's memes
+            user.getMemes().clear();
+
+            // Clear user's posts
+            user.getPosts().clear();
+
+            // Clear the user's followers and following lists
+            user.getFollowers().clear();
+            user.getFollowing().clear();
+
+            // Delete the user
+            userRepository.delete(user);
+
             return "User with id: " + id + " has been deleted";
         } else {
             throw new UserNotFoundException("User with ID: " + id + " hasn't been found");

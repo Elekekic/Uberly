@@ -24,8 +24,7 @@
     
     <section *ngIf="user">
         <div class="container-pfp">
-            <img src="{{ user.pictureProfile }}"
-                alt="{{ user.name }}{{ user.surname }} pfp" class="profile-picture">
+            <img [src]="user?.pictureProfile" alt="{{ user?.name }} {{ user?.surname }} pfp" class="profile-picture">
             <button class="update-toggle pfp-button align-items-center" data-target="#meme">Update profile
                 picture</button>
             <div class="creation-meme" id="meme">
@@ -147,7 +146,8 @@
                     <button type="submit" [disabled]="updateForm.invalid" class="button">UPDATE</button>
                 </div>
             </form>
-            <button class="delete-button" (click)="Ondelete(user.id)"> DELETE </button>
+            <button class="delete-button" (click)="Ondelete(loggedUser?.user?.id)">DELETE</button>
+
         </div>
 
     </section>

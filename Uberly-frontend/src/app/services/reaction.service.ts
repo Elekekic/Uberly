@@ -5,17 +5,16 @@ import { Reaction } from '../interfaces/reaction';
 import { Post } from '@app/interfaces/post';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ReactionService {
-
-  
   apiURL = 'https://outer-lane-kekice-635da50d.koyeb.app/api';
+  /* apiURL = 'http://localhost:8080/api'; */
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
-  getAllReactions () : Observable<Reaction[]> {
-    return this.http.get<Reaction[]> (`${this.apiURL}/reactions`)
+  getAllReactions(): Observable<Reaction[]> {
+    return this.http.get<Reaction[]>(`${this.apiURL}/reactions`);
   }
 
   getReactionsByPostId(postId: number): Observable<Post> {
@@ -27,10 +26,12 @@ export class ReactionService {
   }
 
   addAReaction(reaction: Reaction): Observable<Reaction> {
-    return this.http.post<Reaction>(`${this.apiURL}/reactions`,  reaction, { responseType: 'text' as 'json' });
+    return this.http.post<Reaction>(`${this.apiURL}/reactions`, reaction, {
+      responseType: 'text' as 'json',
+    });
   }
 
   deleteReaction(reactionId: number): Observable<String> {
-    return this.http.delete<string>(`${this.apiURL}/reactions/${reactionId}`)
+    return this.http.delete<string>(`${this.apiURL}/reactions/${reactionId}`);
   }
 }

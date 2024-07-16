@@ -1,4 +1,5 @@
 <body>
+    <!-- NAVBAR -->
     <header>
         <nav class="flex">
             <ul class="primary-navigation flex list-unstyled align-items-center" data-visible="false">
@@ -21,16 +22,18 @@
         </nav>
     </header>
 
+    <!-- SPINNER -->
     <div id="loader">
         <div class="loader"></div>
     </div>
 
+    <!-- TITLE -->
     <div class="body" *ngIf="user">
-        <h1> Hi <img [src]="[user.pictureProfile]" alt="user profile picture">,
+        <h1> Hi <img [src]="[user.pictureProfile]" alt="user profile picture" class="profile-picture">,
             what are <br> you gonna do today? </h1>
 
 
-
+        <!-- BREAKIG NEWS SECTION -->
         <section class="breaking-news">
             <div class="breaking-news-header">
                 <h2> BREAKING NEWS <i class="bi bi-lightning-charge-fill" style="color: #ff6d1f;"></i> </h2>
@@ -82,22 +85,28 @@
             </div>
         </section>
 
+        <!-- FIRST HOME SECTION -->
         <section class="home-info">
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-4 home-left">
                         <div *ngIf="user" class="profile-container">
-                            <div class="profile-pfp">
-                                <img src="{{user.pictureProfile}}" alt="{{user.name}}{{user.surname}} profile picture"
-                                    style="width: 120px; border-radius: 50%;">
+                            <div class="profile-pfp d-flex">
+                                <div>
+                                    <img src="{{user.pictureProfile}}"
+                                        alt="{{user.name}}{{user.surname}} profile picture" class="profile-picture">
+                                </div>
+                                <div class=" d-flex align-items-start justify-content-end flex-column">
+                                    <h2 class="profile-name_surname"> {{user.name}} {{user.surname}}</h2>
+                                    <p class="profile-username" style="word-wrap: break-word;"> <i
+                                        class="bi bi-threads"></i>{{user.username}}</p>
+                                </div>
                             </div>
                             <div class="profile-details">
-                                <h3> {{user.name}} {{user.surname}}</h3>
-                                <p class="fs-5 opacity-75"> <i class="bi bi-threads"></i>{{user.username}}</p>
                                 <p class="fst-italic w-75 text-center" style="word-wrap: break-word;"><i
                                         class="bi bi-quote"></i> {{user.bio}} <i class="bi bi-quote"></i></p>
                                 <p class="fw-bold"> Role : {{user.role}}</p>
-                                <div class="row pt-4">
+                                <div class="container-fluid pt-4 d-flex align-items-center">
                                     <div class="col-6 d-flex justify-content-center align-items-center flex-column">
                                         <p class="m-0 p-0 fs-5"> Following</p>
                                         <p class="fs-5"> {{following}}</p>
@@ -107,13 +116,15 @@
                                         <p class="fs-5"> {{followers}}</p>
                                     </div>
                                 </div>
-                                <a [routerLink]="['/profile', user.id]"> My profile </a>
+                                <div class="container-fluid d-flex algin-items-center justify-content-center">
+                                   <a [routerLink]="['/profile', user.id]"> My profile </a>  
+                                </div>
                             </div>
                         </div>
                     </div>
                     <div class="col-8 home-right">
                         <div class="creation d-flex justify-content-center align-items-center flex-column">
-                            <h4> Do you have something in your mind?</h4>
+                            <h4 class="text-center w-75"> Do you have something in your mind?</h4>
                             <div class="creation-buttons">
                                 <button *ngIf="user?.role === 'ADMIN' || user?.role === 'DRIVER'" class="post-toggle"
                                     data-target="#post"> add a post </button>
@@ -264,14 +275,15 @@
             </div>
         </section>
 
+        <!-- SECOND HOME SECTION / POSTS SECTION -->
         <section class="posts-section">
             <p class="posts-section-p ">People you follow</p>
             <div class="following" *ngIf="followingUsers && followingUsers.length > 0; else noFollowing">
                 <div class="d-flex ms-2">
-                    <div class="mx-4" *ngFor="let user of followingUsers">
+                    <div class="mx-3 d-flex flex-column justify-content-center align-items-center" *ngFor="let user of followingUsers">
                         <div class="pfp">
                             <a [routerLink]="['/profile', user.id]">
-                                <img src="{{user.pictureProfile}}" alt="{{user.name}}{{user.surname}} profile picture">
+                                <img src="{{user.pictureProfile}}" alt="{{user.name}}{{user.surname}} profile picture" class="profile-picture">
                             </a>
                         </div>
                         <div class="a-user-following">
@@ -288,7 +300,7 @@
                 </div>
             </ng-template>
             <ng-container class="posts" *ngIf="recentPosts && recentPosts.length > 0; else noPostsYet">
-                <div class="container d-flex flex-wrap align-items-baseline">
+                <div class="recent-posts-container">
                     <div class="recent-posts" *ngFor="let post of recentPosts; let postIndex = index">
                         <div class="container-header-posts">
                             <img [src]="post.user.pictureProfile"
@@ -309,9 +321,9 @@
                                 <div class="menu-container">
                                     <div
                                         *ngIf="loggedUser && (loggedUser.user.id !== user.id || loggedUser.user.role === 'ADMIN')">
-                                        <p class="d-flex flex-row align-items-center" style="cursor: pointer;"
+                                        <a class="d-flex flex-row align-items-center" style="cursor: pointer;"
                                             (click)="onDeletePost(post.id)">Delete <i class="bi bi-trash-fill"></i>
-                                        </p>
+                                </a>
                                     </div>
                                     <div *ngIf="loggedUser && loggedUser.user.id === user.id">
                                         <a [routerLink]="['/profile', post.user.id]"
@@ -324,25 +336,26 @@
                         </div>
                         <div class="d-flex flex-column container-body-post">
                             <div class="badge">
-                                <p>{{ post.tags }}</p>
+                                <!-- adding a pipe for the tags -->
+                                <p class="badge-title" *ngFor="let tags of post.tags">{{ tags | formatTags }}</p>
                             </div>
                             <h4>{{ post.title }}</h4>
                             <p class="description">{{ post.description }}</p>
                             <div class="d-flex justify-content-start">
-                                <div class="d-flex flex-column align-items-start my-1 ms-0 me-4">
+                                <div class="d-flex flex-column align-items-start my-1 ms-0">
                                     <p class="title-badge">Spaces</p>
                                     <p class="p-badge"><span class="body-badge">{{ post.spacesRiders }}</span>
                                         Riders</p>
                                 </div>
-                                <div class="d-flex flex-column align-items-start my-1 mx-4">
+                                <div class="d-flex flex-column align-items-start my-1 mx-2">
                                     <p class="title-badge">Start point:</p>
                                     <p class="body-badge">{{ post.startingPoint }}</p>
                                 </div>
-                                <div class="d-flex flex-column align-items-start my-1 mx-4">
+                                <div class="d-flex flex-column align-items-start my-1 mx-2">
                                     <p class="title-badge">End point:</p>
                                     <p class="body-badge">{{ post.endPoint }}</p>
                                 </div>
-                                <div class="d-flex flex-column align-items-start my-1 mx-4">
+                                <div class="d-flex flex-column align-items-start my-1 mx-2">
                                     <p class="title-badge">Vehicle:</p>
                                     <p class="body-badge">{{ post.vehicle }}</p>
                                 </div>
@@ -400,19 +413,19 @@
                                                 <i class="bi bi-chat-quote replies-toggle"
                                                     [attr.data-target]="'#replies-' + postIndex + '-' + commentIndex"
                                                     style="cursor: pointer"></i>
-                                                <i class="bi bi-three-dots-vertical three-dots"
+                                                <i class="bi bi-three-dots-vertical three-dots comment-toggle-menu"
                                                     [attr.data-target]="'#comment-menu-' + postIndex + '-' + commentIndex"
                                                     style="cursor: pointer;"></i>
                                                 <div class="menu close"
                                                     [attr.id]="'comment-menu-' + postIndex + '-' + commentIndex">
                                                     <div class="menu-container">
                                                         <div
-                                                            *ngIf="loggedUser && loggedUser.user.id !== user.id || loggedUser?.user?.role === 'ADMIN'">
-                                                            <p class="d-flex flex-row align-items-center"
+                                                            *ngIf="loggedUser && loggedUser.user.id == comment.user.id || loggedUser?.user?.role === 'ADMIN'">
+                                                            <a class="d-flex flex-row align-items-center"
                                                                 style="cursor: pointer;" (click)="onDelete(comment.id)">
                                                                 Delete
                                                                 <i class="bi bi-trash-fill"></i>
-                                                            </p>
+                                                            </a>
                                                         </div>
 
                                                         <div *ngIf="loggedUser && loggedUser.user.id === user.id">
@@ -464,23 +477,25 @@
                                                             </div>
                                                         </div>
                                                         <div class="interactions-comments">
-                                                            <button type="button" class="three-dots"
-                                                                [attr.data-target]="'#reply-menu-' + postIndex + '-' + commentIndex + '-' + replyIndex">
-                                                                <i class="bi bi-three-dots-vertical"></i>
-                                                            </button>
+                                                            <i [attr.data-target]="'#reply-menu-' + postIndex + '-' + commentIndex + '-' + replyIndex"
+                                                                class="bi bi-three-dots-vertical three-dots replies-toggle-menu"
+                                                                style="cursor: pointer;"></i>
+
                                                             <div class="menu close"
                                                                 [attr.id]="'reply-menu-' + postIndex + '-' + commentIndex + '-' + replyIndex">
                                                                 <div class="menu-container">
                                                                     <div
-                                                                        *ngIf="loggedUser && loggedUser.user.id !== user.id || loggedUser?.user?.role === 'ADMIN'">
+                                                                        *ngIf="loggedUser && loggedUser.user.id === reply.user.id || loggedUser?.user?.role === 'ADMIN'">
                                                                         <p class="d-flex flex-row align-items-center"
-                                                                            style="cursor: pointer;" (click)="onDeleteReply(comment.id)">
+                                                                            style="cursor: pointer;"
+                                                                            (click)="onDeleteReply(reply.id)">
                                                                             Delete
                                                                             <i class="bi bi-trash-fill"></i>
                                                                         </p>
                                                                     </div>
-            
-                                                                    <div *ngIf="loggedUser && loggedUser.user.id === user.id">
+
+                                                                    <div
+                                                                        *ngIf="loggedUser && loggedUser.user.id === user.id">
                                                                         <a [routerLink]="['/profile', reply.user.id]"
                                                                             class="d-flex flex-row align-items-center"
                                                                             style="cursor: pointer;"> Info

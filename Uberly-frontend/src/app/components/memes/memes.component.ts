@@ -20,15 +20,15 @@ import gsap from 'gsap';
   templateUrl: './memes.component.html',
   styleUrls: ['./memes.component.scss'],
 })
-export class MemesComponent implements OnInit, AfterViewInit {
-  MemesUser!: Meme[];
+export class MemesComponent implements OnInit {
+  postsUser!: Meme[];
   repliesByComment: { [commentId: number]: Reply[] } = {};
-  commentsByMeme: { [memeId: number]: Comment[] } = {};
+  commentsByPost: { [memeId: number]: Comment[] } = {};
   following!: number;
   followers!: number;
   loggedUser!: AuthData | null;
   user!: User;
-  
+
   constructor(
     private route: ActivatedRoute,
     private memeService: MemeService,
@@ -40,6 +40,7 @@ export class MemesComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.authService.user$.subscribe((user) => (this.loggedUser = user));
+
     const parentRoute = this.route.parent;
     if (parentRoute) {
       parentRoute.params.subscribe((parentParams) => {
@@ -48,123 +49,117 @@ export class MemesComponent implements OnInit, AfterViewInit {
         this.userService.getUser(id).subscribe((profileUser) => {
           this.user = profileUser;
           this.memeService.refreshPostsByUser(id);
-
-          this.memeService.getAllMemesByUserId(id).subscribe((memes) => {
-            this.MemesUser = memes;
-            this.initializeCommentsForPosts();
-          this.initializeRepliesForComments();
-          });
+          this.initializeUserPosts();
         });
       });
     }
   }
-  
+
+  initializeUserPosts(): void {
+    // i need the time out in order to fetch correctly the data, or else it would be giving an empty array even if the user made a post
+    setTimeout(() => {
+      this.memeService.memesByUserSub.subscribe((posts) => {
+        this.postsUser = posts;
+        this.initializeCommentsForPosts();
+      });
+    }, 500);
+  }
 
   initializeCommentsForPosts(): void {
     const commentObservables: Observable<Comment[]>[] = [];
-  
-    this.MemesUser.forEach((meme) => {
-      commentObservables.push(
-        this.commentService.getCommentsByMemeId(meme.id).pipe(
-          tap((comments) => {
-            this.commentsByMeme[meme.id] = comments || [];
-          })
-        )
-      );
-    });
 
-    forkJoin(commentObservables).subscribe(
-      () => {
-        console.log('Comments initialized');
-      },
-      (error) => {
-        console.error('Error initializing comments: ', error);
-      }
-    );
-  }
-
-  initializeCommentsAndReplies(): void {
-    const commentObservables: Observable<Comment[]>[] = [];
-    const replyObservables: Observable<Reply[]>[] = [];
-
-    this.MemesUser.forEach((meme) => {
-      commentObservables.push(this.commentService.getCommentsByMemeId(meme.id)
-        .pipe(
-          tap((comments) => {
-            this.commentsByMeme[meme.id] = comments || [];
-          })
-        ));
-    });
-
-    forkJoin(commentObservables).subscribe(
-      () => {
-        console.log('Comments initialized');
-        this.initializeRepliesForComments();
-      },
-      (error) => {
-        console.error('Error initializing comments: ', error);
-      }
-    );
-  }
-  
-
- 
-  initializeRepliesForComments(): void {
-    const replyObservables: Observable<Reply[]>[] = [];
-  
-    this.MemesUser.forEach((meme) => {
-      const comments = this.commentsByMeme[meme.id] || [];
-      comments.forEach((comment) => {
-        replyObservables.push(
-          this.replyService.getRepliesByCommentId(comment.id).pipe(
-            tap((replies) => {
-              this.repliesByComment[comment.id] = replies || [];
+    // Check if recentPosts has posts inside the array
+    if (this.postsUser && this.postsUser.length > 0) {
+      this.postsUser.forEach((post) => {
+        commentObservables.push(
+          this.commentService.getCommentsByPostId(post.id).pipe(
+            tap((comments) => {
+              this.commentsByPost[post.id] = comments || [];
             })
           )
         );
       });
-    });
-  
-    forkJoin(replyObservables).subscribe(
-      () => {
-        console.log('Replies initialized');
-      },
-      (error) => {
-        console.error('Error initializing replies: ', error);
+
+      forkJoin(commentObservables).subscribe(
+        () => {
+          this.initializeRepliesForComments(); // Proceed to initialize all the replies
+        },
+        (error) => {
+          console.error('Error initializing comments: ', error);
+        }
+      );
+    } else {
+      // If recentPosts is empty or undefined, proceed without fetching comments so it can finish loading
+      this.initializeRepliesForComments();
+    }
+  }
+
+  initializeRepliesForComments(): void {
+    const replyObservables: Observable<Reply[]>[] = [];
+
+    // Ensure recentPosts and commentsByPost are defined
+    if (this.postsUser && this.commentsByPost) {
+      this.postsUser.forEach((post) => {
+        const comments = this.commentsByPost[post.id] || [];
+        comments.forEach((comment) => {
+          replyObservables.push(
+            this.replyService.getRepliesByCommentId(comment.id).pipe(
+              tap((replies) => {
+                this.repliesByComment[comment.id] = replies || [];
+              })
+            )
+          );
+        });
+      });
+
+      // Check if replyObservables has data inside the array
+      if (replyObservables.length > 0) {
+        forkJoin(replyObservables).subscribe(
+          () => {
+            this.finalizeInitialization();
+          },
+          (error) => {
+            console.error('Error initializing replies: ', error);
+          }
+        );
+      } else {
+        // if there's no replies, let the finalization complete with an empty array
+        this.finalizeInitialization();
       }
-    );
-  }
-  
-
-  ngAfterViewInit(): void {
-    setTimeout(() => {
-      this.initializeComments();
-      this.initializeReplies();
-      this.initializeMenu();
-      this.initializeSaveButtons();
-    }, 1700);
+    } else {
+      // if there aren't posts or comments, let the finalization complete with an empty array
+      this.finalizeInitialization();
+    }
   }
 
-  onSubmitComment(memeId: number, form: NgForm) {
+  // search for all the toggles in the home page and hide the loader once everything is done
+  finalizeInitialization(): void {
+    this.initializeComments();
+    this.initializeReplies();
+    this.initializeSaveButtons();
+    this.initializeMenu();
+  }
+
+  onSubmitComment(postId: number, form: NgForm) {
     form.value.userId = this.loggedUser?.user.id;
-    form.value.memeId = memeId;
+    form.value.postId = postId;
 
     this.commentService.createComment(form.value).subscribe(
       () => {
-        console.log('comment sent!');
         form.reset();
 
-        const memeIndex = this.MemesUser.findIndex(
-          (meme) => meme.id === memeId
+        const postIndex = this.postsUser.findIndex(
+          (post) => post.id === postId
         );
-        if (memeIndex !== -1) {
+        if (postIndex !== -1) {
           this.commentService
-            .getCommentsByMemeId(memeId)
+            .getCommentsByPostId(postId)
             .subscribe((comments) => {
-              this.commentsByMeme[memeId] = comments;
+              this.commentsByPost[postId] = comments;
               setTimeout(() => {
-                this.initializeMenu();
+                this.initializeCommentsMenu();
                 this.initializeReplies();
+                this.initializeRepliesMenu();
               }, 0);
             });
         }
@@ -175,34 +170,32 @@ export class MemesComponent implements OnInit, AfterViewInit {
     );
   }
 
-  onSubmitReply(memeId: number, commentId: number, form: NgForm) {
+  onSubmitReply(postId: number, commentId: number, form: NgForm) {
     form.value.userId = this.loggedUser?.user.id;
     form.value.commentId = commentId;
 
     this.replyService.createReply(form.value).subscribe(
-      (response) => {
-        console.log('reply sent!', response);
+      () => {
         form.reset();
-
         this.replyService
           .getRepliesByCommentId(commentId)
           .subscribe((replies) => {
             this.repliesByComment[commentId] = replies;
 
-            const memeIndex = this.MemesUser.findIndex(
-              (meme) => meme.id === memeId
+            const postIndex = this.postsUser.findIndex(
+              (post) => post.id === postId
             );
-            if (memeIndex !== -1) {
-              const commentIndex = this.commentsByMeme[memeId].findIndex(
+            if (postIndex !== -1) {
+              const commentIndex = this.commentsByPost[postId].findIndex(
                 (comment) => comment.id === commentId
               );
               if (commentIndex !== -1) {
-                this.commentsByMeme[memeId][commentIndex].replies = replies;
+                this.commentsByPost[postId][commentIndex].replies = replies;
               }
             }
 
             setTimeout(() => {
-              this.initializeMenu();
+              this.initializeRepliesMenu();
             }, 0);
           });
       },
@@ -212,13 +205,50 @@ export class MemesComponent implements OnInit, AfterViewInit {
     );
   }
 
+  initializeRepliesMenu() {
+    const repliesToggles = document.querySelectorAll('.replies-toggle-menu');
+    repliesToggles.forEach((button) => {
+      button.addEventListener('click', () => {
+        const targetSelector = button.getAttribute('data-target');
+        if (targetSelector) {
+          const target = document.querySelector(targetSelector) as HTMLElement;
+          if (target) {
+            const isOpen = !target.classList.contains('close');
+            if (isOpen) {
+              this.close(target);
+            } else {
+              this.open(target);
+            }
+          }
+        }
+      });
+    });
+  }
+
+  initializeCommentsMenu() {
+    const commentsToggles = document.querySelectorAll('.comment-toggle-menu');
+    commentsToggles.forEach((button) => {
+      button.addEventListener('click', () => {
+        const targetSelector = button.getAttribute('data-target');
+        if (targetSelector) {
+          const target = document.querySelector(targetSelector) as HTMLElement;
+          if (target) {
+            const isOpen = !target.classList.contains('close');
+            if (isOpen) {
+              this.close(target);
+            } else {
+              this.open(target);
+            }
+          }
+        }
+      });
+    });
+  }
 
   initializeMenu() {
     const menuToggles = document.querySelectorAll('.three-dots');
-    console.log('all the menus: ', menuToggles);
     menuToggles.forEach((button) => {
       button.addEventListener('click', () => {
-        console.log('button clicked', button);
         const targetSelector = button.getAttribute('data-target');
         if (targetSelector) {
           const target = document.querySelector(targetSelector) as HTMLElement;
@@ -237,10 +267,9 @@ export class MemesComponent implements OnInit, AfterViewInit {
 
   initializeSaveButtons() {
     const saveToggleButtons = document.querySelectorAll('.save-toggle');
-    console.log("Toggle save buttons", saveToggleButtons);
     saveToggleButtons.forEach((button) => {
       button.addEventListener('click', () => {
-        const postId = Number(button.getAttribute('data-meme-id'));
+        const postId = Number(button.getAttribute('data-post-id'));
         this.onSaves(postId, button);
       });
     });
@@ -278,15 +307,15 @@ export class MemesComponent implements OnInit, AfterViewInit {
     }
   }
 
-  onSaves(memeId: number, button: Element) {
-    const meme = this.MemesUser.find((m) => m.id === memeId);
+  onSaves(postId: number, button: Element) {
+    const post = this.postsUser.find((p) => p.id === postId);
     const loggedUser = this.loggedUser;
-  
+
     if (loggedUser) {
-      if (meme && !this.isMemeSaved(memeId, loggedUser)) {
-        this.userService.addSavedMeme(loggedUser.user.id, memeId).subscribe(
+      if (post && !this.isPostSaved(postId, loggedUser)) {
+        this.userService.addSavedMeme(loggedUser.user.id, postId).subscribe(
           () => {
-            meme.usersWhoSaved.push(loggedUser.user);
+            post.usersWhoSaved.push(loggedUser.user);
             this.toggleSaveIconClass(button, true);
             console.log('Post saved');
           },
@@ -294,12 +323,14 @@ export class MemesComponent implements OnInit, AfterViewInit {
             console.error('Error saving post:', err);
           }
         );
-      } else if (meme && this.isMemeSaved(meme.id, loggedUser)) {
-        this.userService.deleteSavedMeme(loggedUser.user.id, memeId).subscribe(
+      } else if (post && this.isPostSaved(post.id, loggedUser)) {
+        this.userService.deleteSavedMeme(loggedUser.user.id, postId).subscribe(
           () => {
-            const index = meme.usersWhoSaved.findIndex((u) => u.id === loggedUser.user.id);
+            const index = post.usersWhoSaved.findIndex(
+              (u) => u.id === loggedUser.user.id
+            );
             if (index !== -1) {
-              meme.usersWhoSaved.splice(index, 1);
+              post.usersWhoSaved.splice(index, 1);
             }
             this.toggleSaveIconClass(button, false);
             console.log('Post removed from saved');
@@ -311,15 +342,14 @@ export class MemesComponent implements OnInit, AfterViewInit {
       }
     }
   }
-  
-  isMemeSaved(memeId: number, user: AuthData): boolean {
-    const meme = this.MemesUser.find((m) => m.id === memeId);
-    if (!meme) {
+
+  isPostSaved(postId: number, user: AuthData): boolean {
+    const post = this.postsUser.find((p) => p.id === postId);
+    if (!post) {
       return false;
     }
-    return meme.usersWhoSaved.some((u) => u.id === user.user.id);
+    return post.usersWhoSaved.some((u) => u.id === user.user.id);
   }
-
 
   toggleSaveIconClass(button: Element, isSaved: boolean) {
     if (isSaved) {
@@ -333,7 +363,6 @@ export class MemesComponent implements OnInit, AfterViewInit {
 
   initializeReplies() {
     const repliesToggle = document.querySelectorAll('.replies-toggle');
-    console.log(repliesToggle);
     repliesToggle.forEach((button) => {
       button.addEventListener('click', () => {
         const targetSelector = button.getAttribute('data-target');
@@ -373,21 +402,57 @@ export class MemesComponent implements OnInit, AfterViewInit {
     });
   }
 
-  onDelete(commentId: number) {
+  onDeleteComment(commentId: number) {
     this.commentService.deleteComment(commentId).subscribe(() => {
       console.log('comment deleted!');
+      this.removeCommentFromUI(commentId);
     });
   }
 
   onDeleteReply(replyId: number) {
     this.replyService.deleteReply(replyId).subscribe(() => {
       console.log('reply deleted!');
+      this.removeReplyFromUI(replyId);
     });
   }
 
-  onDeleteMeme(memeId: number) {
-    this.memeService.deleteMeme(memeId).subscribe(() => {
-      console.log('deleted post!');
+  onDeletePost(postId: number) {
+    this.memeService.deleteMeme(postId).subscribe(() => {
+      console.log('post deleted!');
+      this.removePostFromUI(postId);
     });
+  }
+
+  removeCommentFromUI(commentId: number) {
+    for (const postId in this.commentsByPost) {
+      if (this.commentsByPost.hasOwnProperty(postId)) {
+        const comments = this.commentsByPost[postId];
+        const index = comments.findIndex((comment) => comment.id === commentId);
+        if (index !== -1) {
+          comments.splice(index, 1);
+          break;
+        }
+      }
+    }
+  }
+
+  removeReplyFromUI(replyId: number) {
+    for (const commentId in this.repliesByComment) {
+      if (this.repliesByComment.hasOwnProperty(commentId)) {
+        const replies = this.repliesByComment[commentId];
+        const index = replies.findIndex((reply) => reply.id === replyId);
+        if (index !== -1) {
+          replies.splice(index, 1);
+          break;
+        }
+      }
+    }
+  }
+
+  removePostFromUI(postId: number) {
+    const index = this.postsUser.findIndex((post) => post.id === postId);
+    if (index !== -1) {
+      this.postsUser.splice(index, 1);
+    }
   }
 }

@@ -57,20 +57,21 @@ export class HomeComponent implements OnInit, AfterViewInit {
     private replyService: ReplyService
   ) {}
 
-  
   ngOnInit(): void {
     this.authSrv.user$.subscribe((user) => {
       this.loggedUser = user;
       if (this.loggedUser) {
-        this.userService.getUser(this.loggedUser.user.id).subscribe((profileUser) => {
-          this.user = profileUser;
-          this.initializeUserDetails();
-        });
+        this.userService
+          .getUser(this.loggedUser.user.id)
+          .subscribe((profileUser) => {
+            this.user = profileUser;
+            this.initializeUserDetails();
+          });
       }
     });
-    this.showLoader();
+    this.showLoader(); // Show loader in the home page and wait for all the data to be loaded 
   }
-  
+
   initializeUserDetails(): void {
     if (this.user) {
       this.followers = this.extractNumber(this.user.followers);
@@ -78,107 +79,112 @@ export class HomeComponent implements OnInit, AfterViewInit {
       this.userId = this.user.id;
       this.loadFollowingUsers();
 
-      this.postService.recentPostsSub.subscribe((recentPosts) => {
-        this.recentPosts = recentPosts;
-         this.initializeCommentsForPosts();
-        this.initializeRepliesForComments();
-      });
 
-      this.postService.getRecentPostsForFollowedUsers(this.userId);
-
-     
+      this.postService.getRecentPostsForFollowedUsers(this.userId).subscribe(
+        (posts) => {
+          this.recentPosts = posts || []; // if there's no posts from the followed users, start with an empty array 
+          console.log(this.recentPosts);
+          this.initializeCommentsForPosts();
+        },
+        (error) => {
+          console.error('Error fetching recent posts:', error);
+        }
+      );
     }
-    setTimeout(() => {
-      this.hideLoader();
-    }, 1700);
   }
-
 
   initializeCommentsForPosts(): void {
     const commentObservables: Observable<Comment[]>[] = [];
   
-    this.recentPosts.forEach((post) => {
-      commentObservables.push(
-        this.commentService.getCommentsByPostId(post.id).pipe(
-          tap((comments) => {
-            this.commentsByPost[post.id] = comments || [];
-          })
-        )
-      );
-    });
-
-    forkJoin(commentObservables).subscribe(
-      () => {
-        console.log('Comments initialized');
-      },
-      (error) => {
-        console.error('Error initializing comments: ', error);
-      }
-    );
-  }
-  
-
-  initializeCommentsAndReplies(): void {
-    const commentObservables: Observable<Comment[]>[] = [];
-    const replyObservables: Observable<Reply[]>[] = [];
-
-    this.recentPosts.forEach((post) => {
-      commentObservables.push(this.commentService.getCommentsByPostId(post.id)
-        .pipe(
-          tap((comments) => {
-            this.commentsByPost[post.id] = comments || [];
-          })
-        ));
-    });
-
-    forkJoin(commentObservables).subscribe(
-      () => {
-        console.log('Comments initialized');
-        this.initializeRepliesForComments();
-      },
-      (error) => {
-        console.error('Error initializing comments: ', error);
-      }
-    );
-  }
-
-  initializeRepliesForComments(): void {
-    const replyObservables: Observable<Reply[]>[] = [];
-
-    this.recentPosts.forEach((post) => {
-      const comments = this.commentsByPost[post.id] || [];
-      comments.forEach((comment) => {
-        replyObservables.push(
-          this.replyService.getRepliesByCommentId(comment.id).pipe(
-            tap((replies) => {
-              this.repliesByComment[comment.id] = replies || [];
+    // Check if recentPosts has posts inside the array
+    if (this.recentPosts && this.recentPosts.length > 0) {
+      this.recentPosts.forEach((post) => {
+        commentObservables.push(
+          this.commentService.getCommentsByPostId(post.id).pipe(
+            tap((comments) => {
+              this.commentsByPost[post.id] = comments || [];
+              console.log(`Comments for post ${post.id} initialized`);
             })
           )
         );
       });
-    });
-
-    forkJoin(replyObservables).subscribe(
-      () => {
-        console.log('Replies initialized');
-      },
-      (error) => {
-        console.error('Error initializing replies: ', error);
-      }
-    );
+  
+      forkJoin(commentObservables).subscribe(
+        () => {
+          console.log('All comments initialized');
+          this.initializeRepliesForComments(); // Proceed to initialize all the replies 
+        },
+        (error) => {
+          console.error('Error initializing comments: ', error);
+        }
+      );
+    } else {
+      // If recentPosts is empty or undefined, proceed without fetching comments so it can finish loading 
+      console.log('No recent posts found');
+      this.initializeRepliesForComments();
+    }
   }
-  
 
+  initializeRepliesForComments(): void {
+    const replyObservables: Observable<Reply[]>[] = [];
   
+    // Ensure recentPosts and commentsByPost are defined
+    if (this.recentPosts && this.commentsByPost) {
+      this.recentPosts.forEach((post) => {
+        const comments = this.commentsByPost[post.id] || [];
+        comments.forEach((comment) => {
+          replyObservables.push(
+            this.replyService.getRepliesByCommentId(comment.id).pipe(
+              tap((replies) => {
+                this.repliesByComment[comment.id] = replies || [];
+              })
+            )
+          );
+        });
+      });
+  
+      // Check if replyObservables has data inside the array 
+      if (replyObservables.length > 0) {
+        forkJoin(replyObservables).subscribe(
+          () => {
+            console.log('Replies initialized');
+            this.finalizeInitialization();
+          },
+          (error) => {
+            console.error('Error initializing replies: ', error);
+          }
+        );
+      } else {
+        // if there's no replies, let the finalization complete with an empty array 
+        console.log('No replies to initialize');
+        this.finalizeInitialization();
+      }
+    } else {
+      // if there aren't posts or comments, let the finalization complete with an empty array 
+      console.log('No recent posts or comments to initialize replies');
+      this.finalizeInitialization();
+    }
+  }
+
+  // search for all the toggles in the home page and hide the loader once everything is done 
+  finalizeInitialization(): void {
+    this.initializeComments();
+    this.initializeReplies();
+    
+    this.initializeSaveButtons();
+    this.createPost();
+    this.createMeme();
+    this.hideLoader();
+    setTimeout(() => {
+      // i had to add a little bit of delay for the menus because if not, it wouldn't collect them all 
+      this.initializeMenu();
+    }, 500)
+  }
+
 
   ngAfterViewInit(): void {
+    // added a delay to get all the items inside the slider
     setTimeout(() => {
-      this.initializeComments();
-      this.initializeReplies();
-      this.initializeMenu();
-      this.initializeSaveButtons();
-      this.createPost();
-      this.createMeme();
       const scrollbreakingnews = new ScrollingNews({
         el: '.slider',
         wrap: '.slider-wrapper',
@@ -187,16 +193,11 @@ export class HomeComponent implements OnInit, AfterViewInit {
       });
 
       this.animateScroll(scrollbreakingnews);
-    }, 3000);
+    }, 1000);
   }
 
   showLoader(): void {
     window.scrollTo(0, 0);
-
-    const loader = document.querySelector('#loader');
-    if (loader) {
-      loader.classList.remove('hidden');
-    }
   }
 
   hideLoader(): void {
@@ -224,7 +225,6 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
     this.commentService.createComment(form.value).subscribe(
       () => {
-        console.log('comment sent!');
         form.reset();
 
         const postIndex = this.recentPosts.findIndex(
@@ -236,8 +236,9 @@ export class HomeComponent implements OnInit, AfterViewInit {
             .subscribe((comments) => {
               this.commentsByPost[postId] = comments;
               setTimeout(() => {
-                this.initializeMenu();
+                this.initializeCommentsMenu();
                 this.initializeReplies();
+                this.initializeRepliesMenu();
               }, 0);
             });
         }
@@ -253,8 +254,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
     form.value.commentId = commentId;
 
     this.replyService.createReply(form.value).subscribe(
-      (response) => {
-        console.log('reply sent!', response);
+      () => {
         form.reset();
 
         this.replyService
@@ -275,7 +275,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
             }
 
             setTimeout(() => {
-              this.initializeMenu();
+              this.initializeRepliesMenu();
             }, 0);
           });
       },
@@ -288,9 +288,9 @@ export class HomeComponent implements OnInit, AfterViewInit {
   onSubmit(form: NgForm) {
     form.value.userId = this.userId;
     form.value.tags = this.tags;
-  
-    console.log(form.value); 
-  
+
+    console.log(form.value);
+
     this.postService.savePost(form.value).subscribe(
       () => {
         form.resetForm();
@@ -368,7 +368,6 @@ export class HomeComponent implements OnInit, AfterViewInit {
     }
   }
 
-
   private extractNumber(value: User[] | number | undefined): number {
     if (typeof value === 'number') {
       return value;
@@ -379,13 +378,53 @@ export class HomeComponent implements OnInit, AfterViewInit {
     }
   }
 
+  initializeRepliesMenu() {
+    const repliesToggles = document.querySelectorAll('.replies-toggle-menu');
+    console.log('Replies Toggles: ', repliesToggles);
+    repliesToggles.forEach((button) => {
+      button.addEventListener('click', () => {
+        const targetSelector = button.getAttribute('data-target');
+        if (targetSelector) {
+          const target = document.querySelector(targetSelector) as HTMLElement;
+          if (target) {
+            const isOpen = !target.classList.contains('close');
+            if (isOpen) {
+              this.close(target);
+            } else {
+              this.open(target);
+            }
+          }
+        }
+      });
+    });
+  }
+
+  initializeCommentsMenu() {
+    const commentsToggles = document.querySelectorAll('.comment-toggle-menu');
+    console.log('Comments Toggles: ', commentsToggles);
+    commentsToggles.forEach((button) => {
+      button.addEventListener('click', () => {
+        const targetSelector = button.getAttribute('data-target');
+        if (targetSelector) {
+          const target = document.querySelector(targetSelector) as HTMLElement;
+          if (target) {
+            const isOpen = !target.classList.contains('close');
+            if (isOpen) {
+              this.close(target);
+            } else {
+              this.open(target);
+            }
+          }
+        }
+      });
+    });
+  }
 
   initializeMenu() {
     const menuToggles = document.querySelectorAll('.three-dots');
     console.log('Menu Toggles: ', menuToggles);
     menuToggles.forEach((button) => {
       button.addEventListener('click', () => {
-        console.log('button clicked', button);
         const targetSelector = button.getAttribute('data-target');
         if (targetSelector) {
           const target = document.querySelector(targetSelector) as HTMLElement;
@@ -404,7 +443,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
   initializeSaveButtons() {
     const saveToggleButtons = document.querySelectorAll('.save-toggle');
-    console.log("Save toggles: ", saveToggleButtons);
+    console.log('Save toggles: ', saveToggleButtons);
     saveToggleButtons.forEach((button) => {
       button.addEventListener('click', () => {
         const postId = Number(button.getAttribute('data-post-id'));
@@ -415,7 +454,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
   initializeComments() {
     const commentToggle = document.querySelectorAll('.comments-toggle');
-    console.log("Comment toggles: ", commentToggle);
+    console.log('Comment toggles: ', commentToggle);
     commentToggle.forEach((button) => {
       button.addEventListener('click', () => {
         const targetSelector = button.getAttribute('data-target');
@@ -449,7 +488,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
   onSaves(postId: number, button: Element) {
     const post = this.recentPosts.find((p) => p.id === postId);
     const loggedUser = this.loggedUser;
-  
+
     if (loggedUser) {
       if (post && !this.isPostSaved(postId, loggedUser)) {
         this.userService.addSavedPost(loggedUser.user.id, postId).subscribe(
@@ -465,7 +504,9 @@ export class HomeComponent implements OnInit, AfterViewInit {
       } else if (post && this.isPostSaved(post.id, loggedUser)) {
         this.userService.deleteSavedPost(loggedUser.user.id, postId).subscribe(
           () => {
-            const index = post.usersWhoSaved.findIndex((u) => u.id === loggedUser.user.id);
+            const index = post.usersWhoSaved.findIndex(
+              (u) => u.id === loggedUser.user.id
+            );
             if (index !== -1) {
               post.usersWhoSaved.splice(index, 1);
             }
@@ -479,7 +520,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
       }
     }
   }
-  
+
   isPostSaved(postId: number, user: AuthData): boolean {
     const post = this.recentPosts.find((p) => p.id === postId);
     if (!post) {
@@ -487,7 +528,6 @@ export class HomeComponent implements OnInit, AfterViewInit {
     }
     return post.usersWhoSaved.some((u) => u.id === user.user.id);
   }
-
 
   toggleSaveIconClass(button: Element, isSaved: boolean) {
     if (isSaved) {
@@ -501,7 +541,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
   initializeReplies() {
     const repliesToggle = document.querySelectorAll('.replies-toggle');
-    console.log("Replies toggle: ", repliesToggle);
+    console.log('Replies toggle: ', repliesToggle);
     repliesToggle.forEach((button) => {
       button.addEventListener('click', () => {
         const targetSelector = button.getAttribute('data-target');
@@ -590,22 +630,22 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
   openCreation(target: HTMLElement): void {
     gsap.to(target, {
-      duration: 0.4,
+      duration: 0.5,
       maxHeight: '100vh',
       opacity: 1,
-      ease: 'power4.inOut',
+      ease: 'power2.inOut',
       onComplete: () => {
         target.classList.add('open');
       },
     });
   }
-
+  
   closeCreation(target: HTMLElement): void {
     gsap.to(target, {
       duration: 0.8,
       maxHeight: 0,
       opacity: 0,
-      ease: 'power4.inOut',
+      ease: 'power2.inOut',
       onComplete: () => {
         target.classList.remove('open');
       },
@@ -632,8 +672,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
   clearImage(): void {
     this.uploadedImage = null;
     this.imagePreview = null;
-    (document.querySelector('input[type="file"]') as HTMLInputElement).value =
-      '';
+    (document.querySelector('input[type="file"]') as HTMLInputElement).value = '';
     const containerInput = document.querySelector('.preview-container');
     containerInput?.classList.remove('hidden');
   }

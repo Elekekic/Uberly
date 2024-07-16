@@ -15,7 +15,9 @@ export class UserService {
   favMemesByUserSub = new BehaviorSubject<Meme[]>([]);
   favPostsByUserSub = new BehaviorSubject<Post[]>([]);
 
-  private apiURL = 'https://outer-lane-kekice-635da50d.koyeb.app/api/users';
+  apiURL = 'https://outer-lane-kekice-635da50d.koyeb.app/api/users';
+ /*  apiURL = 'http://localhost:8080/api/users'; */
+
 
   constructor(private http: HttpClient) { }
 
