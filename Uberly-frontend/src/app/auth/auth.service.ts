@@ -10,8 +10,8 @@ import { AuthData } from '../interfaces/auth-data';
   providedIn: 'root',
 })
 export class AuthService {
-  /*   apiURL = "https://outer-lane-kekice-635da50d.koyeb.app/auth/" */
-  apiURL = 'http://localhost:8080/auth/';
+    apiURL = "https://magnetic-kathlin-kekice-0533f74d.koyeb.app/auth/"
+ /*  apiURL = 'http://localhost:8080/auth/'; */
   jwtHelper = new JwtHelperService();
   private authSub = new BehaviorSubject<AuthData | null>(null);
   user$ = this.authSub.asObservable();
