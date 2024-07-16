@@ -33,7 +33,7 @@ public class JwtFilter extends OncePerRequestFilter {
     String authHeader = request.getHeader("Authorization");
 
         String origin = request.getHeader("Origin");
-        if ("https://uberly-gamma.vercel.app".equals(origin) || "http://localhost:4200".equals(origin)) {
+        if ("https://uberly-app.vercel.app".equals(origin) || "http://localhost:4200".equals(origin)) {
             response.setHeader("Access-Control-Allow-Origin", origin);
         }
             response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD, PATCH");
