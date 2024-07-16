@@ -13,7 +13,6 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "https://uberly-gamma.vercel.app")
 public class ReactionController {
 
     @Autowired

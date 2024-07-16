@@ -17,6 +17,7 @@ export class PostService {
 recentPostsSub = new BehaviorSubject<Post[]>([]);
 
   apiURL = 'https://outer-lane-kekice-635da50d.koyeb.app/api';
+ /*  apiURL = 'http://localhost:8080/api' */
 
   constructor(private http: HttpClient) { }
 
@@ -28,11 +29,13 @@ recentPostsSub = new BehaviorSubject<Post[]>([]);
     return this.http.get<Post>(`${this.apiURL}/posts/${id}`);
   }
 
-  getRecentPostsForFollowedUsers(userId: number): void {
-    this.http.get<Post[]>(`${this.apiURL}/posts/recent/${userId}`).subscribe(posts => {
-      this.recentPosts = posts;
-      this.recentPostsSub.next(this.recentPosts);
-    });
+  getRecentPostsForFollowedUsers(userId: number): Observable<Post[]> {
+    return this.http.get<Post[]>(`${this.apiURL}/posts/recent/${userId}`).pipe(
+      tap(posts => {
+        this.recentPosts = posts;
+        this.recentPostsSub.next(this.recentPosts);
+      })
+    );
   }
   
 

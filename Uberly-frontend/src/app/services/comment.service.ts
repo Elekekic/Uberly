@@ -5,20 +5,20 @@ import { CommentDto } from '@app/interfaces/comment-dto';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class CommentService {
-
   private commentsByPost: { [postId: number]: Comment[] } = {};
   commentsByPostSub = new BehaviorSubject<{ [postId: number]: Comment[] }>({});
 
   apiURL = 'https://outer-lane-kekice-635da50d.koyeb.app/api/comments';
+  /* apiURL = 'http://localhost:8080/api/comments'; */
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   getCommentsByPostId(postId: number): Observable<Comment[]> {
     return this.http.get<Comment[]>(`${this.apiURL}/posts/${postId}`).pipe(
-      tap(comments => {
+      tap((comments) => {
         this.commentsByPost[postId] = comments;
         this.commentsByPostSub.next(this.commentsByPost);
       })
@@ -27,7 +27,7 @@ export class CommentService {
 
   getCommentsByMemeId(memeId: number): Observable<Comment[]> {
     return this.http.get<Comment[]>(`${this.apiURL}/memes/${memeId}`).pipe(
-      tap(comments => {
+      tap((comments) => {
         this.commentsByPost[memeId] = comments;
         this.commentsByPostSub.next(this.commentsByPost);
       })
@@ -39,13 +39,15 @@ export class CommentService {
   }
 
   createComment(commentDTO: CommentDto): Observable<string> {
-    return this.http.post<string>(this.apiURL, commentDTO, { responseType: 'text' as 'json' }).pipe(
-      tap(() => {
-        if (commentDTO.postId) {
-          this.refreshCommentsByPost(commentDTO.postId);
-        }
-      })
-    );
+    return this.http
+      .post<string>(this.apiURL, commentDTO, { responseType: 'text' as 'json' })
+      .pipe(
+        tap(() => {
+          if (commentDTO.postId) {
+            this.refreshCommentsByPost(commentDTO.postId);
+          }
+        })
+      );
   }
 
   getAllComments(): Observable<Comment[]> {
@@ -53,32 +55,39 @@ export class CommentService {
   }
 
   updateComment(id: number, comment: Comment): Observable<Comment> {
-    return this.http.put<Comment>(`${this.apiURL}/${id}`, comment, { responseType: 'text' as 'json' }).pipe(
-      tap(() => {
-        if (comment.postId) {
-          this.refreshCommentsByPost(comment.postId);
-        }
+    return this.http
+      .put<Comment>(`${this.apiURL}/${id}`, comment, {
+        responseType: 'text' as 'json',
       })
-    );
+      .pipe(
+        tap(() => {
+          if (comment.postId) {
+            this.refreshCommentsByPost(comment.postId);
+          }
+        })
+      );
   }
 
   deleteComment(id: number): Observable<string> {
-    return this.http.delete<string>(`${this.apiURL}/${id}`, { responseType: 'text' as 'json' }).pipe(
-      tap(() => {
-        for (const postId in this.commentsByPost) {
-          if (this.commentsByPost.hasOwnProperty(postId)) {
-            const comments = this.commentsByPost[postId];
-            const index = comments.findIndex(comment => comment.id === id);
-            if (index !== -1) {
-              comments.splice(index, 1);
-              this.commentsByPostSub.next({ ...this.commentsByPost });
-              break;
+    return this.http
+      .delete<string>(`${this.apiURL}/${id}`, {
+        responseType: 'text' as 'json',
+      }).pipe(
+        tap(() => {
+          for (const postId in this.commentsByPost) {
+            if (this.commentsByPost.hasOwnProperty(postId)) {
+              const comments = this.commentsByPost[postId];
+              const index = comments.findIndex((comment) => comment.id === id);
+              if (index !== -1) {
+                comments.splice(index, 1);
+                this.commentsByPostSub.next({ ...this.commentsByPost });
+                break;
+              }
             }
           }
-        }
-      })
-    );
-  } 
+        })
+      );
+    }
 
   refreshCommentsByPost(postId: number): void {
     this.getCommentsByPostId(postId).subscribe();

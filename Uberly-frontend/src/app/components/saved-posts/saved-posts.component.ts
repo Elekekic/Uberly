@@ -20,7 +20,7 @@ import gsap from 'gsap';
   templateUrl: './saved-posts.component.html',
   styleUrls: ['./saved-posts.component.scss'],
 })
-export class SavedPostsComponent implements OnInit, AfterViewInit {
+export class SavedPostsComponent implements OnInit {
   postsUser: Post[] = [];
   repliesByComment: { [commentId: number]: Reply[] } = {};
   commentsByPost: { [postId: number]: Comment[] } = {};
@@ -57,96 +57,95 @@ export class SavedPostsComponent implements OnInit, AfterViewInit {
   }
 
   initializeUserPosts(): void {
+    // i need the time out in order to fetch correctly the data, or else it would be giving an empty array even if the user made a post
     setTimeout(() => {
       this.userService.favPostsByUserSub.subscribe((posts) => {
         this.postsUser = posts;
+        console.log(this.postsUser);
         this.initializeCommentsForPosts();
-        this.initializeRepliesForComments();
       });
-    }, 1000);
+    }, 500);
   }
 
   initializeCommentsForPosts(): void {
     const commentObservables: Observable<Comment[]>[] = [];
 
-    this.postsUser.forEach((post) => {
-      commentObservables.push(
-        this.commentService.getCommentsByPostId(post.id).pipe(
-          tap((comments) => {
-            this.commentsByPost[post.id] = comments || [];
-          })
-        )
+    // Check if recentPosts has posts inside the array
+    if (this.postsUser && this.postsUser.length > 0) {
+      this.postsUser.forEach((post) => {
+        commentObservables.push(
+          this.commentService.getCommentsByPostId(post.id).pipe(
+            tap((comments) => {
+              this.commentsByPost[post.id] = comments || [];
+              console.log(`Comments for post ${post.id} initialized`);
+            })
+          )
+        );
+      });
+
+      forkJoin(commentObservables).subscribe(
+        () => {
+          console.log('All comments initialized');
+          this.initializeRepliesForComments(); // Proceed to initialize all the replies
+        },
+        (error) => {
+          console.error('Error initializing comments: ', error);
+        }
       );
-    });
-
-    forkJoin(commentObservables).subscribe(
-      () => {
-        console.log('Comments initialized');
-      },
-      (error) => {
-        console.error('Error initializing comments: ', error);
-      }
-    );
-  }
-
-  initializeCommentsAndReplies(): void {
-    const commentObservables: Observable<Comment[]>[] = [];
-    const replyObservables: Observable<Reply[]>[] = [];
-
-    this.postsUser.forEach((post) => {
-      commentObservables.push(
-        this.commentService.getCommentsByPostId(post.id).pipe(
-          tap((comments) => {
-            this.commentsByPost[post.id] = comments || [];
-          })
-        )
-      );
-    });
-
-    forkJoin(commentObservables).subscribe(
-      () => {
-        console.log('Comments initialized');
-        this.initializeRepliesForComments();
-      },
-      (error) => {
-        console.error('Error initializing comments: ', error);
-      }
-    );
+    } else {
+      // If recentPosts is empty or undefined, proceed without fetching comments so it can finish loading
+      console.log('No recent posts found');
+      this.initializeRepliesForComments();
+    }
   }
 
   initializeRepliesForComments(): void {
     const replyObservables: Observable<Reply[]>[] = [];
 
-    this.postsUser.forEach((post) => {
-      const comments = this.commentsByPost[post.id] || [];
-      comments.forEach((comment) => {
-        replyObservables.push(
-          this.replyService.getRepliesByCommentId(comment.id).pipe(
-            tap((replies) => {
-              this.repliesByComment[comment.id] = replies || [];
-            })
-          )
-        );
+    // Ensure recentPosts and commentsByPost are defined
+    if (this.postsUser && this.commentsByPost) {
+      this.postsUser.forEach((post) => {
+        const comments = this.commentsByPost[post.id] || [];
+        comments.forEach((comment) => {
+          replyObservables.push(
+            this.replyService.getRepliesByCommentId(comment.id).pipe(
+              tap((replies) => {
+                this.repliesByComment[comment.id] = replies || [];
+              })
+            )
+          );
+        });
       });
-    });
 
-    forkJoin(replyObservables).subscribe(
-      () => {
-        console.log('Replies initialized');
-      },
-      (error) => {
-        console.error('Error initializing replies: ', error);
+      // Check if replyObservables has data inside the array
+      if (replyObservables.length > 0) {
+        forkJoin(replyObservables).subscribe(
+          () => {
+            console.log('Replies initialized');
+            this.finalizeInitialization();
+          },
+          (error) => {
+            console.error('Error initializing replies: ', error);
+          }
+        );
+      } else {
+        // if there's no replies, let the finalization complete with an empty array
+        console.log('No replies to initialize');
+        this.finalizeInitialization();
       }
-    );
+    } else {
+      // if there aren't posts or comments, let the finalization complete with an empty array
+      console.log('No recent posts or comments to initialize replies');
+      this.finalizeInitialization();
+    }
   }
 
-  ngAfterViewInit(): void {
-    setTimeout(() => {
-      this.initializeComments();
-      this.initializeReplies();
-      this.initializeMenu();
-      this.initializeSaveButtons();
-    }, 1000);
+  // search for all the toggles in the home page and hide the loader once everything is done
+  finalizeInitialization(): void {
+    this.initializeComments();
+    this.initializeReplies();
+    this.initializeSaveButtons();
+    this.initializeMenu();
   }
 
   onSubmitComment(postId: number, form: NgForm) {
@@ -155,7 +154,6 @@ export class SavedPostsComponent implements OnInit, AfterViewInit {
 
     this.commentService.createComment(form.value).subscribe(
       () => {
-        console.log('comment sent!');
         form.reset();
 
         const postIndex = this.postsUser.findIndex(
@@ -167,8 +165,9 @@ export class SavedPostsComponent implements OnInit, AfterViewInit {
             .subscribe((comments) => {
               this.commentsByPost[postId] = comments;
               setTimeout(() => {
-                this.initializeMenu();
+                this.initializeCommentsMenu();
                 this.initializeReplies();
+                this.initializeRepliesMenu();
               }, 0);
             });
         }
@@ -184,8 +183,7 @@ export class SavedPostsComponent implements OnInit, AfterViewInit {
     form.value.commentId = commentId;
 
     this.replyService.createReply(form.value).subscribe(
-      (response) => {
-        console.log('reply sent!', response);
+      () => {
         form.reset();
 
         this.replyService
@@ -206,7 +204,7 @@ export class SavedPostsComponent implements OnInit, AfterViewInit {
             }
 
             setTimeout(() => {
-              this.initializeMenu();
+              this.initializeRepliesMenu();
             }, 0);
           });
       },
@@ -216,12 +214,53 @@ export class SavedPostsComponent implements OnInit, AfterViewInit {
     );
   }
 
+  initializeRepliesMenu() {
+    const repliesToggles = document.querySelectorAll('.replies-toggle-menu');
+    console.log('Replies Toggles: ', repliesToggles);
+    repliesToggles.forEach((button) => {
+      button.addEventListener('click', () => {
+        const targetSelector = button.getAttribute('data-target');
+        if (targetSelector) {
+          const target = document.querySelector(targetSelector) as HTMLElement;
+          if (target) {
+            const isOpen = !target.classList.contains('close');
+            if (isOpen) {
+              this.close(target);
+            } else {
+              this.open(target);
+            }
+          }
+        }
+      });
+    });
+  }
+
+  initializeCommentsMenu() {
+    const commentsToggles = document.querySelectorAll('.comment-toggle-menu');
+    console.log('Comments Toggles: ', commentsToggles);
+    commentsToggles.forEach((button) => {
+      button.addEventListener('click', () => {
+        const targetSelector = button.getAttribute('data-target');
+        if (targetSelector) {
+          const target = document.querySelector(targetSelector) as HTMLElement;
+          if (target) {
+            const isOpen = !target.classList.contains('close');
+            if (isOpen) {
+              this.close(target);
+            } else {
+              this.open(target);
+            }
+          }
+        }
+      });
+    });
+  }
+
   initializeMenu() {
     const menuToggles = document.querySelectorAll('.three-dots');
-    console.log('all the menus: ', menuToggles);
+    console.log('Menu Toggles: ', menuToggles);
     menuToggles.forEach((button) => {
       button.addEventListener('click', () => {
-        console.log('button clicked', button);
         const targetSelector = button.getAttribute('data-target');
         if (targetSelector) {
           const target = document.querySelector(targetSelector) as HTMLElement;
@@ -240,7 +279,7 @@ export class SavedPostsComponent implements OnInit, AfterViewInit {
 
   initializeSaveButtons() {
     const saveToggleButtons = document.querySelectorAll('.save-toggle');
-    console.log(saveToggleButtons);
+    console.log('Save toggles: ', saveToggleButtons);
     saveToggleButtons.forEach((button) => {
       button.addEventListener('click', () => {
         const postId = Number(button.getAttribute('data-post-id'));
@@ -251,6 +290,7 @@ export class SavedPostsComponent implements OnInit, AfterViewInit {
 
   initializeComments() {
     const commentToggle = document.querySelectorAll('.comments-toggle');
+    console.log('Comment toggles: ', commentToggle);
     commentToggle.forEach((button) => {
       button.addEventListener('click', () => {
         const targetSelector = button.getAttribute('data-target');
@@ -345,7 +385,7 @@ export class SavedPostsComponent implements OnInit, AfterViewInit {
 
   initializeReplies() {
     const repliesToggle = document.querySelectorAll('.replies-toggle');
-    console.log(repliesToggle);
+    console.log('Replies toggle: ', repliesToggle);
     repliesToggle.forEach((button) => {
       button.addEventListener('click', () => {
         const targetSelector = button.getAttribute('data-target');

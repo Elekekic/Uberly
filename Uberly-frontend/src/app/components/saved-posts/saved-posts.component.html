@@ -1,6 +1,6 @@
-<body>
-    <section class="posts" *ngIf="user">
-        <ng-container *ngIf="postsUser && postsUser.length > 0; else noPosts">
+<body *ngIf="user">
+    <ng-container class="posts" *ngIf="postsUser && postsUser.length > 0; else noPostsYet">
+        <div class="recent-posts-container">
             <div class="recent-posts" *ngFor="let post of postsUser; let postIndex = index">
                 <div class="container-header-posts">
                     <img [src]="post.user.pictureProfile"
@@ -21,15 +21,14 @@
                         <div class="menu-container">
                             <div
                                 *ngIf="loggedUser && (loggedUser.user.id !== user.id || loggedUser.user.role === 'ADMIN')">
-                                <p class="d-flex flex-row align-items-center" style="cursor: pointer;"
-                                    (click)="onDeletePost(post.id)">Delete <i class="bi bi-trash-fill"></i></p>
-                            </div>
-                            <div *ngIf="loggedUser && loggedUser.user.id !== user.id">
-                                <a [routerLink]="['/profile', post.user.id]"
-                                    routerLinkActive="active"
-                                    [routerLinkActiveOptions]="{ exact: true }">
-                                    Info <i class="bi bi-person-fill"></i>
+                                <a class="d-flex flex-row align-items-center" style="cursor: pointer;"
+                                    (click)="onDeletePost(post.id)">Delete <i class="bi bi-trash-fill"></i>
                                 </a>
+                            </div>
+                            <div *ngIf="loggedUser && loggedUser.user.id === user.id">
+                                <a [routerLink]="['/profile', post.user.id]" class="d-flex flex-row align-items-center"
+                                    style="cursor: pointer;"> Info
+                                    <i class="bi bi-person-fill"></i></a>
                             </div>
 
                         </div>
@@ -37,24 +36,26 @@
                 </div>
                 <div class="d-flex flex-column container-body-post">
                     <div class="badge">
-                        <p>{{ post.tags }}</p>
+                        <!-- adding a pipe for the tags -->
+                        <p class="badge-title" *ngFor="let tags of post.tags">{{ tags | formatTags }}</p>
                     </div>
                     <h4>{{ post.title }}</h4>
                     <p class="description">{{ post.description }}</p>
                     <div class="d-flex justify-content-start">
-                        <div class="d-flex flex-column align-items-start my-1 ms-0 me-4">
+                        <div class="d-flex flex-column align-items-start my-1 ms-0">
                             <p class="title-badge">Spaces</p>
-                            <p class="p-badge"><span class="body-badge">{{ post.spacesRiders }}</span> Riders</p>
+                            <p class="p-badge"><span class="body-badge">{{ post.spacesRiders }}</span>
+                                Riders</p>
                         </div>
-                        <div class="d-flex flex-column align-items-start my-1 mx-4">
+                        <div class="d-flex flex-column align-items-start my-1 mx-2">
                             <p class="title-badge">Start point:</p>
                             <p class="body-badge">{{ post.startingPoint }}</p>
                         </div>
-                        <div class="d-flex flex-column align-items-start my-1 mx-4">
+                        <div class="d-flex flex-column align-items-start my-1 mx-2">
                             <p class="title-badge">End point:</p>
                             <p class="body-badge">{{ post.endPoint }}</p>
                         </div>
-                        <div class="d-flex flex-column align-items-start my-1 mx-4">
+                        <div class="d-flex flex-column align-items-start my-1 mx-2">
                             <p class="title-badge">Vehicle:</p>
                             <p class="body-badge">{{ post.vehicle }}</p>
                         </div>
@@ -70,8 +71,6 @@
                                 [attr.data-post-id]="post.id" [attr.data-target]="'#savePost-' + postIndex"
                                 style="cursor: pointer;"></i>
                         </div>
-
-
                     </div>
 
                     <div class="comments close" [attr.id]="'comments-' + postIndex">
@@ -110,26 +109,26 @@
                                         <i class="bi bi-chat-quote replies-toggle"
                                             [attr.data-target]="'#replies-' + postIndex + '-' + commentIndex"
                                             style="cursor: pointer"></i>
-                                        <i class="bi bi-three-dots-vertical three-dots"
+                                        <i class="bi bi-three-dots-vertical three-dots comment-toggle-menu"
                                             [attr.data-target]="'#comment-menu-' + postIndex + '-' + commentIndex"
                                             style="cursor: pointer;"></i>
                                         <div class="menu close"
                                             [attr.id]="'comment-menu-' + postIndex + '-' + commentIndex">
                                             <div class="menu-container">
                                                 <div
-                                                    *ngIf="loggedUser && loggedUser.user.id === user.id || loggedUser?.user?.role === 'ADMIN'">
-                                                    <p class="d-flex flex-row align-items-center"
-                                                        style="cursor: pointer;" (click)="onDelete(comment.id)">Delete
+                                                    *ngIf="loggedUser && loggedUser.user.id == comment.user.id || loggedUser?.user?.role === 'ADMIN'">
+                                                    <a class="d-flex flex-row align-items-center"
+                                                        style="cursor: pointer;" (click)="onDelete(comment.id)">
+                                                        Delete
                                                         <i class="bi bi-trash-fill"></i>
-                                                    </p>
+                                                    </a>
                                                 </div>
 
-                                                <div *ngIf="loggedUser && loggedUser.user.id !== user.id">
+                                                <div *ngIf="loggedUser && loggedUser.user.id === user.id">
                                                     <a [routerLink]="['/profile', comment.user.id]"
-                                                        routerLinkActive="active"
-                                                        [routerLinkActiveOptions]="{ exact: true }">
-                                                        <i class="bi bi-person-fill"></i>
-                                                    </a>
+                                                        class="d-flex flex-row align-items-center"
+                                                        style="cursor: pointer;"> Info
+                                                        <i class="bi bi-person-fill"></i></a>
                                                 </div>
                                             </div>
                                         </div>
@@ -145,7 +144,7 @@
                                                 ngModel #content="ngModel" required></textarea>
                                         </div>
                                         <div class="creation">
-                                            <button type="submit" class="button"
+                                            <button type="submit" class="button-send"
                                                 [disabled]="replyForm.invalid">Send</button>
                                         </div>
                                     </form>
@@ -171,26 +170,28 @@
                                                     </div>
                                                 </div>
                                                 <div class="interactions-comments">
-                                                    <button type="button" class="three-dots"
-                                                        [attr.data-target]="'#reply-menu-' + postIndex + '-' + commentIndex + '-' + replyIndex">
-                                                        <i class="bi bi-three-dots-vertical"></i>
-                                                    </button>
+                                                    <i [attr.data-target]="'#reply-menu-' + postIndex + '-' + commentIndex + '-' + replyIndex"
+                                                        class="bi bi-three-dots-vertical three-dots replies-toggle-menu"
+                                                        style="cursor: pointer;"></i>
+
                                                     <div class="menu close"
                                                         [attr.id]="'reply-menu-' + postIndex + '-' + commentIndex + '-' + replyIndex">
                                                         <div class="menu-container">
-                                                            <div>
+                                                            <div
+                                                                *ngIf="loggedUser && loggedUser.user.id === reply.user.id || loggedUser?.user?.role === 'ADMIN'">
                                                                 <p class="d-flex flex-row align-items-center"
                                                                     style="cursor: pointer;"
-                                                                    (click)="onDeleteReply(reply.id)">Delete <i
-                                                                        class="bi bi-trash-fill"></i></p>
+                                                                    (click)="onDeleteReply(reply.id)">
+                                                                    Delete
+                                                                    <i class="bi bi-trash-fill"></i>
+                                                                </p>
                                                             </div>
 
-                                                            <div *ngIf="loggedUser && loggedUser.user.id !== user.id">
+                                                            <div *ngIf="loggedUser && loggedUser.user.id === user.id">
                                                                 <a [routerLink]="['/profile', reply.user.id]"
-                                                                    routerLinkActive="active"
-                                                                    [routerLinkActiveOptions]="{ exact: true }">
-                                                                    <i class="bi bi-person-fill"></i>
-                                                                </a>
+                                                                    class="d-flex flex-row align-items-center"
+                                                                    style="cursor: pointer;"> Info
+                                                                    <i class="bi bi-person-fill"></i></a>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -204,17 +205,17 @@
                     </div>
                 </div>
             </div>
-        </ng-container>
-        <ng-template #noPosts>
-            <div class="no-posts" *ngIf="loggedUser?.user?.id !== user.id">
-                <p>This user hasn't saved any posts yet 🤌</p>
-                <p>If you don't wanna miss future posts, <a>follow them!</a> </p>
-            </div>
-            <div class="no-posts" *ngIf="loggedUser?.user?.id === user.id">
-                <p>You haven't saved any posts yet 🤌</p>
-                <p>No worries! You can start in the <a [routerLink]="['/home-page']">home page</a>&nbsp;<i
-                        class="bi bi-house-add"></i></p>
-            </div>
-        </ng-template>
-    </section>
+        </div>
+    </ng-container>
+    <ng-template #noPostsYet>
+        <div class="no-posts" *ngIf="loggedUser?.user?.id !== user.id">
+            <p>This user hasn't saved any posts yet 🤌</p>
+            <p>If you don't wanna miss future posts, <a>follow them!</a> </p>
+        </div>
+        <div class="no-posts" *ngIf="loggedUser?.user?.id === user.id">
+            <p>You haven't saved any posts yet 🤌</p>
+            <p>No worries! You can start in the <a [routerLink]="['/home-page']">home page</a>&nbsp;<i
+                    class="bi bi-house-add"></i></p>
+        </div>
+    </ng-template>
 </body>

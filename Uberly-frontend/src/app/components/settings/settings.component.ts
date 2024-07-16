@@ -54,12 +54,22 @@ export class SettingsComponent implements OnInit, OnDestroy {
     }
   }
 
-  Ondelete(userId: number) {
-    this.userService.deleteUser(userId).subscribe(() => {
-      this.authSrv.clearUser(); 
-      this.router.navigate(['/']);
-    });
+  Ondelete(userId: number | undefined) {
+    if (userId !== undefined) {
+      this.userService.deleteUser(userId).subscribe(
+        () => {
+          this.authSrv.clearUser(); 
+          this.router.navigate(['/']);
+        },
+        (error) => {
+          console.error('Error deleting user', error);
+        }
+      );
+    } else {
+      console.error('User ID is undefined');
+    }
   }
+
 
   onSubmitMeme(form: NgForm): void {
     if (!this.pictureProfile) {
@@ -80,6 +90,8 @@ export class SettingsComponent implements OnInit, OnDestroy {
           if (response.newPictureUrl) {
             if (this.loggedUser && this.loggedUser.user) {
               this.loggedUser.user.pictureProfile = response.newPictureUrl;
+
+              this.user.pictureProfile = response.newPictureUrl;
             } else {
               console.error('loggedUser or loggedUser.user is null');
             }
@@ -179,7 +191,6 @@ export class SettingsComponent implements OnInit, OnDestroy {
   onSubmit(form: NgForm) {
     if (form.valid) {
       form.value.role = this.selectedRole;
-      console.log('Form is valid. Submitting form...', form.value);
       if (this.loggedUser?.user.id) {
         this.userService
           .updateUser(this.loggedUser?.user.id, form.value)

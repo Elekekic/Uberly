@@ -1,34 +1,36 @@
-<body>
-    <section class="posts" *ngIf="user">
-        <ng-container  class="d-flex align-items-baseline flex-wrap justify-content-center" *ngIf="MemesUser && MemesUser.length > 0; else noPosts">
-            <div class="recent-posts" *ngFor="let meme of MemesUser; let memeIndex = index">
+<body *ngIf="user">
+    <ng-container class="posts" *ngIf="postsUser && postsUser.length > 0; else noPosts">
+        <div class="recent-posts-container">
+            <div class="recent-posts" *ngFor="let post of postsUser; let postIndex = index">
                 <div class="container-header-posts">
-                    <img [src]="meme.user.pictureProfile"
-                        [alt]="meme.user.name + ' ' + meme.user.surname + ' profile picture'">
+                    <img [src]="post.user.pictureProfile"
+                        [alt]="post.user.name + ' ' + post.user.surname + ' profile picture'">
                     <div class="container-fluid d-flex flex-column justify-content-center">
                         <div class="row">
                             <div class="col-6 d-flex justify-content-center align-items-start flex-column">
-                                <a [routerLink]="['/profile', meme.user.id]">{{ meme.user.username }}</a>
-                                <p>Role: {{ meme.user.role }}</p>
+                                <a [routerLink]="['/profile', post.user.id]">{{ post.user.username
+                                    }}</a>
+                                <p>Role: {{ post.user.role }}</p>
                             </div>
                             <div class="col-6 d-flex justify-content-end">
                                 <i class="bi bi-three-dots-vertical three-dots"
-                                    [attr.data-target]="'#meme-menu-' + memeIndex" style="cursor: pointer;"></i>
+                                    [attr.data-target]="'#post-menu-' + postIndex" style="cursor: pointer;"></i>
                             </div>
                         </div>
                     </div>
-                    <div class="menu close" [attr.id]="'meme-menu-' + memeIndex">
+                    <div class="menu close" [attr.id]="'post-menu-' + postIndex">
                         <div class="menu-container">
-                            <div *ngIf="loggedUser && (loggedUser.user.id !== user.id || loggedUser.user.role === 'ADMIN')">
-                                <p class="d-flex flex-row align-items-center" style="cursor: pointer;"
-                                    (click)="onDeleteMeme(meme.id)">Delete <i class="bi bi-trash-fill"></i></p>
-                            </div>
-                            <div *ngIf="loggedUser && loggedUser.user.id !== user.id">
-                                <a [routerLink]="['/profile', meme.user.id]"
-                                    routerLinkActive="active"
-                                    [routerLinkActiveOptions]="{ exact: true }">
-                                    Info <i class="bi bi-person-fill"></i>
+                            <div
+                                *ngIf="loggedUser && (loggedUser.user.id !== post.user.id || loggedUser.user.role === 'ADMIN')">
+                                <a class="d-flex flex-row align-items-center" style="cursor: pointer;"
+                                    (click)="onDeletePost(post.id)">Delete <i class="bi bi-trash-fill"></i>
                                 </a>
+                            </div>
+                            <div *ngIf="loggedUser && loggedUser.user.id !== post.user.id">
+                                <a [routerLink]="['/profile', post.user.id]" class="d-flex flex-row align-items-center"
+                                    style="cursor: pointer;">
+                                    Info
+                                    <i class="bi bi-person-fill"></i></a>
                             </div>
 
                         </div>
@@ -37,27 +39,28 @@
                 <div class="d-flex flex-column container-body-post">
                     <div class="d-flex justify-content-start">
                         <div class="d-flex flex-column align-items-start my-1 ms-0 me-4">
-                            <img src="{{meme.url}}" alt="{{meme.user.name}}{{meme.user.surname}} picture posted" style="border-radius: 20px; width: 100%;">
+                            <img src="{{post.url}}" alt="{{post.user.name}}{{post.user.surname}} picture posted"
+                                style="border-radius: 20px; width: 100%;">
                         </div>
                     </div>
                     <div class="interactions">
                         <div class="d-flex align-items-center">
                             <i class="bi bi-chat comments-toggle" style="cursor: pointer;"
-                                [attr.data-target]="'#comments-' + memeIndex"></i>
+                                [attr.data-target]="'#comments-' + postIndex"></i>
                         </div>
-                        <div *ngIf="loggedUser && loggedUser.user.id !== user.id">
+                        <div *ngIf="loggedUser && loggedUser.user.id !== post.user.id">
                             <i class="bi bi-bookmark save-toggle"
-                                [ngClass]="{'bi-bookmark-fill': isMemeSaved(meme.id, loggedUser), 'bi-bookmark': !isMemeSaved(meme.id, loggedUser)}"
-                                [attr.data-meme-id]="meme.id" [attr.data-target]="'#savePost-' + memeIndex"
+                                [ngClass]="{'bi-bookmark-fill': isPostSaved(post.id, loggedUser), 'bi-bookmark': !isPostSaved(post.id, loggedUser)}"
+                                [attr.data-post-id]="post.id" [attr.data-target]="'#savePost-' + postIndex"
                                 style="cursor: pointer;"></i>
                         </div>
 
 
                     </div>
 
-                    <div class="comments close" [attr.id]="'comments-' + memeIndex">
+                    <div class="comments close" [attr.id]="'comments-' + postIndex">
                         <form class="container-input-comment" #commentForm="ngForm"
-                            (ngSubmit)="onSubmitComment(meme.id, commentForm)">
+                            (ngSubmit)="onSubmitComment(post.id, commentForm)">
                             <div class="form__group field">
                                 <textarea type="input" class="form__field" placeholder="Write your comment here..."
                                     name="content" id="content" ngModel #content="ngModel" required></textarea>
@@ -66,8 +69,8 @@
                                 <button type="submit" class="button" [disabled]="commentForm.invalid">Send</button>
                             </div>
                         </form>
-                        <ng-container *ngIf="commentsByMeme[meme.id] && commentsByMeme[meme.id].length > 0">
-                            <div *ngFor="let comment of commentsByMeme[meme.id]; let commentIndex = index">
+                        <ng-container *ngIf="commentsByPost[post.id] && commentsByPost[post.id].length > 0">
+                            <div *ngFor="let comment of commentsByPost[post.id]; let commentIndex = index">
                                 <div class="container-header-comments mt-2">
                                     <img [src]="comment.user.pictureProfile"
                                         [alt]="comment.user.name + ' ' + comment.user.surname + ' profile picture'">
@@ -83,41 +86,43 @@
                                             </div>
                                             <div
                                                 class="col-7 d-flex justify-content-center align-items-start flex-column">
-                                                <p style="word-wrap: break-word;">{{ comment.content }}</p>
+                                                <p style="word-wrap: break-word;">{{ comment.content
+                                                    }}</p>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="interactions-comments">
                                         <i class="bi bi-chat-quote replies-toggle"
-                                            [attr.data-target]="'#replies-' + memeIndex + '-' + commentIndex"
+                                            [attr.data-target]="'#replies-' + postIndex + '-' + commentIndex"
                                             style="cursor: pointer"></i>
-                                        <i class="bi bi-three-dots-vertical three-dots"
-                                            [attr.data-target]="'#comment-menu-' + memeIndex + '-' + commentIndex"
+                                        <i class="bi bi-three-dots-vertical three-dots comment-toggle-menu"
+                                            [attr.data-target]="'#comment-menu-' + postIndex + '-' + commentIndex"
                                             style="cursor: pointer;"></i>
                                         <div class="menu close"
-                                            [attr.id]="'comment-menu-' + memeIndex + '-' + commentIndex">
+                                            [attr.id]="'comment-menu-' + postIndex + '-' + commentIndex">
                                             <div class="menu-container">
                                                 <div
-                                                    *ngIf="loggedUser && loggedUser.user.id === user.id || loggedUser?.user?.role === 'ADMIN'">
-                                                    <p class="d-flex flex-row align-items-center"
-                                                        style="cursor: pointer;" (click)="onDelete(comment.id)">Delete
+                                                    *ngIf="loggedUser && loggedUser.user.id == comment.user.id || loggedUser?.user?.role === 'ADMIN'">
+                                                    <a class="d-flex flex-row align-items-center"
+                                                        style="cursor: pointer;" (click)="onDeleteComment(comment.id)">
+                                                        Delete
                                                         <i class="bi bi-trash-fill"></i>
-                                                    </p>
+                                                    </a>
                                                 </div>
 
-                                                <div *ngIf="loggedUser && loggedUser.user.id !== user.id">
-                                                    <a [routerLink]="['/profile', comment.user.id]" routerLinkActive="active"
-                                                        [routerLinkActiveOptions]="{ exact: true }">
-                                                        Info <i class="bi bi-person-fill"></i>
-                                                    </a>
+                                                <div *ngIf="loggedUser && loggedUser.user.id !== comment.user.id">
+                                                    <a [routerLink]="['/profile', comment.user.id]"
+                                                        class="d-flex flex-row align-items-center"
+                                                        style="cursor: pointer;"> Info
+                                                        <i class="bi bi-person-fill"></i></a>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="replies close" [attr.id]="'replies-' + memeIndex + '-' + commentIndex">
+                                <div class="replies close" [attr.id]="'replies-' + postIndex + '-' + commentIndex">
                                     <form class="container-input-reply" #replyForm="ngForm"
-                                        (ngSubmit)="onSubmitReply(meme.id, comment.id, replyForm)">
+                                        (ngSubmit)="onSubmitReply(post.id, comment.id, replyForm)">
                                         <p class="m-0">Reply to: {{ comment.user.username }}</p>
                                         <div class="form__group field">
                                             <textarea type="input" class="form__field"
@@ -125,7 +130,7 @@
                                                 ngModel #content="ngModel" required></textarea>
                                         </div>
                                         <div class="creation">
-                                            <button type="submit" class="button"
+                                            <button type="submit" class="button-send"
                                                 [disabled]="replyForm.invalid">Send</button>
                                         </div>
                                     </form>
@@ -142,34 +147,40 @@
                                                             <a [routerLink]="['/profile', reply.user.id]">{{
                                                                 reply.user.username }}</a>
                                                             <p>Role: {{ reply.user.role }}</p>
-                                                            <p>Replying to: {{ comment.user.username }}</p>
+                                                            <p>Replying to: {{ comment.user.username
+                                                                }}</p>
                                                         </div>
                                                         <div
                                                             class="col-8 d-flex justify-content-center align-items-start flex-column">
-                                                            <p class="comment">{{ reply.content }}</p>
+                                                            <p class="comment">{{ reply.content }}
+                                                            </p>
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div class="interactions-comments">
-                                                    <button type="button" class="three-dots"
-                                                        [attr.data-target]="'#reply-menu-' + memeIndex + '-' + commentIndex + '-' + replyIndex">
-                                                        <i class="bi bi-three-dots-vertical"></i>
-                                                    </button>
+                                                    <i [attr.data-target]="'#reply-menu-' + postIndex + '-' + commentIndex + '-' + replyIndex"
+                                                        class="bi bi-three-dots-vertical three-dots replies-toggle-menu"
+                                                        style="cursor: pointer;"></i>
+
                                                     <div class="menu close"
-                                                        [attr.id]="'reply-menu-' + memeIndex + '-' + commentIndex + '-' + replyIndex">
+                                                        [attr.id]="'reply-menu-' + postIndex + '-' + commentIndex + '-' + replyIndex">
                                                         <div class="menu-container">
-                                                            <div>
-                                                             <p *ngIf="loggedUser && loggedUser.user.id === user.id || loggedUser?.user?.role === 'ADMIN'" class="d-flex flex-row align-items-center"
-                                                                style="cursor: pointer;"
-                                                                (click)="onDeleteReply(reply.id)">Delete <i
-                                                                    class="bi bi-trash-fill"></i></p>   
-                                                            </div>
-                                                            <div *ngIf="loggedUser && loggedUser.user.id !== user.id">
-                                                                <a [routerLink]="['/profile', reply.user.id]"
-                                                                    routerLinkActive="active"
-                                                                    [routerLinkActiveOptions]="{ exact: true }">
-                                                                    Info <i class="bi bi-person-fill"></i>
+                                                            <div
+                                                                *ngIf="loggedUser && loggedUser.user.id === reply.user.id || loggedUser?.user?.role === 'ADMIN'">
+                                                                <a class="d-flex flex-row align-items-center"
+                                                                    style="cursor: pointer;"
+                                                                    (click)="onDeleteReply(reply.id)">
+                                                                    Delete
+                                                                    <i class="bi bi-trash-fill"></i>
                                                                 </a>
+                                                            </div>
+
+                                                            <div
+                                                                *ngIf="loggedUser && loggedUser.user.id !== reply.user.id">
+                                                                <a [routerLink]="['/profile', reply.user.id]"
+                                                                    class="d-flex flex-row align-items-center"
+                                                                    style="cursor: pointer;"> Info
+                                                                    <i class="bi bi-person-fill"></i></a>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -183,18 +194,17 @@
                     </div>
                 </div>
             </div>
-        </ng-container>
-        <ng-template #noPosts>
-            <div class="no-posts" *ngIf="loggedUser?.user?.id !== user.id">
-                <p>This user hasn't saved any pictures yet 🤌</p>
-                <p>If you don't wanna miss future posts, <a>follow them!</a> </p>
-            </div>
-            <div class="no-posts" *ngIf="loggedUser?.user?.id === user.id">
-                <p>You haven't saved any pictures yet 🤌</p>
-                <p>No worries! You can start in the <a [routerLink]="['/explore-page']">explore page</a>&nbsp;
-                <i class="bi bi-search"></i></p>
-            </div>
-        </ng-template>
-    </section>
-
+        </div>
+    </ng-container>
+    <ng-template #noPosts>
+        <div class="no-posts" *ngIf="loggedUser?.user?.id !== user.id">
+            <p>This user hasn't saved any picture yet 🤌</p>
+            <p>If you don't wanna miss future posts, <a>follow them!</a></p>
+        </div>
+        <div class="no-posts" *ngIf="loggedUser?.user?.id === user.id">
+            <p>You haven't posted any picture yet 🤌</p>
+            <p>No worries! You can start in the <a [routerLink]="['/home-page']">home page</a>&nbsp;<i
+                    class="bi bi-house-add"></i></p>
+        </div>
+    </ng-template>
 </body>

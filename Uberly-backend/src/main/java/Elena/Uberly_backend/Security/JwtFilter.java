@@ -32,8 +32,11 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
     String authHeader = request.getHeader("Authorization");
 
-            response.setHeader("Access-Control-Allow-Origin", "https://uberly-gamma.vercel.app");
-            response.setHeader("Access-Control-Allow-MethSods", "GET, POST, PUT, DELETE, OPTIONS, HEAD, PATCH");
+        String origin = request.getHeader("Origin");
+        if ("https://uberly-gamma.vercel.app".equals(origin) || "http://localhost:4200".equals(origin)) {
+            response.setHeader("Access-Control-Allow-Origin", origin);
+        }
+            response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD, PATCH");
             response.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type");
             response.setHeader("Access-Control-Allow-Credentials", "true");
 

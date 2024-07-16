@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
-@CrossOrigin(origins = "https://uberly-gamma.vercel.app")
 public class AuthController {
 
     @Autowired

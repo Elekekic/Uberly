@@ -26,6 +26,7 @@ import { PostsComponent } from './components/posts/posts.component';
 import { MemesComponent } from './components/memes/memes.component';
 import { AuthGuard } from './auth/auth-.guard';
 import { SearchComponent } from './components/search/search.component';
+import { FormatTagsPipe } from 'src/pipes/format-tags.pipe';
 
 const routes: Route[] = [
   {
@@ -119,7 +120,8 @@ const routes: Route[] = [
     SettingsComponent,
     PostsComponent,
     MemesComponent,
-    SearchComponent
+    SearchComponent,
+    FormatTagsPipe
   ],
   imports: [
     BrowserModule,

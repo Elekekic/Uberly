@@ -64,6 +64,10 @@ nav {
   font-size: 2rem;
 }
 
+.icons-explore p {
+  cursor: pointer;
+}
+
 .icons-explore p.active-link {
   transition: all 0.3s ease;
   color: #ff6d1f;

@@ -26,7 +26,7 @@ import { forkJoin, Observable, tap } from 'rxjs';
   templateUrl: './posts.component.html',
   styleUrls: ['./posts.component.scss'],
 })
-export class PostsComponent implements OnInit, AfterViewInit {
+export class PostsComponent implements OnInit {
   postsUser: Post[] = [];
   repliesByComment: { [commentId: number]: Reply[] } = {};
   commentsByPost: { [postId: number]: Comment[] } = {};
@@ -62,96 +62,88 @@ export class PostsComponent implements OnInit, AfterViewInit {
   }
 
   initializeUserPosts(): void {
+    // i need the time out in order to fetch correctly the data, or else it would be giving an empty array even if the user made a post
     setTimeout(() => {
       this.postService.postsByUserSub.subscribe((posts) => {
         this.postsUser = posts;
         this.initializeCommentsForPosts();
-        this.initializeRepliesForComments();
       });
-    }, 1000);
+    }, 500);
   }
 
   initializeCommentsForPosts(): void {
     const commentObservables: Observable<Comment[]>[] = [];
 
-    this.postsUser.forEach((post) => {
-      commentObservables.push(
-        this.commentService.getCommentsByPostId(post.id).pipe(
-          tap((comments) => {
-            this.commentsByPost[post.id] = comments || [];
-          })
-        )
+    // Check if recentPosts has posts inside the array
+    if (this.postsUser && this.postsUser.length > 0) {
+      this.postsUser.forEach((post) => {
+        commentObservables.push(
+          this.commentService.getCommentsByPostId(post.id).pipe(
+            tap((comments) => {
+              this.commentsByPost[post.id] = comments || [];
+            })
+          )
+        );
+      });
+
+      forkJoin(commentObservables).subscribe(
+        () => {
+          this.initializeRepliesForComments(); // Proceed to initialize all the replies
+        },
+        (error) => {
+          console.error('Error initializing comments: ', error);
+        }
       );
-    });
-
-    forkJoin(commentObservables).subscribe(
-      () => {
-        console.log('Comments initialized');
-      },
-      (error) => {
-        console.error('Error initializing comments: ', error);
-      }
-    );
-  }
-
-  initializeCommentsAndReplies(): void {
-    const commentObservables: Observable<Comment[]>[] = [];
-    const replyObservables: Observable<Reply[]>[] = [];
-
-    this.postsUser.forEach((post) => {
-      commentObservables.push(
-        this.commentService.getCommentsByPostId(post.id).pipe(
-          tap((comments) => {
-            this.commentsByPost[post.id] = comments || [];
-          })
-        )
-      );
-    });
-
-    forkJoin(commentObservables).subscribe(
-      () => {
-        console.log('Comments initialized');
-        this.initializeRepliesForComments();
-      },
-      (error) => {
-        console.error('Error initializing comments: ', error);
-      }
-    );
+    } else {
+      // If recentPosts is empty or undefined, proceed without fetching comments so it can finish loading
+      this.initializeRepliesForComments();
+    }
   }
 
   initializeRepliesForComments(): void {
     const replyObservables: Observable<Reply[]>[] = [];
 
-    this.postsUser.forEach((post) => {
-      const comments = this.commentsByPost[post.id] || [];
-      comments.forEach((comment) => {
-        replyObservables.push(
-          this.replyService.getRepliesByCommentId(comment.id).pipe(
-            tap((replies) => {
-              this.repliesByComment[comment.id] = replies || [];
-            })
-          )
-        );
+    // Ensure recentPosts and commentsByPost are defined
+    if (this.postsUser && this.commentsByPost) {
+      this.postsUser.forEach((post) => {
+        const comments = this.commentsByPost[post.id] || [];
+        comments.forEach((comment) => {
+          replyObservables.push(
+            this.replyService.getRepliesByCommentId(comment.id).pipe(
+              tap((replies) => {
+                this.repliesByComment[comment.id] = replies || [];
+              })
+            )
+          );
+        });
       });
-    });
 
-    forkJoin(replyObservables).subscribe(
-      () => {
-        console.log('Replies initialized');
-      },
-      (error) => {
-        console.error('Error initializing replies: ', error);
+      // Check if replyObservables has data inside the array
+      if (replyObservables.length > 0) {
+        forkJoin(replyObservables).subscribe(
+          () => {
+            this.finalizeInitialization();
+          },
+          (error) => {
+            console.error('Error initializing replies: ', error);
+          }
+        );
+      } else {
+        // if there's no replies, let the finalization complete with an empty array
+        this.finalizeInitialization();
       }
-    );
+    } else {
+      // if there aren't posts or comments, let the finalization complete with an empty array
+      this.finalizeInitialization();
+    }
   }
 
-  ngAfterViewInit(): void {
-    setTimeout(() => {
-      this.initializeComments();
-      this.initializeReplies();
-      this.initializeMenu();
-      this.initializeSaveButtons();
-    }, 1700);
+  // search for all the toggles in the home page and hide the loader once everything is done
+  finalizeInitialization(): void {
+    this.initializeComments();
+    this.initializeReplies();
+    this.initializeSaveButtons();
+    this.initializeMenu();
   }
 
   onSubmitComment(postId: number, form: NgForm) {
@@ -160,7 +152,6 @@ export class PostsComponent implements OnInit, AfterViewInit {
 
     this.commentService.createComment(form.value).subscribe(
       () => {
-        console.log('comment sent!');
         form.reset();
 
         const postIndex = this.postsUser.findIndex(
@@ -172,8 +163,9 @@ export class PostsComponent implements OnInit, AfterViewInit {
             .subscribe((comments) => {
               this.commentsByPost[postId] = comments;
               setTimeout(() => {
-                this.initializeMenu();
+                this.initializeCommentsMenu();
                 this.initializeReplies();
+                this.initializeRepliesMenu();
               }, 0);
             });
         }
@@ -189,8 +181,7 @@ export class PostsComponent implements OnInit, AfterViewInit {
     form.value.commentId = commentId;
 
     this.replyService.createReply(form.value).subscribe(
-      (response) => {
-        console.log('reply sent!', response);
+      () => {
         form.reset();
 
         this.replyService
@@ -211,7 +202,7 @@ export class PostsComponent implements OnInit, AfterViewInit {
             }
 
             setTimeout(() => {
-              this.initializeMenu();
+              this.initializeRepliesMenu();
             }, 0);
           });
       },
@@ -221,12 +212,50 @@ export class PostsComponent implements OnInit, AfterViewInit {
     );
   }
 
+  initializeRepliesMenu() {
+    const repliesToggles = document.querySelectorAll('.replies-toggle-menu');
+    repliesToggles.forEach((button) => {
+      button.addEventListener('click', () => {
+        const targetSelector = button.getAttribute('data-target');
+        if (targetSelector) {
+          const target = document.querySelector(targetSelector) as HTMLElement;
+          if (target) {
+            const isOpen = !target.classList.contains('close');
+            if (isOpen) {
+              this.close(target);
+            } else {
+              this.open(target);
+            }
+          }
+        }
+      });
+    });
+  }
+
+  initializeCommentsMenu() {
+    const commentsToggles = document.querySelectorAll('.comment-toggle-menu');
+    commentsToggles.forEach((button) => {
+      button.addEventListener('click', () => {
+        const targetSelector = button.getAttribute('data-target');
+        if (targetSelector) {
+          const target = document.querySelector(targetSelector) as HTMLElement;
+          if (target) {
+            const isOpen = !target.classList.contains('close');
+            if (isOpen) {
+              this.close(target);
+            } else {
+              this.open(target);
+            }
+          }
+        }
+      });
+    });
+  }
+
   initializeMenu() {
     const menuToggles = document.querySelectorAll('.three-dots');
-    console.log('all the menus: ', menuToggles);
     menuToggles.forEach((button) => {
       button.addEventListener('click', () => {
-        console.log('button clicked', button);
         const targetSelector = button.getAttribute('data-target');
         if (targetSelector) {
           const target = document.querySelector(targetSelector) as HTMLElement;
@@ -245,7 +274,6 @@ export class PostsComponent implements OnInit, AfterViewInit {
 
   initializeSaveButtons() {
     const saveToggleButtons = document.querySelectorAll('.save-toggle');
-    console.log(saveToggleButtons);
     saveToggleButtons.forEach((button) => {
       button.addEventListener('click', () => {
         const postId = Number(button.getAttribute('data-post-id'));
@@ -342,7 +370,6 @@ export class PostsComponent implements OnInit, AfterViewInit {
 
   initializeReplies() {
     const repliesToggle = document.querySelectorAll('.replies-toggle');
-    console.log(repliesToggle);
     repliesToggle.forEach((button) => {
       button.addEventListener('click', () => {
         const targetSelector = button.getAttribute('data-target');
@@ -382,21 +409,57 @@ export class PostsComponent implements OnInit, AfterViewInit {
     });
   }
 
-  onDelete(commentId: number) {
+  onDeleteComment(commentId: number) {
     this.commentService.deleteComment(commentId).subscribe(() => {
       console.log('comment deleted!');
+      this.removeCommentFromUI(commentId);
     });
   }
-
+  
   onDeleteReply(replyId: number) {
     this.replyService.deleteReply(replyId).subscribe(() => {
       console.log('reply deleted!');
+      this.removeReplyFromUI(replyId);
     });
   }
-
+  
   onDeletePost(postId: number) {
     this.postService.deletePost(postId).subscribe(() => {
-      console.log('deleted post!');
+      console.log('post deleted!');
+      this.removePostFromUI(postId);
     });
+  }
+  
+  removeCommentFromUI(commentId: number) {
+    for (const postId in this.commentsByPost) {
+      if (this.commentsByPost.hasOwnProperty(postId)) {
+        const comments = this.commentsByPost[postId];
+        const index = comments.findIndex((comment) => comment.id === commentId);
+        if (index !== -1) {
+          comments.splice(index, 1);
+          break;
+        }
+      }
+    }
+  }
+  
+  removeReplyFromUI(replyId: number) {
+    for (const commentId in this.repliesByComment) {
+      if (this.repliesByComment.hasOwnProperty(commentId)) {
+        const replies = this.repliesByComment[commentId];
+        const index = replies.findIndex((reply) => reply.id === replyId);
+        if (index !== -1) {
+          replies.splice(index, 1);
+          break;
+        }
+      }
+    }
+  }
+  
+  removePostFromUI(postId: number) {
+    const index = this.postsUser.findIndex(post => post.id === postId);
+    if (index !== -1) {
+      this.postsUser.splice(index, 1);
+    }
   }
 }
