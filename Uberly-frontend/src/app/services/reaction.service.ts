@@ -8,7 +8,7 @@ import { Post } from '@app/interfaces/post';
   providedIn: 'root',
 })
 export class ReactionService {
-  apiURL = 'https://outer-lane-kekice-635da50d.koyeb.app/api';
+  apiURL = 'https://magnetic-kathlin-kekice-0533f74d.koyeb.app/api';
   /* apiURL = 'http://localhost:8080/api'; */
 
   constructor(private http: HttpClient) {}

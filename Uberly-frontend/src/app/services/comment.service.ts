@@ -11,7 +11,7 @@ export class CommentService {
   private commentsByPost: { [postId: number]: Comment[] } = {};
   commentsByPostSub = new BehaviorSubject<{ [postId: number]: Comment[] }>({});
 
-  apiURL = 'https://outer-lane-kekice-635da50d.koyeb.app/api/comments';
+  apiURL = 'https://magnetic-kathlin-kekice-0533f74d.koyeb.app/api/comments';
   /* apiURL = 'http://localhost:8080/api/comments'; */
 
   constructor(private http: HttpClient) {}
