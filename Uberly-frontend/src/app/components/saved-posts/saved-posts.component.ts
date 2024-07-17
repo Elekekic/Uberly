@@ -425,21 +425,57 @@ export class SavedPostsComponent implements OnInit {
     });
   }
 
-  onDelete(commentId: number) {
+  onDeleteComment(commentId: number) {
     this.commentService.deleteComment(commentId).subscribe(() => {
       console.log('comment deleted!');
+      this.removeCommentFromUI(commentId);
     });
   }
 
   onDeleteReply(replyId: number) {
     this.replyService.deleteReply(replyId).subscribe(() => {
       console.log('reply deleted!');
+      this.removeReplyFromUI(replyId);
     });
   }
 
   onDeletePost(postId: number) {
     this.postService.deletePost(postId).subscribe(() => {
-      console.log('deleted post!');
+      console.log('post deleted!');
+      this.removePostFromUI(postId);
     });
+  }
+
+  removeCommentFromUI(commentId: number) {
+    for (const postId in this.commentsByPost) {
+      if (this.commentsByPost.hasOwnProperty(postId)) {
+        const comments = this.commentsByPost[postId];
+        const index = comments.findIndex((comment) => comment.id === commentId);
+        if (index !== -1) {
+          comments.splice(index, 1);
+          break;
+        }
+      }
+    }
+  }
+
+  removeReplyFromUI(replyId: number) {
+    for (const commentId in this.repliesByComment) {
+      if (this.repliesByComment.hasOwnProperty(commentId)) {
+        const replies = this.repliesByComment[commentId];
+        const index = replies.findIndex((reply) => reply.id === replyId);
+        if (index !== -1) {
+          replies.splice(index, 1);
+          break;
+        }
+      }
+    }
+  }
+
+  removePostFromUI(postId: number) {
+    const index = this.postsUser.findIndex((post) => post.id === postId);
+    if (index !== -1) {
+      this.postsUser.splice(index, 1);
+    }
   }
 }

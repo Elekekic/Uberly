@@ -19,18 +19,21 @@
                     </div>
                     <div class="menu close" [attr.id]="'post-menu-' + postIndex">
                         <div class="menu-container">
-                            <div
-                                *ngIf="loggedUser && (loggedUser.user.id !== user.id || loggedUser.user.role === 'ADMIN')">
+                            <!-- Show delete icon if the logged user is admin or the post owner -->
+                            <div *ngIf="loggedUser?.user?.role === 'ADMIN' || loggedUser?.user?.id === post.user.id">
                                 <a class="d-flex flex-row align-items-center" style="cursor: pointer;"
-                                    (click)="onDeletePost(post.id)">Delete <i class="bi bi-trash-fill"></i>
+                                    (click)="onDeletePost(post.id)">
+                                    Delete <i class="bi bi-trash-fill"></i>
                                 </a>
                             </div>
-                            <div *ngIf="loggedUser && loggedUser.user.id === user.id">
-                                <a [routerLink]="['/profile', post.user.id]" class="d-flex flex-row align-items-center"
-                                    style="cursor: pointer;"> Info
-                                    <i class="bi bi-person-fill"></i></a>
-                            </div>
 
+                            <!-- Show info icon only if the logged user is not the post owner -->
+                            <div *ngIf="loggedUser?.user?.id !== post.user.id">
+                                <a [routerLink]="['/profile', post.user.id]" class="d-flex flex-row align-items-center"
+                                    style="cursor: pointer;">
+                                    Info <i class="bi bi-person-fill"></i>
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -115,20 +118,22 @@
                                         <div class="menu close"
                                             [attr.id]="'comment-menu-' + postIndex + '-' + commentIndex">
                                             <div class="menu-container">
+                                                <!-- Show delete icon if the logged user is admin or the comment owner -->
                                                 <div
-                                                    *ngIf="loggedUser && loggedUser.user.id == comment.user.id || loggedUser?.user?.role === 'ADMIN'">
+                                                    *ngIf="loggedUser?.user?.role === 'ADMIN' || loggedUser?.user?.id === comment.user.id">
                                                     <a class="d-flex flex-row align-items-center"
-                                                        style="cursor: pointer;" (click)="onDelete(comment.id)">
-                                                        Delete
-                                                        <i class="bi bi-trash-fill"></i>
+                                                        style="cursor: pointer;" (click)="onDeleteComment(comment.id)">
+                                                        Delete <i class="bi bi-trash-fill"></i>
                                                     </a>
                                                 </div>
 
-                                                <div *ngIf="loggedUser && loggedUser.user.id === user.id">
+                                                <!-- Show info icon only if the logged user is not the comment owner -->
+                                                <div *ngIf="loggedUser?.user?.id !== comment.user.id">
                                                     <a [routerLink]="['/profile', comment.user.id]"
                                                         class="d-flex flex-row align-items-center"
-                                                        style="cursor: pointer;"> Info
-                                                        <i class="bi bi-person-fill"></i></a>
+                                                        style="cursor: pointer;">
+                                                        Info <i class="bi bi-person-fill"></i>
+                                                    </a>
                                                 </div>
                                             </div>
                                         </div>
@@ -177,21 +182,23 @@
                                                     <div class="menu close"
                                                         [attr.id]="'reply-menu-' + postIndex + '-' + commentIndex + '-' + replyIndex">
                                                         <div class="menu-container">
+                                                            <!-- Show delete icon if the logged user is admin or the reply owner -->
                                                             <div
-                                                                *ngIf="loggedUser && loggedUser.user.id === reply.user.id || loggedUser?.user?.role === 'ADMIN'">
-                                                                <p class="d-flex flex-row align-items-center"
+                                                                *ngIf="loggedUser?.user?.role === 'ADMIN' || loggedUser?.user?.id === reply.user.id">
+                                                                <a class="d-flex flex-row align-items-center"
                                                                     style="cursor: pointer;"
                                                                     (click)="onDeleteReply(reply.id)">
-                                                                    Delete
-                                                                    <i class="bi bi-trash-fill"></i>
-                                                                </p>
+                                                                    Delete <i class="bi bi-trash-fill"></i>
+                                                                </a>
                                                             </div>
 
-                                                            <div *ngIf="loggedUser && loggedUser.user.id === user.id">
+                                                            <!-- Show info icon only if the logged user is not the reply owner -->
+                                                            <div *ngIf="loggedUser?.user?.id !== reply.user.id">
                                                                 <a [routerLink]="['/profile', reply.user.id]"
                                                                     class="d-flex flex-row align-items-center"
-                                                                    style="cursor: pointer;"> Info
-                                                                    <i class="bi bi-person-fill"></i></a>
+                                                                    style="cursor: pointer;">
+                                                                    Info <i class="bi bi-person-fill"></i>
+                                                                </a>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -214,7 +221,7 @@
         </div>
         <div class="no-posts" *ngIf="loggedUser?.user?.id === user.id">
             <p>You haven't saved any posts yet 🤌</p>
-            <p>No worries! You can start in the <a [routerLink]="['/home-page']">home page</a>&nbsp;<i
+            <p>No worries! You can start in the <a [routerLink]="['/home']">home page</a>&nbsp;<i
                     class="bi bi-house-add"></i></p>
         </div>
     </ng-template>

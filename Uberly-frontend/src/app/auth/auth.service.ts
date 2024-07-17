@@ -20,6 +20,7 @@ export class AuthService {
   constructor(private http: HttpClient, private router: Router) {}
 
   signup(data: SignUp) {
+
     return this.http.post(`${this.apiURL}signup`, data, {
       responseType: 'text',
     });
