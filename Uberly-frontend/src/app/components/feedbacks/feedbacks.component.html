@@ -41,7 +41,7 @@
                         <div *ngIf="feedback.author">
                           <div class="d-flex align-items-center">
                             <div class="d-flex align-items-center">
-                              <img [src]="feedback.author.pictureProfile" alt="Profile picture"  class="picture-profile">
+                              <img [src]="feedback.author.pictureProfile" alt="Profile picture"  style="width: 60px; height: 60px; border-radius: 50%;">
                               <div class="recipient-info">
                                 <a [routerLink]="['/profile', feedback.author.id]">{{ feedback.author.username }}</a>
                                 <p>Role: {{ feedback.author.role }}</p>
@@ -86,7 +86,7 @@
                       <div class="container-user-feedback" *ngFor="let feedback of authoredFeedbacks">
                         <div class="d-flex align-items-center justify-content-around">
                           <div class="d-flex align-items-center">
-                            <img [src]="feedback.author.pictureProfile" alt="Profile picture"  class="picture-profile">
+                            <img [src]="feedback.author.pictureProfile" alt="Profile picture"   style="width: 60px; height: 60px; border-radius: 50%;">
                             <div class="recipient-info">
                               <a>{{ feedback.author.username }}</a>
                               <p>Role: {{ feedback.author.role }}</p>
@@ -97,7 +97,7 @@
                           </div>
                           <div class="d-flex align-items-center">
                             <a [routerLink]="['/profile', feedback.recipient.id]">
-                              <img [src]="feedback.recipient.pictureProfile" alt="Profile picture"  class="picture-profile" >
+                              <img [src]="feedback.recipient.pictureProfile" alt="Profile picture"   style="width: 60px; height: 60px; border-radius: 50%;" >
                             </a>
                             <div class="recipient-info">
                               <a [routerLink]="['/profile', feedback.recipient.id]">{{ feedback.recipient.username }}</a>
