@@ -157,6 +157,13 @@ input:hover {
   align-items: center;
 }
 
+.profile-picture {
+  width: 90px; 
+  height: 90px; 
+  object-fit: cover; 
+  border-radius: 50%; 
+}
+
 .container-header-posts img {
   margin: 0.5em 0.6em;
   padding: 0.2em;
