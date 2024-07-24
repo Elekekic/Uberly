@@ -11,4 +11,50 @@
 
 </div>
 
-# WELCOME TO UBERLY
+> [!NOTE]
+> This project is currently in **refactoring**. I am planning to incorporate additional features, so the current state of the project reflects the progress made within one month.
+
+<br>
+
+<hr> 
+
+# 🧾 Table of contents 
+
+- [🛠 Technologies](#technologies)
+- [🧩 Features](#features)
+- [📝 How It Works](#how-it-works)
+- [📂 Video](#video)
+- [💡 Improvements](#improvements)
+- [:shipit: Issues and their status](#issues-and-their-status)
+
+
+<hr> 
+
+<br> 
+
+## 🛠️ Technologies
+
+> [!IMPORTANT]
+> The dependency for the websocket has been implemented in the back-end, but hasn't been used yet
+
+_**Front-end**_: `Angular`, `GSAP`[^1], `Bootstrap`, `Typescript`, `RxJS`, `jquery`, `@auth0/angular-jwt` <br> 
+- Front deploy : `Vercel`
+
+_**Back-end**_: `Java`, `SpringBoot`, `Maven`, `PostGreSQL`, `JWT`, `Cloudinary`, `Email sender`, `Lombok`, `Spring Security` <br> 
+- Back deploy : `Koyeb` <br> 
+
+## 🧩 Features
+
+## 📝 How It Works
+
+## 📂 Video
+
+## 💡 Improvements
+
+## :shipit: Issues and their status 
+-  [RESOLVING] Only the landing,community login/signup pages are responsive
+-  [UNTOUCHED] Need to warn the users that if a picture is too big in it's size, it won't post
+-  [UNTOUCHED] In the explore page, if you filter a post and then remove the filter, the menus of the post don't work anymore 
+
+[^1]: GreenSock Animation Platform. A JavaScript library for creating high-performance animations.
+
