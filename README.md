@@ -30,7 +30,7 @@
 
 <br>
 
-<h2 id="technologies">🛠️ Technologies</h2>
+<h1 id="technologies">🛠️ Technologies</h1>
 
 > [!IMPORTANT]
 > The dependency for the websocket has been implemented in the back-end, but hasn't been used yet
@@ -41,13 +41,41 @@ _**Front-end**_: `Angular`, `GSAP`[^1], `Bootstrap`, `Typescript`, `RxJS`, `jque
 _**Back-end**_: `Java`, `SpringBoot`, `Maven`, `PostGreSQL`, `JWT`, `Cloudinary`, `Email sender`, `Lombok`, `Spring Security`  
 - Back deploy : `Koyeb`  
 
-<h2 id="features">🧩 Features</h2>
+<br>
 
-<h2 id="how-it-works">📝 How It Works</h2>
+<h1 id="features">🧩 Features</h1>
 
-<h2 id="video">📂 Video</h2>
+Uberly offers various features tailored to three essential roles within the application: **Admin, Driver, and Rider**. Each role has specific capabilities designed to meet their needs and responsibilities.
 
-<h2 id="improvements">💡 Improvements</h2>
+### 1. Admin
+
+  - `Full Access`: Ability to manage and oversee all aspects of the platform.
+  - `User Management`: Create, edit, and delete users posts, comments, replies and pictures.
+  - `Content Moderation`: Review and manage posts, pictures & feedbacks from Drivers and Riders.
+  - `System Configuration`: Adjusting configurations for the application as needed.
+
+---
+
+### 2. Driver
+
+ - `Create Posts`: Ability to create posts to seek riders to go in journeys. 
+ - `Add Pictures`: Upload pictures visible in their profile and in the explore page for other users.
+ - `Submit Feedback` : Provide feedbacks to other users in their profiles.
+
+---
+
+### 3. Rider
+
+  - `Add Pictures`: Upload pictures visible in their profile and in the explore page for other users.
+  - `Submit Feedback`: Provide feedbacks to other users in their profiles.
+
+<br> 
+
+<h1 id="how-it-works">📝 How It Works</h1>
+
+<h1 id="video">📂 Video</h1>
+
+<h1 id="improvements">💡 Improvements</h1>
 
 <h2 id="issues-and-their-status">:shipit: Issues and their status</h2>
 - <strong>[RESOLVING]</strong> Only the landing, community login/signup pages are responsive <br> 
