@@ -17,7 +17,7 @@
 
 ---
 
-# 🧾 Table of contents 
+<h1 id="table-of-contents"> 🧾 Table of contents </h1> 
 
 - [🛠 Technologies](#technologies)  
 - [🧩 Features](#features)  
@@ -30,7 +30,7 @@
 
 <br>
 
-## 🛠️ Technologies
+<h2 id="technologies">🛠️ Technologies</h2>
 
 > [!IMPORTANT]
 > The dependency for the websocket has been implemented in the back-end, but hasn't been used yet
@@ -41,15 +41,15 @@ _**Front-end**_: `Angular`, `GSAP`[^1], `Bootstrap`, `Typescript`, `RxJS`, `jque
 _**Back-end**_: `Java`, `SpringBoot`, `Maven`, `PostGreSQL`, `JWT`, `Cloudinary`, `Email sender`, `Lombok`, `Spring Security`  
 - Back deploy : `Koyeb`  
 
-## 🧩 Features
+<h2 id="features">🧩 Features</h2>
 
-## 📝 How It Works
+<h2 id="how-it-works">📝 How It Works</h2>
 
-## 📂 Video
+<h2 id="video">📂 Video</h2>
 
-## 💡 Improvements
+<h2 id="improvements">💡 Improvements</h2>
 
-## :shipit: Issues and their status 
+<h2 id="issues-and-their-status">:shipit: Issues and their status</h2>
 - [RESOLVING] Only the landing, community login/signup pages are responsive
 - [UNTOUCHED] Need to warn the users that if a picture is too big in its size, it won't post
 - [UNTOUCHED] In the explore page, if you filter a post and then remove the filter, the menus of the post don't work anymore 
