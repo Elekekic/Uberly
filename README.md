@@ -50,9 +50,11 @@ _**Back-end**_: `Java`, `SpringBoot`, `Maven`, `PostGreSQL`, `JWT`, `Cloudinary`
 <h2 id="improvements">💡 Improvements</h2>
 
 <h2 id="issues-and-their-status">:shipit: Issues and their status</h2>
-- [RESOLVING] Only the landing, community login/signup pages are responsive
-- [UNTOUCHED] Need to warn the users that if a picture is too big in its size, it won't post
-- [UNTOUCHED] In the explore page, if you filter a post and then remove the filter, the menus of the post don't work anymore 
+- <strong>[RESOLVING]</strong> Only the landing, community login/signup pages are responsive <br> 
+- <strong>[UNTOUCHED]</strong> Need to warn the users that if a picture is too big in its size, it won't post <br>
+- <strong>[UNTOUCHED]</strong> In the explore page, if you filter a post and then remove the filter, the menus of the post don't work anymore  <br>
+
+<br>
 
 [Back to top](#table-of-contents)
 
