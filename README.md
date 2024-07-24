@@ -8,41 +8,38 @@
 
    ![Static Badge](https://img.shields.io/badge/Deployed-%23FC7E0F?logo=Vercel&label=Vercel&labelColor=%23000000)  ![Static Badge](https://img.shields.io/badge/Deployed-%23F5E7C6?logo=Koyeb&label=Koyeb&labelColor=%23000000) ![Static Badge](https://img.shields.io/badge/Refactoring-%23FAF3E1?logo=htmx&label=code&labelColor=black)
 
-
 </div>
-
 
 > [!NOTE]
 > This project is currently in **refactoring**. I am planning to incorporate additional features, so the current state of the project reflects the progress made within one month.
 
 <br>
 
-<hr> 
+---
 
 # 🧾 Table of contents 
 
--  [🛠 Technologies](#technologies) <br> 
--  [🧩 Features](#features) <br> 
--  [📝 How It Works](#How-It-Works) <br> 
--  [📂 Video](#video) <br> 
--  [💡 Improvements](#improvements) <br> 
--  [:shipit: Issues and their status](#issues-and-their-status) <br> 
+- [🛠 Technologies](#technologies)  
+- [🧩 Features](#features)  
+- [📝 How It Works](#how-it-works)  
+- [📂 Video](#video)  
+- [💡 Improvements](#improvements)  
+- [:shipit: Issues and their status](#issues-and-their-status)  
 
+---
 
-<hr> 
-
-<br> 
+<br>
 
 ## 🛠️ Technologies
 
 > [!IMPORTANT]
 > The dependency for the websocket has been implemented in the back-end, but hasn't been used yet
 
-_**Front-end**_: `Angular`, `GSAP`[^1], `Bootstrap`, `Typescript`, `RxJS`, `jquery`, `@auth0/angular-jwt` <br> 
+_**Front-end**_: `Angular`, `GSAP`[^1], `Bootstrap`, `Typescript`, `RxJS`, `jquery`, `@auth0/angular-jwt`  
 - Front deploy : `Vercel`
 
-_**Back-end**_: `Java`, `SpringBoot`, `Maven`, `PostGreSQL`, `JWT`, `Cloudinary`, `Email sender`, `Lombok`, `Spring Security` <br> 
-- Back deploy : `Koyeb` <br> 
+_**Back-end**_: `Java`, `SpringBoot`, `Maven`, `PostGreSQL`, `JWT`, `Cloudinary`, `Email sender`, `Lombok`, `Spring Security`  
+- Back deploy : `Koyeb`  
 
 ## 🧩 Features
 
@@ -53,11 +50,10 @@ _**Back-end**_: `Java`, `SpringBoot`, `Maven`, `PostGreSQL`, `JWT`, `Cloudinary`
 ## 💡 Improvements
 
 ## :shipit: Issues and their status 
--  [RESOLVING] Only the landing,community login/signup pages are responsive
--  [UNTOUCHED] Need to warn the users that if a picture is too big in it's size, it won't post
--  [UNTOUCHED] In the explore page, if you filter a post and then remove the filter, the menus of the post don't work anymore 
+- [RESOLVING] Only the landing, community login/signup pages are responsive
+- [UNTOUCHED] Need to warn the users that if a picture is too big in its size, it won't post
+- [UNTOUCHED] In the explore page, if you filter a post and then remove the filter, the menus of the post don't work anymore 
 
 [Back to top](#table-of-contents)
 
 [^1]: GreenSock Animation Platform. A JavaScript library for creating high-performance animations.
-
