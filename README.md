@@ -79,7 +79,7 @@ Uberly offers various features tailored to three essential roles within the appl
 
 <h1 id="improvements">💡 Improvements</h1>
 
-<h2 id="issues-and-their-status">:shipit: Issues and their status</h2>
+<h1 id="issues-and-their-status">:shipit: Issues and their status</h1>
 - <strong>[RESOLVING]</strong> Only the landing, community login/signup pages are responsive <br> 
 - <strong>[UNTOUCHED]</strong> Need to warn the users that if a picture is too big in its size, it won't post <br>
 - <strong>[UNTOUCHED]</strong> In the explore page, if you filter a post and then remove the filter, the menus of the post don't work anymore  <br>
