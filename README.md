@@ -11,6 +11,7 @@
 
 </div>
 
+
 > [!NOTE]
 > This project is currently in **refactoring**. I am planning to incorporate additional features, so the current state of the project reflects the progress made within one month.
 
@@ -20,12 +21,12 @@
 
 # 🧾 Table of contents 
 
-- [🛠 Technologies](#technologies)
-- [🧩 Features](#features)
-- [📝 How It Works](#how-it-works)
-- [📂 Video](#video)
-- [💡 Improvements](#improvements)
-- [:shipit: Issues and their status](#issues-and-their-status)
+-  [🛠 Technologies](#technologies) <br> 
+-  [🧩 Features](#features) <br> 
+-  [📝 How It Works](#How-It-Works) <br> 
+-  [📂 Video](#video) <br> 
+-  [💡 Improvements](#improvements) <br> 
+-  [:shipit: Issues and their status](#issues-and-their-status) <br> 
 
 
 <hr> 
@@ -55,6 +56,8 @@ _**Back-end**_: `Java`, `SpringBoot`, `Maven`, `PostGreSQL`, `JWT`, `Cloudinary`
 -  [RESOLVING] Only the landing,community login/signup pages are responsive
 -  [UNTOUCHED] Need to warn the users that if a picture is too big in it's size, it won't post
 -  [UNTOUCHED] In the explore page, if you filter a post and then remove the filter, the menus of the post don't work anymore 
+
+[Back to top](#table-of-contents)
 
 [^1]: GreenSock Animation Platform. A JavaScript library for creating high-performance animations.
 
