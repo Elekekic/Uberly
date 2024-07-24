@@ -73,6 +73,14 @@ Uberly offers various features tailored to three essential roles within the appl
 
 <h1 id="how-it-works">📝 How It Works</h1>
 
+To set up the project, run the following commands in the terminal:
+```sh
+npm i
+npm install gsap
+npm install jquery & npm install --save-dev @types/jquery
+npm install @auth0/angular-jwt
+```
+
 <h1 id="video">📂 Video</h1>
 
 
