@@ -45,6 +45,8 @@ _**Front-end**_: `Angular`, `GSAP`[^1], `Bootstrap`, `Typescript`, `RxJS`, `jque
 _**Back-end**_: `Java`, `SpringBoot`, `Maven`, `PostGreSQL`, `JWT`, `Cloudinary`, `Email sender`, `Lombok`, `Spring Security`  
 - Back deploy : `Koyeb`  
 
+_**Others**_: `Postman`  
+
 <br>
 
 <h1 id="features">🧩 Features</h1>
@@ -83,7 +85,8 @@ Uberly offers various features tailored to three essential roles within the appl
 ##  DEVELOPMENT IN LOCAL ⚙
 
 > [!WARNING]
-> Make sure that once you have finished to setup the back-end, only after u start the application, so u can take the tomcat localhost and add it in the front end
+> Ensure that you complete the back-end setup before starting the application firstly. Only after the back-end server is running, you will be able to get the URL from the console.
+> This step is crucial for the front-end to communicate correctly with the back-end.
 
 
  ### BACK-END
