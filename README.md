@@ -26,7 +26,7 @@
 - [🛠 Technologies](#technologies)  
 - [🧩 Features](#features)  
 - [📝 How It Works](#how-it-works)  
-- [📂 Video](#video)  
+- [📂 Videos](#videos)  
 - [💡 Improvements](#improvements)  
 - [:shipit: Issues and their status](#issues-and-their-status)  
 
@@ -125,13 +125,30 @@ npm install jquery & npm install --save-dev @types/jquery
 npm install @auth0/angular-jwt
 ```
 
-Next, simply run the command `npm serve -o` to start the front-end and you're done!
+Next, simply run the command `ng s -o` to start the front-end and you're done!
 
 
 <br> 
 
 
-<h1 id="video">📂 Video</h1>
+<h1 id="videos">📂 Videos</h1>
+
+[Landing page video](https://github.com/user-attachments/assets/830e5dab-cc0e-44dd-a673-5853c317a9de)
+
+[Community page video](https://github.com/user-attachments/assets/d63d8022-2f09-4421-8090-a52f1db03abc)
+
+[Forms video](https://github.com/user-attachments/assets/c3577451-df85-445a-bceb-8be2d13000f1)
+
+[Home page video](https://github.com/user-attachments/assets/66cb4931-bc62-4f92-bd62-1bc0e7e1b5e5)
+
+[Profile page video](https://github.com/user-attachments/assets/4e97d8e3-ba3e-4a8f-b83c-7253c177eeec)
+
+
+[Another User's Profile video](https://github.com/user-attachments/assets/4b1cd730-5986-46d0-bfb4-9f8a4e6fba79)
+
+[Explore page video](https://github.com/user-attachments/assets/9c90e452-0a09-4159-ad72-7a017c7ad01f)
+
+[404 page video](https://github.com/user-attachments/assets/35460992-bcfb-440a-a9b6-40270920ee0d)
 
 
 <br> 
