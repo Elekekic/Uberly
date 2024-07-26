@@ -169,8 +169,7 @@ Allow users to set a custom status with emojis on their profile, such as "💤 S
 Enhance user experience by adding more reaction options to posts.
 
 <strong> Settings Page Redesign: </strong>
-Revamp the settings page to improve its UX and UI for a more user-friendly experience.
-
+Upgrade the settings page to improve its UX and UI for a more user-friendly experience.
 
 <br>
 
@@ -185,6 +184,9 @@ Implement a warning system to notify users if a picture is too large to post. (U
 
 <strong> Filtering and Toggles: </strong>
 Fix an issue on the explore page where post menus stop working after applying and removing filters. (Untouched)
+
+<strong> Viewing Followers Component: </strong>
+Necessary to know who is following you, since you can only see who you are following. (Resolving)
 
 <br>
 
