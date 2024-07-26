@@ -85,7 +85,7 @@ Uberly offers various features tailored to three essential roles within the appl
 ##  DEVELOPMENT IN LOCAL ⚙
 
 > [!WARNING]
-> Ensure that you complete the back-end setup before starting the application firstly. Only after the back-end server is running, you will be able to get the URL from the console.
+> Ensure that you complete the back-end setup before starting the application. Only after the back-end server is running you will be able to get the URL from the console.
 > This step is crucial for the front-end to communicate correctly with the back-end.
 
 
