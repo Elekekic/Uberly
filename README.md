@@ -6,7 +6,7 @@
 
 <br> 
 
-   ![Static Badge](https://img.shields.io/badge/Deployed-%23FC7E0F?logo=Vercel&label=Vercel&labelColor=%23000000)  ![Static Badge](https://img.shields.io/badge/Deployed-%23F5E7C6?logo=Koyeb&label=Koyeb&labelColor=%23000000) ![Static Badge](https://img.shields.io/badge/Refactoring-%23FAF3E1?logo=htmx&label=code&labelColor=black)
+   ![Static Badge](https://img.shields.io/badge/Temporarily_Removed-%23FC7E0F?logo=Vercel&label=Vercel&labelColor=%23000000)  ![Static Badge](https://img.shields.io/badge/Temporarily_Removed-%23F5E7C6?logo=Koyeb&label=Koyeb&labelColor=%23000000) ![Static Badge](https://img.shields.io/badge/Refactoring-%23FAF3E1?logo=htmx&label=code&labelColor=black)
 
 </div>
 
