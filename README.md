@@ -79,8 +79,8 @@ Uberly offers various features tailored to three essential roles within the appl
 
 <h1 id="how-it-works">📝 How It Works</h1>
 
-> [!TIP]
-> if you want to see the website deployed, click to [this link](https://uberly-app.vercel.app/) and enjoy it!
+<!-- [!TIP]
+ if you want to see the website deployed, click to [this link](https://uberly-app.vercel.app/) and enjoy it! --> 
 
 ##  DEVELOPMENT IN LOCAL ⚙
 
