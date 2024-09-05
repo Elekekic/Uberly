@@ -13,13 +13,7 @@
 > [!NOTE]
 > This project is currently in **refactoring**. I am planning to incorporate additional features, so the current state of the project reflects the progress made within one month.
 
-
-> [!CAUTION]
-> Since the database is currently deployed on Koyeb and it's on a free plan, I have to reset it every 50 hours. If you see an error reflecting the server not responding, it's probably caused by that.
-
-
 <br> 
-
 
 <h1 id="table-of-contents"> 🧾 Table of contents </h1> 
 
